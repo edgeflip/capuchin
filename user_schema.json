@@ -1,0 +1,37 @@
+{
+  'relationship_status': '',
+  'updated': datetime.datetime(2014, 5, 13, 17, 15, 30),
+  'quotes': [''],
+  'books': [''],
+  'has_timeline':'1',
+  'city': '',
+  'lname': 'Collins',
+  'religion': '',
+  'tv': [''],
+  'political': '',
+  'sports': [{},{}],
+  'languages': [{},{}],
+  'affiliations': '[
+    {
+      "type": "college",
+      "name": "Harvard",
+      "nid": 16777217
+    }
+  ]',
+  'state': '',
+  'music': [''],
+  'fname': 'Ben',
+  'email': '',
+  'interests': [''],
+  'activities': '',
+  'wall_count': 129,
+  'birthday': datatime,
+  'likes_count': None,
+  'gender': 'male',
+  'fbid': 846L,
+  'devices': [{}],
+  'movies': [''],
+  'country': '', 
+  'profile_update_time': datetime.datetime(2014, 5, 3, 5, 51, 58),
+  'friend_request_count': int
+}
