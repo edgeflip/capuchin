@@ -13,7 +13,7 @@ class Capuchin(Flask):
             body = {
                 "settings":user_mapping.SETTINGS,
                 "mappings":{
-                    "users":{
+                    "user":{
                         "_source":{"enabled":True},
                         "properties":user_mapping.USER
                     }

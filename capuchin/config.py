@@ -4,5 +4,5 @@ REDSHIFT_PORT = 5439
 REDSHIFT_USER = 'edgeflip'
 REDSHIFT_PASSWORD = 'XzriGDp2FfVy9K'
 
-ES_INDEX = "capuchin"
+ES_INDEX = "capuchin_users"
 ES_HOSTS = [{"host":"localhost", "port":9200},]

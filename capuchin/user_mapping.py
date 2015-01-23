@@ -110,26 +110,34 @@ USER = {
         }
     },
     "sports":{
-        "type": "multi_field",
-        "fields": {
-            "search": {
-                "type": "string",
-            },
-            "facet": {
-                "type": "string",
-                "index": "not_analyzed",
+        "properties":{
+            "name":{
+                "type": "multi_field",
+                "fields": {
+                    "search": {
+                        "type": "string",
+                    },
+                    "facet": {
+                        "type": "string",
+                        "index": "not_analyzed",
+                    }
+                }
             }
         }
     },
     "languages": {
-        "type": "multi_field",
-        "fields": {
-            "search": {
-                "type": "string",
-            },
-            "facet": {
-                "type": "string",
-                "index": "not_analyzed",
+        "properties":{
+            "name":{
+                "type": "multi_field",
+                "fields": {
+                    "search": {
+                        "type": "string",
+                    },
+                    "facet": {
+                        "type": "string",
+                        "index": "not_analyzed",
+                    }
+                }
             }
         }
     },

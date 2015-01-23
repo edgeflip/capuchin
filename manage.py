@@ -6,12 +6,13 @@ import psycopg2.extras
 import capuchin.config as config
 from capuchin.app import Capuchin
 from capuchin.models.user import User
+from capuchin import user_mapping
 from pprint import pprint
 
 app = Capuchin()
 manager = Manager(app)
 
-TOTAL = 10000
+TOTAL = 1000000
 
 class SyncUsers(Command):
     "syncs users from RedShift to ElasticSearch"
@@ -53,7 +54,13 @@ class SyncUsers(Command):
         self.cur.close()
         self.con.close()
 
+class UpdateMapping(Command):
+
+    def run(self):
+        app.es.indices.put_mapping(index=config.ES_INDEX, doc_type="user", body=user_mapping.USER)
+
 manager.add_command('sync', SyncUsers())
+manager.add_command('update', UpdateMapping())
 
 if __name__ == "__main__":
     manager.run()
