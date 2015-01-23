@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-4">
+            <h3>Notifications</h3>
+            <table class='table table-striped'>
+                <thead>
+                    <th>Name</th>
+                    <th>Message</th>
+                    <th>Users</th>
+                    <th>Clicks</th>
+                    <th></th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Avid readers in California</td>
+                        <td>We've got some great new resources for you...</td>
+                        <td>5,908</td>
+                        <td>2,898</td>
+                        <td>
+                            <a class='btn btn-primary' href='' role="button">View</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>New Website</td>
+                        <td>Check out the new site!</td>
+                        <td>2,898</td>
+                        <td>2,512</td>
+                        <td>
+                            <a class='btn btn-primary' href='' role="button">View</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Help us help you!</td>
+                        <td>Donate now and get a free subscription.</td>
+                        <td>6,005</td>
+                        <td>3,090</td>
+                        <td>
+                            <a class='btn btn-primary' href='' role="button">View</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Drama fans in Delaware</td>
+                        <td>Delaware loves the Golden Globes.</td>
+                        <td>1,309</td>
+                        <td>566</td>
+                        <td>
+                            <a class='btn btn-primary' href='' role="button">View</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Liberals in Detroit</td>
+                        <td>Detroit needs you!</td>
+                        <td>1,098</td>
+                        <td>978</td>
+                        <td>
+                            <a class='btn btn-primary' href='' role="button">View</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-4">
+            <h3>Lists</h3>
+            <table class='table table-striped'>
+                <thead>
+                    <th>Name</th>
+                    <th>Users</th>
+                    <th></th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Facebook</td>
+                        <td>2,898</td>
+                        <td>
+                            <a class='btn btn-primary' href='' role="button">View</a>
+                            <a class='btn btn-danger' href='' role="button">Share</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Website</td>
+                        <td>590</td>
+                        <td>
+                            <a class='btn btn-primary' href='' role="button">View</a>
+                            <a class='btn btn-danger' href='' role="button">Share</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Email</td>
+                        <td>5,908</td>
+                        <td>
+                            <a class='btn btn-primary' href='' role="button">View</a>
+                            <a class='btn btn-danger' href='' role="button">Share</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-4">
+            <h3>Segments</h3>
+            <table class='table table-striped'>
+                <thead>
+                    <th>Name</th>
+                    <th>Users</th>
+                    <th></th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Everyone</td>
+                        <td>9,747</td>
+                        <td>
+                            <a class='btn btn-primary' href='' role="button">View</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Drama lovers in Delaware</td>
+                        <td>2,909</td>
+                        <td>
+                            <a class='btn btn-primary' href='' role="button">View</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Liberals in Detroit</td>
+                        <td>1,990</td>
+                        <td>
+                            <a class='btn btn-primary' href='' role="button">View</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Readers in California</td>
+                        <td>2,990</td>
+                        <td>
+                            <a class='btn btn-primary' href='' role="button">View</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Soccer Players in USA</td>
+                        <td>7,098</td>
+                        <td>
+                            <a class='btn btn-primary' href='' role="button">View</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Buddhists in Chicago</td>
+                        <td>544</td>
+                        <td>
+                            <a class='btn btn-primary' href='' role="button">View</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div id="chart1" class="col-md-12">
+            <h3>User Aquisition</h3>
+            <svg></svg>
+            <script>
+                nv.addGraph(function() {
+                    var chart = nv.models.multiBarChart();
+
+                    chart.xAxis
+                    .tickFormat(d3.format(',f'));
+
+                    chart.yAxis
+                    .tickFormat(d3.format(',.1f'));
+
+                    d3.select('#chart1 svg')
+                    .datum(data())
+                    .transition().duration(500)
+                    .call(chart)
+                    ;
+
+                    nv.utils.windowResize(chart.update);
+
+                    return chart;
+                });
+                function data() {
+                    return stream_layers(3,10+Math.random()*100,.1).map(function(data, i) {
+                        return {
+                            key: 'Stream' + i,
+                            values: data
+                        };
+                    });
+                }
+
+                /* Inspired by Lee Byron's test data generator. */
+                function stream_layers(n, m, o) {
+                    if (arguments.length < 3) o = 0;
+                    function bump(a) {
+                        var x = 1 / (.1 + Math.random()),
+                        y = 2 * Math.random() - .5,
+                        z = 10 / (.1 + Math.random());
+                        for (var i = 0; i < m; i++) {
+                            var w = (i / m - y) * z;
+                            a[i] += x * Math.exp(-w * w);
+                        }
+                    }
+                    return d3.range(n).map(function() {
+                        var a = [], i;
+                        for (i = 0; i < m; i++) a[i] = o + o * Math.random();
+                        for (i = 0; i < 5; i++) bump(a);
+                        return a.map(stream_index);
+                    });
+                }
+
+                /* Another layer generator using gamma distributions. */
+                function stream_waves(n, m) {
+                    return d3.range(n).map(function(i) {
+                        return d3.range(m).map(function(j) {
+                            var x = 20 * j / m - i / 3;
+                            return 2 * x * Math.exp(-.5 * x);
+                        }).map(stream_index);
+                    });
+                }
+
+                function stream_index(d, i) {
+                    return {x: i, y: Math.max(0, d)};
+                }
+            </script>
+{% endblock %}

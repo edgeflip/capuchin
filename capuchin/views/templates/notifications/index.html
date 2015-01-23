@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Notifications{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h3>Notifications <a href="/notifications/create" class="btn btn-success">Create</a></h3>
+        <table class='table table-striped'>
+            <thead>
+                <th>Name</th>
+                <th>Message</th>
+                <th>Users</th>
+                <th>Clicks</th>
+                <th></th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Avid readers in California</td>
+                    <td>We've got some great new resources for you...</td>
+                    <td>5,908</td>
+                    <td>2,898</td>
+                    <td>
+                        <a class='btn btn-primary' href='' role="button">View</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>New Website</td>
+                    <td>Check out the new site!</td>
+                    <td>2,898</td>
+                    <td>2,512</td>
+                    <td>
+                        <a class='btn btn-primary' href='' role="button">View</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Help us help you!</td>
+                    <td>Donate now and get a free subscription.</td>
+                    <td>6,005</td>
+                    <td>3,090</td>
+                    <td>
+                        <a class='btn btn-primary' href='' role="button">View</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Drama fans in Delaware</td>
+                    <td>Delaware loves the Golden Globes.</td>
+                    <td>1,309</td>
+                    <td>566</td>
+                    <td>
+                        <a class='btn btn-primary' href='' role="button">View</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Liberals in Detroit</td>
+                    <td>Detroit needs you!</td>
+                    <td>1,098</td>
+                    <td>978</td>
+                    <td>
+                        <a class='btn btn-primary' href='' role="button">View</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="row">
+    <div id="chart1" class="col-md-12">
+        <h3>Notification Performance</h3>
+        <svg></svg>
+        <script>
+
+            //Donut chart example
+            nv.addGraph(function() {
+                var chart = nv.models.pieChart()
+                .x(function(d) { return d.label })
+                .y(function(d) { return d.value })
+                .showLabels(true)     //Display pie labels
+                .labelThreshold(.05)  //Configure the minimum slice size for labels to show up
+                .labelType("percent") //Configure what type of data to show in the label. Can be "key", "value" or "percent"
+                .donut(true)          //Turn on Donut mode. Makes pie chart look tasty!
+                .donutRatio(0.35)     //Configure how big you want the donut hole size to be.
+                ;
+
+                d3.select("#chart1 svg")
+                .datum(exampleData())
+                .transition().duration(350)
+                .call(chart);
+
+                return chart;
+            });
+
+            //Pie chart example data. Note how there is only a single array of key-value pairs.
+            function exampleData() {
+                return  [
+                    {
+                        "label": "Avid readers in California",
+                        "value" : 2898
+                    } ,
+                    {
+                        "label": "New Website",
+                        "value" : 2512
+                    } ,
+                    {
+                        "label": "Help us help you!",
+                        "value" : 3090
+                    } ,
+                    {
+                        "label": "Drama fans in Delaware",
+                        "value" : 566
+                    } ,
+                    {
+                        "label": "Liberals in Detroit",
+                        "value" : 978
+                    }
+                ];
+            }
+        </script>
+        {% endblock %}
