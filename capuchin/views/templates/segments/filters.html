@@ -1,0 +1,66 @@
+<h2>Filters</h2>
+<ul class="list-group">
+    <li class="list-group-item">
+        <a class="" data-toggle="collapse" href="#ages" aria-expanded="false" aria-controls="collapseAges">
+            <h4>Ages</h4>
+        </a>
+        <div id="ages" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="collapseAges" aria-expanded="true">
+            <div class="list-group">
+                {% for a in ages %}
+                <a href="{{ url_for(
+                    'segments.filter_update',
+                    id=id,
+                    filter_type='age',
+                    fro=ages[a]['range']['from'],
+                    to=ages[a]['range'].get('to', 0)) }}"
+                    class="list-group-item filter">
+                    {{ages[a]['display']}}
+                    <span class="badge">{{ages[a]['count']}}</span>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </li>
+    <li class="list-group-item">
+        <a class="" data-toggle="collapse" href="#states" aria-expanded="false" aria-controls="collapseStates">
+            <h4>States</h4>
+        </a>
+        <div id="states" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="collapseStates" aria-expanded="false">
+            <div class="list-group">
+                {% for a in states['buckets'] %}
+                <a href="{{ url_for(
+                    'segments.filter_update',
+                    id=id,
+                    filter_type='state',
+                    fro=a['key'],
+                    to=a['key']) }}"
+                    class="list-group-item filter">
+                    {{a['key']}}
+                    <span class="badge">{{a['doc_count']}}</span>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </li>
+    <li class="list-group-item">
+        <a class="" data-toggle="collapse" href="#popularity" aria-expanded="false" aria-controls="collapsePop">
+            <h4>Popularity</h4>
+        </a>
+        <div id="popularity" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="collapsePop" aria-expanded="false">
+            <div class="list-group">
+                {% for a in popularity['buckets'][10:] %}
+                <a href="{{ url_for(
+                    'segments.filter_update',
+                    id=id,
+                    filter_type='popularity',
+                    fro=a['key'],
+                    to=a['key']) }}"
+                    class="list-group-item filter">
+                    {{a['key']}}
+                    <span class="badge">{{a['doc_count']}}</span>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </li>
+</ul>

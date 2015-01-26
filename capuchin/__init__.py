@@ -22,7 +22,10 @@ class Capuchin(Flask):
             },
             ignore=400
         )
-        self.init_blueprints()
+        try:
+            self.init_blueprints()
+        except Exception as e:
+            logging.exception(e)
 
     def init_blueprints(self):
         logging.debug("registering blueprints")
