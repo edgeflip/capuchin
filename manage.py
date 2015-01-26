@@ -4,7 +4,7 @@ from flask.ext.script import Command
 import psycopg2
 import psycopg2.extras
 import capuchin.config as config
-from capuchin.app import Capuchin
+from capuchin import Capuchin
 from capuchin.models.user import User
 from capuchin import user_mapping
 from pprint import pprint

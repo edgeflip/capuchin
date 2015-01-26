@@ -29,6 +29,8 @@ class Capuchin(Flask):
         from controllers.dashboard import db
         from controllers.notifications import notif
         from controllers.lists import lists
+        from controllers.segments import segments
         self.register_blueprint(db)
         self.register_blueprint(notif)
         self.register_blueprint(lists)
+        self.register_blueprint(segments)
