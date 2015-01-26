@@ -1,0 +1,17 @@
+<nav>
+    <ul class="pagination">
+        <li>
+            <a class="pager" href="{{url_for('.segment_pagination', id=id, page=pagination['previous'])}}" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        {% for i in range(pagination['total_pages']) %}
+            <li><a class="pager" href="{{ url_for('.segment_pagination', id=id, page=i) }}">{{i+1}}</a></li>
+        {% endfor %}
+        <li>
+            <a class="pager" href="{{url_for('.segment_pagination', id=id, page=pagination['previous'])}}" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+    </ul>
+</nav>

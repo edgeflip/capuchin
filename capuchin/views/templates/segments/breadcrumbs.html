@@ -1,0 +1,17 @@
+{% if not query['filtered']['filter']['and'] %}
+    <li>No Filters</li>
+{% endif %}
+
+{% set age = query|has_filter('age') %}
+{% set state = query|has_filter('state') %}
+{% set popularity = query|has_filter('popularity') %}
+
+{% if age %}
+    <li><a href="#">Ages: {{age['from']}} - {{age['to']}}</a></li>
+{% endif %}
+{% if state %}
+    <li><a href="#">State: {{ state }}</a></li>
+{% endif %}
+{% if popularity %}
+    <li><a href="#">Popularity: {{popularity['from']}}</a></li>
+{% endif %}

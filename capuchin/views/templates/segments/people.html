@@ -1,0 +1,11 @@
+{% for p in people %}
+<tr>
+    <td>{{p['fields']['fname'][0]}}</td>
+    <td>{{p['fields']['lname'][0]}}</td>
+    <td>{{p['fields'].get('age', [''])[0]}}</td>
+    <td>{{p['fields'].get('city', [''])[0]}}, {{p['fields'].get('state',[''])[0]}}</td>
+    <td>
+        <a target="_blank" class='btn btn-primary' href="http://facebook.com/{{p['fields']['fbid'][0]}}" role="button">View</a>
+    </td>
+</tr>
+{% endfor %}

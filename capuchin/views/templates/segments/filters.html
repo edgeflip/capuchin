@@ -1,50 +1,64 @@
+{% set age_filter = query|has_filter('age') %}
+{% set state_filter = query|has_filter('state') %}
+{% set popularity_filter = query|has_filter('popularity') %}
+
 <h2>Filters</h2>
 <ul class="list-group">
     <li class="list-group-item">
         <a class="" data-toggle="collapse" href="#ages" aria-expanded="false" aria-controls="collapseAges">
-            <h4>Ages</h4>
+            <h4>Ages {% if age_filter %}
+                <span class="badge">{{age_filter['from']}} - {{age_filter['to']}}</span>
+            {% endif %}</h4>
         </a>
-        <div id="ages" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="collapseAges" aria-expanded="true">
-            <div class="list-group">
-                {% for a in ages %}
-                <a href="{{ url_for(
-                    'segments.filter_update',
-                    id=id,
-                    filter_type='age',
-                    fro=ages[a]['range']['from'],
-                    to=ages[a]['range'].get('to', 0)) }}"
-                    class="list-group-item filter">
-                    {{ages[a]['display']}}
-                    <span class="badge">{{ages[a]['count']}}</span>
-                </a>
-                {% endfor %}
+        {% if not age_filter %}
+            <div id="ages" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="collapseAges" aria-expanded="true">
+                <div class="list-group">
+                    {% for a in ages %}
+                    <a href="{{ url_for(
+                        'segments.filter_update',
+                        id=id,
+                        filter_type='age',
+                        fro=ages[a]['range']['from'],
+                        to=ages[a]['range'].get('to', 0)) }}"
+                        class="list-group-item filter">
+                        {{ages[a]['display']}}
+                        <span class="badge">{{ages[a]['count']}}</span>
+                    </a>
+                    {% endfor %}
+                </div>
             </div>
-        </div>
+        {% endif %}
     </li>
     <li class="list-group-item">
         <a class="" data-toggle="collapse" href="#states" aria-expanded="false" aria-controls="collapseStates">
-            <h4>States</h4>
+            <h4>States{% if state_filter %}
+                <span class="badge">{{state_filter}}</span>
+                {% endif %}</h4>
         </a>
-        <div id="states" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="collapseStates" aria-expanded="false">
-            <div class="list-group">
-                {% for a in states['buckets'] %}
-                <a href="{{ url_for(
-                    'segments.filter_update',
-                    id=id,
-                    filter_type='state',
-                    fro=a['key'],
-                    to=a['key']) }}"
-                    class="list-group-item filter">
-                    {{a['key']}}
-                    <span class="badge">{{a['doc_count']}}</span>
-                </a>
-                {% endfor %}
+        {% if not state_filter %}
+            <div id="states" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="collapseStates" aria-expanded="false">
+                <div class="list-group">
+                    {% for a in states['buckets'] %}
+                    <a href="{{ url_for(
+                        'segments.filter_update',
+                        id=id,
+                        filter_type='state',
+                        fro=a['key'],
+                        to=a['key']) }}"
+                        class="list-group-item filter">
+                        {{a['key']}}
+                        <span class="badge">{{a['doc_count']}}</span>
+                    </a>
+                    {% endfor %}
+                </div>
             </div>
-        </div>
+        {% endif %}
     </li>
     <li class="list-group-item">
         <a class="" data-toggle="collapse" href="#popularity" aria-expanded="false" aria-controls="collapsePop">
-            <h4>Popularity</h4>
+            <h4>Popularity{% if popularity_filter %}
+                <span class="badge">{{popularity_filter['from']}}</span>
+                {% endif %}</h4>
         </a>
         <div id="popularity" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="collapsePop" aria-expanded="false">
             <div class="list-group">
