@@ -2,36 +2,6 @@
 <div class="filters col-md-3" id="filters">
     {% include "segments/filters.html" %}
 </div>
-<div class="data col-md-9">
-    <div class="row">
-        <div class="col-md-9">
-            <ol class="breadcrumb">
-                {% include "segments/breadcrumbs.html" %}
-            </ol>
-        </div>
-        <div class="col-md-3">
-            <h4>List Length: {{"{:,}".format(total)}}</h4>
-        </div>
-    </row>
-    <div class="row">
-        <div class="col-md-12">
-            <table class="table table-striped">
-                <thead>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Age</th>
-                    <th>Location</th>
-                    <th></th>
-                </thead>
-                <tbody id="people">
-                    {% include "segments/people.html" %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            {% include "segments/pagination.html" %}
-        </div>
-    </div>
+<div class="data col-md-9" id="records">
+    {% include "segments/records.html" %}
 </div>

@@ -1,0 +1,30 @@
+<div id="range{{filter['field']}}"></div>
+<div class="row">
+    <div class="col-md-6">
+        <div id="range-{{filter['field']}}-min" class="range-min pull-left">
+            {{values[filter['field']][0]}}
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div id="range-{{filter['field']}}-max" class="range-max pull-right">
+            {{values[filter['field']][1]}}
+        </div>
+    </div>
+</div>
+<script>
+var {{filter['field']}} = [{{ranges[filter['display']]['min']}}, {{ranges[filter['display']]['max']}}];
+$("#range{{filter['field']}}").slider({
+    animate:"fast",
+    max:{{ranges[filter['display']]['max']}},
+    min:{{ranges[filter['display']]['min']}},
+    range:true,
+    step:{{filter['aggregation_args']['interval']}},
+    values:[{{values[filter['field']][0]}}, {{values[filter['field']][1]}}],
+    slide:function(e, ui){
+        {{filter['field']}} = ui.values;
+        $("#range-{{filter['field']}}-min").html(ui.values[0]);
+        $("#range-{{filter['field']}}-max").html(ui.values[1]);
+        filters["{{filter['field']}}"] = ui.values;
+    }
+});
+</script>

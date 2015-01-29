@@ -1,0 +1,36 @@
+<div class="row">
+    <div class="col-md-12">
+        <h4>Segment Length: {{"{:,}".format(total)}}</h4>
+    </div>
+</row>
+<div class="row">
+    <div class="col-md-12">
+        <table class="table table-striped">
+            <thead>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Age</th>
+                <th>Location</th>
+                <th></th>
+            </thead>
+            <tbody>
+                {% for p in records %}
+                <tr>
+                    <td>{{p['fields']['fname'][0]}}</td>
+                    <td>{{p['fields']['lname'][0]}}</td>
+                    <td>{{p['fields'].get('age', [''])[0]}}</td>
+                    <td>{{p['fields'].get('city', [''])[0]}}, {{p['fields'].get('state',[''])[0]}}</td>
+                    <td>
+                        <a target="_blank" class='btn btn-primary' href="http://facebook.com/{{p['fields']['fbid'][0]}}" role="button">View</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        {% include "segments/pagination.html" %}
+    </div>
+</div>

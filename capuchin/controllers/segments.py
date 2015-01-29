@@ -1,9 +1,9 @@
-from flask import Blueprint, render_template, current_app, redirect, url_for
+from flask import Blueprint, render_template, current_app, redirect, url_for, request, Response
 from flask.views import MethodView
 from capuchin import config
-import collections
 import logging
 import math
+import json
 
 RECORDS_PER_PAGE = 10
 
@@ -13,76 +13,73 @@ segments = Blueprint(
     template_folder=config.TEMPLATES,
 )
 
-def age_query(q, fro, to):
-    q['filtered']['filter']['and'].append(
-        {
-            "range":{
-                "age":{
-                    "from":fro,
-                    "to":to
-                }
+RECORD_TYPE = "user"
+
+RECORD_FIELDS = ["fname", "lname", "age", "fbid", "city", "state"]
+
+FILTERS = [
+    {
+        "display":"Age",
+        "field":"age",
+        "type":"range",
+        "aggregation_args":{
+            "interval":10,
+            "min_doc_count":0,
+            "interval":1,
+        }
+    },
+    {
+        "display":"Popularity",
+        "field":"num_friends_interacted_with_my_posts",
+        "type":"range",
+        "aggregation_args":{
+            "interval" : 100,
+            "min_doc_count": 100,
+            "extended_bounds" : {
+                "min" : 100,
+                "max" : 5000
             }
         }
-    )
-    return q
+    },
+    {
+        "display":"State",
+        "field":"state",
+        "type":"term",
+        "aggregation_args":{}
+    },
+    {
+        "display":"Religion",
+        "field":"religion",
+        "type":"term",
+        "aggregation_args":{}
+    },
+]
 
-def state_query(q, fro, to):
-    q['filtered']['filter']['and'].append({"term":{ "state":fro}})
-    return q
-
-def popularity_query(q, fro, to):
-    q['filtered']['filter']['and'].append(
-        {
-            "range":{
-                "num_friends_interacted_with_my_posts":{
-                    "from":fro,
-                }
+def range_filter(field, value):
+    return {
+        "range":{
+            field:{
+                "from":value[0],
+                "to": value[1]
             }
         }
-    )
-    return q
+    }
+
+def term_filter(field, value):
+    return {
+        "term":{
+            "{}.facet".format(field):value
+        }
+    }
 
 FILTER_TYPES = {
-    "age":age_query,
-    "state":state_query,
-    "popularity":popularity_query
+    "range": range_filter,
+    "term": term_filter,
 }
 
-def has_filter(query, filter_type):
-    for f in query['filtered']['filter']['and']:
-        if f.get('range'):
-            if f['range'].get('age') and filter_type == 'age':
-                return f['range'].get('age')
-            elif filter_type == 'popularity':
-                return f['range'].get('num_friends_interacted_with_my_posts')
-        elif f.get('term') and filter_type == 'state': return f.get('term')['state']
-
-    return False
-
-segments.add_app_template_filter(has_filter)
-
-def create_ages(buckets):
-    last = buckets[0]['key']
-    ages = collections.OrderedDict()
-    ages["bucket{}".format(last)] = {
-        "display":"< {}".format(last),
-        "range":{"from":0, "to":last},
-        "count": buckets[0]['doc_count']
-    }
-    for i in buckets[1:]:
-        ages["bucket{}".format(i['key'])] = {
-            "display": "{}-{}".format(last, i['key']),
-            "range": {"from":last, "to":i['key']},
-            "count": i['doc_count'],
-        }
-        last=i['key']+1
-    ages["bucket{}".format(last)] = {
-        "display": "{}+".format(last),
-        "range": {"from":last},
-        "count": "NA"
-
-    }
-    return ages
+def get_filter(filters, field):
+    for f in filters:
+        if f['field'] == field: return f
 
 def create_pagination(total_records, current_page=0):
     tp = math.ceil(total_records/RECORDS_PER_PAGE)
@@ -94,48 +91,95 @@ def create_pagination(total_records, current_page=0):
     }
     return page
 
+def get_ranges(filters):
+    q = {"aggregations":{}}
+    for f in filters:
+        if f["type"] == "range":
+            key = f["display"]
+            q["aggregations"][key] = {
+                "stats":{
+                    "field":f["field"]
+                }
+            }
+    res = current_app.es.search(
+        config.ES_INDEX,
+        "user",
+        _source=False,
+        size=0,
+        body=q,
+    )
+    return res["aggregations"]
 
-def get_aggs(query=None, fro=0):
-    body = {
-        "aggregations" : {
-            "ages" : {
-                "histogram" : {
-                    "field" : "age",
-                    "interval" : 10,
-                    "min_doc_count" : 0
+def get_filters(id):
+    if id:
+        res = current_app.es.get(config.ES_INDEX, id, "segment")
+        q = res['_source']
+    else:
+        q = {}
+        res = current_app.es.index(config.ES_INDEX, "segment", body=q)
+        id = res['_id']
+    return (q, id,)
+
+def get_records(filters, from_=0):
+    q = {}
+    if len(filters['filtered']['filter']['and']): q["query"] = filters
+    res = current_app.es.search(
+        config.ES_INDEX,
+        RECORD_TYPE,
+        fields=RECORD_FIELDS,
+        size=RECORDS_PER_PAGE,
+        from_=from_,
+        _source=False,
+        body=q
+    )
+    return res['hits']
+
+def get_suggestions(field, text):
+    q = {}
+    res = current_app.es.search(
+        config.ES_INDEX,
+        RECORD_TYPE,
+        size=0,
+        _source=False,
+        body={
+            "query": {
+                "match": {
+                    "{}.suggest".format(field): {
+                        "query":text,
+                        "analyzer":"lowercase"
+                    }
                 }
             },
-            "states" : {
-                "terms" : {
-                    "field" : "state",
-                    "size": 50,
-                }
-            },
-            "popularity": {
-                "histogram" : {
-                    "field" : "num_friends_interacted_with_my_posts",
-                    "interval" : 100,
-                    "min_doc_count": 100,
-                    "extended_bounds" : {
-                        "min" : 100,
-                        "max" : 5000
+            "aggregations":{
+                field:{
+                    "terms":{
+                        "field":"{}.facet".format(field),
+                        "size":20,
+                        "order" : { "_term" : "asc" },
                     }
                 }
             }
         }
-    }
-    if query and len(query['filtered']['filter']['and']): body['query'] = query
-    logging.info(body)
-    aggs = current_app.es.search(
-        config.ES_INDEX,
-        "user",
-        _source=False,
-        fields=['fname', 'lname', 'age', 'fbid', 'last_activity', 'city', 'state'],
-        body=body,
-        from_=fro,
-        size=RECORDS_PER_PAGE,
     )
-    return aggs
+    return res['aggregations']
+
+def update_filters(id, filters):
+    res = current_app.es.get(config.ES_INDEX, id, "segment")
+    q = res['_source']
+    for k,v in filters.iteritems(): q[k] = v
+    current_app.es.index(config.ES_INDEX, "segment", body=q, id=id)
+    return q
+
+def build_query_filters(filters):
+    and_ = []
+    for k,v in filters.iteritems():
+        filt = get_filter(FILTERS, k)
+        logging.info(k)
+        logging.info(filt)
+        if v: and_.append(FILTER_TYPES[filt['type']](k,v))
+
+    query = {"filtered":{"filter":{"and":and_}}}
+    return query
 
 class SegmentsDefault(MethodView):
 
@@ -144,68 +188,42 @@ class SegmentsDefault(MethodView):
 
 class SegmentsCreate(MethodView):
 
-    def get(self, id=None):
-        if id:
-            res = current_app.es.get(config.ES_INDEX, id, "segment")
-            q = res['_source']
-        else:
-            q = {
-                "filtered":{
-                    "filter":{
-                        "and":[]
-                    }
-                }
-            }
-            res = current_app.es.index(config.ES_INDEX, "segment", body=q)
-            return redirect(url_for(".segments_create_id", id=res['_id']))
-
-        aggs = get_aggs(query=q)
+    def get(self, id=None, page=0, template=None):
+        filters, _id = get_filters(id)
+        if not id: return redirect(url_for(".segments_id", id=_id))
+        query_filters = build_query_filters(filters)
+        ranges = get_ranges(FILTERS)
+        records = get_records(query_filters, from_=page*RECORDS_PER_PAGE)
+        logging.info(ranges)
+        tmpl = template if template else "segments/create.html"
         return render_template(
-            "segments/create.html",
-            ages=create_ages(aggs['aggregations']['ages']['buckets']),
-            states=aggs['aggregations']['states'],
-            popularity=aggs['aggregations']['popularity'],
-            people=aggs['hits']['hits'],
-            id=res['_id'],
-            query=q,
-            total=aggs['hits']['total'],
-            pagination=create_pagination(aggs['hits']['total']),
+            tmpl,
+            filters=FILTERS,
+            values=filters,
+            ranges=ranges,
+            records=records['hits'],
+            id=id,
+            total=records['total'],
+            pagination=create_pagination(records['total'], page),
+            page=page
         )
 
+    def post(self, id, page=0):
+        filters = json.loads(request.form['filters'])
+        q = update_filters(id, filters)
+        return self.get(id=id, page=page, template="segments/records.html")
 
-class SegmentsUpdate(MethodView):
+class SegmentsAutocomplete(MethodView):
 
-    def get(self, id, filter_type, fro=None, to=None):
-        res = current_app.es.get(config.ES_INDEX, id, "segment")
-        q = res['_source']
-        q = FILTER_TYPES[filter_type](q, fro, to)
-        current_app.es.index(config.ES_INDEX, "segment", body=q, id=id)
-        aggs = get_aggs(query=q)
-        return render_template(
-            "segments/filtered.html",
-            ages=create_ages(aggs['aggregations']['ages']['buckets']),
-            states=aggs['aggregations']['states'],
-            popularity=aggs['aggregations']['popularity'],
-            people=aggs['hits']['hits'],
-            id=res['_id'],
-            query=q,
-            total=aggs['hits']['total'],
-            pagination=create_pagination(aggs['hits']['total']),
-        )
-
-class SegmentsPagination(MethodView):
-
-    def get(self, id, page):
-        res = current_app.es.get(config.ES_INDEX, id, "segment")
-        q = res['_source']
-        aggs = get_aggs(query=q, fro=int(page)*RECORDS_PER_PAGE)
-        return render_template(
-            "segments/people.html",
-            people=aggs['hits']['hits'],
-        )
+    def get(self, field):
+        term = request.args.get("term")
+        res = get_suggestions(field, term)
+        ar = [{"label":u"{}: {}".format(a['key'], a['doc_count']), "value":a['key']} for a in res[field]['buckets']]
+        return Response(json.dumps(ar), mimetype='application/json')
 
 segments.add_url_rule("/segments", view_func=SegmentsDefault.as_view('segments'))
 segments.add_url_rule("/segments/create", view_func=SegmentsCreate.as_view('segments_create'))
-segments.add_url_rule("/segments/create/<id>", view_func=SegmentsCreate.as_view('segments_create_id'))
-segments.add_url_rule("/segments/<id>/filters/<filter_type>/<fro>/<to>", view_func=SegmentsUpdate.as_view("filter_update"))
-segments.add_url_rule("/segments/<id>/page/<page>", view_func=SegmentsPagination.as_view("segment_pagination"))
+segments.add_url_rule("/segments/<id>", view_func=SegmentsCreate.as_view('segments_id'))
+segments.add_url_rule("/segments/<id>/<int:page>", view_func=SegmentsCreate.as_view("segments_page"))
+segments.add_url_rule("/segments/<id>/<int:page>/filters", view_func=SegmentsCreate.as_view("filter_update"))
+segments.add_url_rule("/segments/autocomplete/<field>", view_func=SegmentsAutocomplete.as_view("autocomplete"))

@@ -1,0 +1,16 @@
+<div id="term{{filter['field']}}">
+    <input type="text" id="input{{filter['field']}}" class="term-input" data-field="{{filter['field']}}" value="{{values[filter['field']]}}"/>
+</div>
+<script>
+
+    $("#input{{filter['field']}}").autocomplete({
+        minLength: 2,
+        source:"{{ url_for('.autocomplete', field=filter['field']) }}",
+
+        select: function(e, ui){
+            console.log(ui.item.value);
+            filters["{{filter['field']}}"] = ui.item.value;
+        }
+    });
+
+</script>

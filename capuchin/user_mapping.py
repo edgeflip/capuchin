@@ -2,11 +2,6 @@ SETTINGS = {
     "index": {
         "analysis": {
             "analyzer": {
-                "kw_analyzer": {
-                    "type": "custom",
-                    "tokenizer": "lowercase",
-                    "filter": ["kw_ngram"]
-                },
                 "lowercase": {
                     "tokenizer": "keyword",
                     "filter": "lowercase"
@@ -15,13 +10,18 @@ SETTINGS = {
                     "type": "custom",
                     "tokenizer": "standard",
                     "filter": ["lowercase", "snowball"]
-                }
+                },
+                "autocomplete":{
+                    "type":"custom",
+                    "tokenizer":"standard",
+                    "filter":[ "standard", "lowercase", "stop", "kstem", "ngram" ]
+                },
             },
             "filter": {
-                "kw_ngram": {
+                "ngram": {
                     "type": "nGram",
                     "min_gram": 2,
-                    "max_gram": 20,
+                    "max_gram": 8,
                 },
                 "snowball": {
                     "type": "snowball",
@@ -36,17 +36,95 @@ USER = {
     "fbid": {"type": "long",},
     "fname": {"type": "string",},
     "lname": {"type": "string",},
-    "city": {"type": "string", "index": "not_analyzed",},
-    "state": {"type": "string", "index": "not_analyzed",},
-    "country": {"type": "string", "index": "not_analyzed",},
+    "city": {
+        "type": "multi_field",
+        "fields":{
+            "facet":{
+                "type":"string",
+                "index": "not_analyzed"
+            },
+            "suggest": {
+                "type": "string",
+                "analyzer": "autocomplete"
+            }
+        }
+    },
+    "state": {
+        "type": "multi_field",
+        "fields":{
+            "facet":{
+                "type":"string",
+                "index": "not_analyzed"
+            },
+            "suggest": {
+                "type": "string",
+                "analyzer": "autocomplete"
+            }
+        }
+    },
+    "country":{
+        "type": "multi_field",
+        "fields":{
+            "facet":{
+                "type":"string",
+                "index": "not_analyzed"
+            },
+            "suggest": {
+                "type": "string",
+                "analyzer": "autocomplete"
+            }
+        }
+    },
     "updated": {"type": "date",},
     "profile_update_time":{"type": "date"},
     "quotes": {"type": "string",},
-    "religion": {"type": "string",},
+    "religion": {
+        "type": "multi_field",
+        "fields":{
+            "facet":{
+                "type":"string",
+                "index": "not_analyzed"
+            },
+            "suggest": {
+                "type": "string",
+                "analyzer": "autocomplete"
+            }
+        }
+    },
     "birthday": {"type": "date",},
     "gender": {"type": "string", "index": "not_analyzed",},
-    "music": {"type": "string", "index": "not_analyzed",},
-    "political": {"type": "string", "index": "not_analyzed",},
+    "music": {
+        "type": "multi_field",
+        "fields": {
+            "search": {
+                "type": "string"
+            },
+            "facet": {
+                "type": "string",
+                "index": "not_analyzed",
+            },
+            "suggest": {
+                "type": "string",
+                "analyzer": "autocomplete"
+            }
+        }
+    },
+    "political": {
+        "type": "multi_field",
+        "fields": {
+            "search": {
+                "type": "string"
+            },
+            "facet": {
+                "type": "string",
+                "index": "not_analyzed",
+            },
+            "suggest": {
+                "type": "string",
+                "analyzer": "autocomplete"
+            }
+        }
+    },
     "relationship_status": {"type": "string", "index": "not_analyzed",},
     "likes_count": {"type": "integer",},
     "wall_count": {"type": "integer", "index": "not_analyzed",},
@@ -70,13 +148,40 @@ USER = {
     "avg_friends_interacted_with_my_posts":{"type": "integer"},
     "avg_friends_i_interacted_with":{"type": "integer"},
     "top_words":{
-        "type":"string",
-        "index":"not_analyzed",
+        "type": "multi_field",
+        "fields": {
+            "search": {
+                "type": "string"
+            },
+            "facet": {
+                "type": "string",
+                "index": "not_analyzed",
+            },
+            "suggest": {
+                "type": "string",
+                "analyzer": "autocomplete"
+            }
+        }
     },
     "affiliations": {
         "properties":{
             "type": {"type": "string", "index": "not_analyzed"},
-            "name": {"type": "string", "index": "not_analyzed"},
+            "name": {
+                "type": "multi_field",
+                "fields": {
+                    "search": {
+                        "type": "string"
+                    },
+                    "facet": {
+                        "type": "string",
+                        "index": "not_analyzed",
+                    },
+                    "suggest": {
+                        "type": "string",
+                        "analyzer": "autocomplete"
+                    }
+                }
+            }
         }
     },
     "devices": {
@@ -94,6 +199,10 @@ USER = {
             "facet": {
                 "type": "string",
                 "index": "not_analyzed",
+            },
+            "suggest": {
+                "type": "string",
+                "analyzer": "autocomplete"
             }
         }
     },
@@ -106,6 +215,10 @@ USER = {
             "facet": {
                 "type": "string",
                 "index": "not_analyzed",
+            },
+            "suggest": {
+                "type": "string",
+                "analyzer": "autocomplete"
             }
         }
     },
@@ -120,6 +233,10 @@ USER = {
                     "facet": {
                         "type": "string",
                         "index": "not_analyzed",
+                    },
+                    "suggest": {
+                        "type": "string",
+                        "analyzer": "autocomplete"
                     }
                 }
             }
@@ -131,11 +248,15 @@ USER = {
                 "type": "multi_field",
                 "fields": {
                     "search": {
-                        "type": "string",
+                        "type": "string"
                     },
                     "facet": {
                         "type": "string",
                         "index": "not_analyzed",
+                    },
+                    "suggest": {
+                        "type": "string",
+                        "analyzer": "autocomplete"
                     }
                 }
             }
@@ -148,15 +269,18 @@ USER = {
                 "type":"string"
             },
             "domain":{
-                "type":"multi_field",
-                "fields":{
-                    "search":{
-                        "type":"string",
-
+                "type": "multi_field",
+                "fields": {
+                    "search": {
+                        "type": "string"
                     },
-                    "facet":{
-                        "type":"string",
-                        "index":"not_analyzed"
+                    "facet": {
+                        "index": "not_analyzed",
+                        "type": "string",
+                    },
+                    "suggest": {
+                        "type": "string",
+                        "analyzer": "autocomplete"
                     }
                 }
             }
@@ -171,6 +295,10 @@ USER = {
             "facet": {
                 "type": "string",
                 "index": "not_analyzed",
+            },
+            "suggest": {
+                "type": "string",
+                "analyzer": "autocomplete"
             }
         }
     },
@@ -183,6 +311,10 @@ USER = {
             "facet": {
                 "type": "string",
                 "index": "not_analyzed",
+            },
+            "suggest": {
+                "type": "string",
+                "analyzer": "autocomplete"
             }
         }
     },

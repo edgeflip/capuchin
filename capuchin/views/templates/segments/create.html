@@ -3,8 +3,27 @@
 {% block head %}
 <script>
     var id = "{{id}}";
-    $(document).pjax(".filter", "#filtered", {push:false});
-    $(document).pjax(".pager", "#people", {push:false});
+    var filters = {};
+    $(document).ready(function(){
+        $("#filter-submit").click(function(e){
+            $(".term-input").each(function(i, el){
+                filters[$(el).data("field")] = $(el).val();
+            });
+            console.log("test");
+            $.pjax({
+                container:"#records",
+                url: "{{ url_for('.filter_update', id=id, page=0) }}",
+                type:"POST",
+                data:{"filters":JSON.stringify(filters)},
+                push:false,
+            });
+        })
+    });
+    $(document).pjax(".pager", "#records", {push:false});
+
+    function filters_updated(e){
+        console.log(e);
+    }
 </script>
 {% endblock %}
 
