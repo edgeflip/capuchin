@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Lists{% endblock %}
+{% block title %}Segments{% endblock %}
 
 {% block content %}
 <h3>Segments <a href="/segments/create" class="btn btn-success">Create</a></h3>
@@ -11,48 +11,15 @@
         <th></th>
     </thead>
     <tbody>
+        {% for seg in segments %}
         <tr>
-            <td>Everyone</td>
-            <td>9,747</td>
+            <td>{{seg.name}}</td>
+            <td>{{"{:,}".format(seg.count())}}</td>
             <td>
-                <a class='btn btn-primary' href='' role="button">View</a>
+                <a class='btn btn-primary' href="{{ url_for('.segments_id', id=seg._id|string) }}" role="button">View</a>
             </td>
         </tr>
-        <tr>
-            <td>Drama lovers in Delaware</td>
-            <td>2,909</td>
-            <td>
-                <a class='btn btn-primary' href='' role="button">View</a>
-            </td>
-        </tr>
-        <tr>
-            <td>Liberals in Detroit</td>
-            <td>1,990</td>
-            <td>
-                <a class='btn btn-primary' href='' role="button">View</a>
-            </td>
-        </tr>
-        <tr>
-            <td>Readers in California</td>
-            <td>2,990</td>
-            <td>
-                <a class='btn btn-primary' href='' role="button">View</a>
-            </td>
-        </tr>
-        <tr>
-            <td>Soccer Players in USA</td>
-            <td>7,098</td>
-            <td>
-                <a class='btn btn-primary' href='' role="button">View</a>
-            </td>
-        </tr>
-        <tr>
-            <td>Buddhists in Chicago</td>
-            <td>544</td>
-            <td>
-                <a class='btn btn-primary' href='' role="button">View</a>
-            </td>
-        </tr>
+        {% endfor %}
     </tbody>
 </table>
 </div>

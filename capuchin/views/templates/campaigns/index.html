@@ -1,63 +1,63 @@
 {% extends "base.html" %}
 
-{% block title %}Notifications{% endblock %}
+{% block title %}Campaigns{% endblock %}
 
 {% block content %}
 <div class="row">
     <div class="col-md-12">
-        <h3>Notifications <a href="/notifications/create" class="btn btn-success">Create</a></h3>
+        <h3>Campaigns <a href="{{ url_for('.create') }}" class="btn btn-success">Create</a></h3>
         <table class='table table-striped'>
             <thead>
                 <th>Name</th>
-                <th>Message</th>
-                <th>Users</th>
+                <th>Created</th>
+                <th>Notifications Sent</th>
                 <th>Clicks</th>
                 <th></th>
             </thead>
             <tbody>
                 <tr>
-                    <td>Avid readers in California</td>
-                    <td>We've got some great new resources for you...</td>
+                    <td>Check out our Super Bowl ad!</td>
+                    <td>February 1st, 2014</td>
                     <td>5,908</td>
                     <td>2,898</td>
                     <td>
-                        <a class='btn btn-primary' href='' role="button">View</a>
+                        <a class='btn btn-primary' href="{{ url_for('.view') }}" role="button">View</a>
                     </td>
                 </tr>
                 <tr>
                     <td>New Website</td>
-                    <td>Check out the new site!</td>
+                    <td>December 12th, 2014</td>
                     <td>2,898</td>
                     <td>2,512</td>
                     <td>
-                        <a class='btn btn-primary' href='' role="button">View</a>
+                        <a class='btn btn-primary' href="{{ url_for('.view') }}" role="button">View</a>
                     </td>
                 </tr>
                 <tr>
                     <td>Help us help you!</td>
-                    <td>Donate now and get a free subscription.</td>
+                    <td>December 1st, 2014</td>
                     <td>6,005</td>
                     <td>3,090</td>
                     <td>
-                        <a class='btn btn-primary' href='' role="button">View</a>
+                        <a class='btn btn-primary' href="{{ url_for('.view') }}" role="button">View</a>
                     </td>
                 </tr>
                 <tr>
-                    <td>Drama fans in Delaware</td>
-                    <td>Delaware loves the Golden Globes.</td>
+                    <td>Golden Globes</td>
+                    <td>January 2nd, 2014</td>
                     <td>1,309</td>
                     <td>566</td>
                     <td>
-                        <a class='btn btn-primary' href='' role="button">View</a>
+                        <a class='btn btn-primary' href="{{ url_for('.view') }}" role="button">View</a>
                     </td>
                 </tr>
                 <tr>
                     <td>Liberals in Detroit</td>
-                    <td>Detroit needs you!</td>
+                    <td>November 18th, 2014</td>
                     <td>1,098</td>
                     <td>978</td>
                     <td>
-                        <a class='btn btn-primary' href='' role="button">View</a>
+                        <a class='btn btn-primary' href="{{ url_for('.view') }}" role="button">View</a>
                     </td>
                 </tr>
             </tbody>
@@ -66,7 +66,7 @@
 </div>
 <div class="row">
     <div id="chart1" class="col-md-12">
-        <h3>Notification Performance</h3>
+        <h3>Campaign Performance</h3>
         <svg></svg>
         <script>
 

@@ -1,5 +1,5 @@
 import logging
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 from capuchin import Capuchin
 from flask_pjax import PJAX
 app = Capuchin()

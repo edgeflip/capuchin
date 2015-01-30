@@ -4,12 +4,17 @@
 <script>
     var id = "{{id}}";
     var filters = {};
+
+    function notify(text){
+        $("#notification").html(text);
+        $(".alert").removeClass("hidden");
+    }
+
     $(document).ready(function(){
         $("#filter-submit").click(function(e){
             $(".term-input").each(function(i, el){
                 filters[$(el).data("field")] = $(el).val();
             });
-            console.log("test");
             $.pjax({
                 container:"#records",
                 url: "{{ url_for('.filter_update', id=id, page=0) }}",
@@ -17,23 +22,30 @@
                 data:{"filters":JSON.stringify(filters)},
                 push:false,
             });
-        })
+        });
+
+        $("#segment-name-save").click(function(e){
+            $.pjax({
+                container:"#notifications",
+                url:"{{ url_for('.save', id=id) }}",
+                type:"POST",
+                data:{'name':$("#segment-name").val()},
+                push:false,
+            });
+        });
     });
     $(document).pjax(".pager", "#records", {push:false});
 
-    function filters_updated(e){
-        console.log(e);
-    }
 </script>
 {% endblock %}
 
 {% block content %}
 <div class="row">
     <div class="col-md-11">
-        <input class='form-control' type="text" placeholder="Enter Segment Name" />
+        <input class='form-control' type="text" placeholder="Enter Segment Name" id="segment-name" value="{% if name %}{{name}}{% endif %}" />
     </div>
     <div class="col-md-1">
-        <button class="btn btn-success pull-right">Save</button>
+        <button class="btn btn-success pull-right" id="segment-name-save">Save</button>
     </div>
 </div>
 <div class="row" id="filtered">

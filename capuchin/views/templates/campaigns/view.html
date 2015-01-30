@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout our super Bow ad!{% endblock %}
+
+{% block content %}
+<h3>Checkout our super Bow ad!</h3>
+<div class="row">
+    <div class="col-md-4">
+        <form>
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" class="form-control" id="name" placeholder="Enter name" value="Checkout our super bowl ad!">
+            </div>
+            <div class="form-group">
+                <label for="content">Description</label>
+                <textarea class="form-control" id="content" rows="10">
+                    Sed dignissim lacinia nunc. Curabitur tortor. Pellentesque nibh. Aenean quam. In scelerisque sem at dolor. Maecenas mattis. Sed convallis tristique sem. Proin ut ligula vel nunc egestas porttitor. Morbi lectus risus, iaculis vel, suscipit quis, luctus non, massa. Fusce ac turpis quis ligula lacinia aliquet. Mauris ipsum. Nulla metus metus, ullamcorper vel, tincidunt sed, euismod in, nibh.
+                </textarea>
+            </div>
+            <button type="submit" class="btn btn-success">Save</button>
+        </form>
+    </div>
+    <div class="col-md-8">
+        <h3>Notifications sent</h3>
+        <table class='table table-striped'>
+            <thead>
+                <th>Message</th>
+                <th>Segment</th>
+                <th>Sent</th>
+                <th>Clicks</th>
+                <th></th>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Check out our Super Bowl ad!</td>
+                    <td>Buddhists in California</td>
+                    <td>January 31st, 2015</td>
+                    <td>2,898</td>
+                    <td>
+                        <a class='btn btn-primary' href='' role="button">View</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Seriously cool video!</td>
+                    <td>popular 25 - 35</td>
+                    <td>January 20th, 2015</td>
+                    <td>2,512</td>
+                    <td>
+                        <a class='btn btn-primary' href='' role="button">View</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Whoa, check this out!</td>
+                    <td>Liberals in Detroit</td>
+                    <td>December 1st, 2014</td>
+                    <td>3,090</td>
+                    <td>
+                        <a class='btn btn-primary' href='' role="button">View</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
