@@ -40,8 +40,10 @@ class Capuchin(Flask):
         from controllers.lists import lists
         from controllers.segments import segments
         from controllers.campaigns import campaigns
+        from controllers.redirect import redirect
         self.register_blueprint(db)
         self.register_blueprint(notif)
         self.register_blueprint(lists)
         self.register_blueprint(segments)
         self.register_blueprint(campaigns)
+        self.register_blueprint(redirect)

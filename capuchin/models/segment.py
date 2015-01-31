@@ -62,8 +62,11 @@ class Segment(orm.Document):
 
     def count(self):
         filters = self.build_query_filters()
-        q = {}
-        if len(filters['filtered']['filter']['and']): q["query"] = filters
+        q = None
+        self.logger.info(filters)
+        if len(filters['filtered']['filter']['and']):
+            q = {}
+            q["query"] = filters
         res = ES.count(
             config.ES_INDEX,
             config.RECORD_TYPE,

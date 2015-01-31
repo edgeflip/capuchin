@@ -18,5 +18,5 @@ class NotificationsCreate(MethodView):
     def get(self):
         return render_template("notifications/create.html")
 
-notif.add_url_rule("/notifications", view_func=NotificationsDefault.as_view('notifications'))
-notif.add_url_rule("/notifications/create", view_func=NotificationsCreate.as_view('notifications_create'))
+notif.add_url_rule("/notifications", view_func=NotificationsDefault.as_view('index'))
+notif.add_url_rule("/notifications/create", view_func=NotificationsCreate.as_view('create'))

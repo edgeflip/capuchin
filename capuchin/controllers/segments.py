@@ -71,14 +71,14 @@ def update_segment(id, filters):
 class SegmentsDefault(MethodView):
 
     def get(self):
-        segments = Segment.find()
+        segments = Segment.find({"name":{"$ne":None}})
         return render_template("segments/index.html", segments=segments)
 
 class SegmentsCreate(MethodView):
 
     def get(self, id=None, page=0, template=None):
         segment, _id = get_segment(id)
-        if not id: return redirect(url_for(".segments_id", id=_id))
+        if not id: return redirect(url_for(".id", id=_id))
         records = segment.records(from_=page*config.RECORDS_PER_PAGE)
         tmpl = template if template else "segments/create.html"
         return render_template(
@@ -115,10 +115,10 @@ class SegmentsSave(MethodView):
         s.save()
         return render_template("widgets/notification.html", type='success', text='Segment Saved')
 
-segments.add_url_rule("/segments", view_func=SegmentsDefault.as_view('segments'))
-segments.add_url_rule("/segments/create", view_func=SegmentsCreate.as_view('segments_create'))
-segments.add_url_rule("/segments/<id>", view_func=SegmentsCreate.as_view('segments_id'))
-segments.add_url_rule("/segments/<id>/<int:page>", view_func=SegmentsCreate.as_view("segments_page"))
+segments.add_url_rule("/segments", view_func=SegmentsDefault.as_view('index'))
+segments.add_url_rule("/segments/create", view_func=SegmentsCreate.as_view('create'))
+segments.add_url_rule("/segments/<id>", view_func=SegmentsCreate.as_view('id'))
+segments.add_url_rule("/segments/<id>/<int:page>", view_func=SegmentsCreate.as_view("page"))
 segments.add_url_rule("/segments/<id>/<int:page>/filters", view_func=SegmentsCreate.as_view("filter_update"))
 segments.add_url_rule("/segments/autocomplete/<field>", view_func=SegmentsAutocomplete.as_view("autocomplete"))
 segments.add_url_rule("/segments/<id>/save", view_func=SegmentsSave.as_view("save"))

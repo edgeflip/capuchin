@@ -5,38 +5,25 @@
 {% block content %}
 <div class="row">
     <div class="col-md-12">
-        <h3>Lists <a href="/lists/create" class="btn btn-success">Create</a></h3>
+        <h3>Lists <a href="{{ url_for('.create') }}" class="btn btn-success">Create</a></h3>
         <table class='table table-striped'>
             <thead>
                 <th>Name</th>
                 <th>Users</th>
+                <th>URL</th>
                 <th></th>
             </thead>
             <tbody>
+                {% for l in lists %}
                 <tr>
-                    <td>Facebook</td>
-                    <td>2,898</td>
+                    <td>{{l.name}}</td>
+                    <td>{{"{:,}".format(l.users)}}</td>
+                    <td>{{l.url}}</td>
                     <td>
-                        <a class='btn btn-primary' href='' role="button">View</a>
-                        <a class='btn btn-danger' href='' role="button">Share</a>
+                        <a class='btn btn-primary' href="{{ url_for('segments.create')}}" role="button">View</a>
                     </td>
                 </tr>
-                <tr>
-                    <td>Website</td>
-                    <td>590</td>
-                    <td>
-                        <a class='btn btn-primary' href='' role="button">View</a>
-                        <a class='btn btn-danger' href='' role="button">Share</a>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Email</td>
-                    <td>5,908</td>
-                    <td>
-                        <a class='btn btn-primary' href='' role="button">View</a>
-                        <a class='btn btn-danger' href='' role="button">Share</a>
-                    </td>
-                </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
@@ -70,18 +57,12 @@
             //Pie chart example data. Note how there is only a single array of key-value pairs.
             function exampleData() {
                 return  [
-                {
-                    "label": "Facebook",
-                    "value" : 2898
-                } ,
-                {
-                    "label": "Website",
-                    "value" : 590
-                } ,
-                {
-                    "label": "Email",
-                    "value" : 5908
-                }
+                {% for l in lists %}
+                    {
+                        "label": "{{l.name}}",
+                        "value" : {{l.users}}
+                    } ,
+                {% endfor %}
                 ];
             }
         </script>

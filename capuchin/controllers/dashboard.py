@@ -13,4 +13,4 @@ class DashboardDefault(MethodView):
     def get(self):
         return render_template("dashboard/index.html")
 
-db.add_url_rule("/", view_func=DashboardDefault.as_view('dashboard'))
+db.add_url_rule("/", view_func=DashboardDefault.as_view('index'))

@@ -3,7 +3,7 @@
 {% block title %}Segments{% endblock %}
 
 {% block content %}
-<h3>Segments <a href="/segments/create" class="btn btn-success">Create</a></h3>
+<h3>Segments <a href="{{ url_for('.create') }}" class="btn btn-success">Create</a></h3>
 <table class='table table-striped'>
     <thead>
         <th>Name</th>
@@ -16,7 +16,7 @@
             <td>{{seg.name}}</td>
             <td>{{"{:,}".format(seg.count())}}</td>
             <td>
-                <a class='btn btn-primary' href="{{ url_for('.segments_id', id=seg._id|string) }}" role="button">View</a>
+                <a class='btn btn-primary' href="{{ url_for('.id', id=seg._id|string) }}" role="button">View</a>
             </td>
         </tr>
         {% endfor %}

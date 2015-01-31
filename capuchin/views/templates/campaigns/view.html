@@ -21,7 +21,7 @@
         </form>
     </div>
     <div class="col-md-8">
-        <h3>Notifications sent</h3>
+        <h3>Notifications <a href="{{ url_for('notifications.create') }}" class="btn btn-success">Create</a></h3>
         <table class='table table-striped'>
             <thead>
                 <th>Message</th>
@@ -44,6 +44,15 @@
                     <td>Seriously cool video!</td>
                     <td>popular 25 - 35</td>
                     <td>January 20th, 2015</td>
+                    <td>2,512</td>
+                    <td>
+                        <a class='btn btn-primary' href='' role="button">View</a>
+                    </td>
+                </tr>
+                <tr class="info">
+                    <td>Seriously cool video!</td>
+                    <td>popular 25 - 35</td>
+                    <td><span class="badge">SCHEDULED</span></td>
                     <td>2,512</td>
                     <td>
                         <a class='btn btn-primary' href='' role="button">View</a>
