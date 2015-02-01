@@ -7,7 +7,8 @@ import capuchin.config as config
 from capuchin import Capuchin
 from capuchin.models.user import User
 from capuchin import user_mapping
-from pprint import pprint
+from capuchin import ES
+import logging
 
 app = Capuchin()
 manager = Manager(app)
@@ -18,8 +19,6 @@ class SyncUsers(Command):
     "syncs users from RedShift to ElasticSearch"
 
     def get_rows(self, offset=0, limit=1000):
-        offset = 0
-        limit = 1000
         def execute():
             self.cur.execute("SELECT * FROM users u, user_aggregates ua WHERE ua.fbid = u.fbid LIMIT %s OFFSET %s", (limit, offset))
             rows = self.cur.fetchmany(size=100)
@@ -45,11 +44,13 @@ class SyncUsers(Command):
         self.cur = self.con.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
     def run(self):
-        for i in self.get_rows():
+        offset = ES.count(config.ES_INDEX, config.RECORD_TYPE)['count']
+        logging.info(offset)
+        for i in self.get_rows(offset=offset):
             for row in i:
                 u = User(row)
-                pprint(u)
-                app.es.index(index=config.ES_INDEX, doc_type="user", body=u)
+                logging.info(u)
+                ES.index(index=config.ES_INDEX, doc_type=config.RECORD_TYPE, body=u)
 
         self.cur.close()
         self.con.close()
@@ -57,7 +58,7 @@ class SyncUsers(Command):
 class UpdateMapping(Command):
 
     def run(self):
-        app.es.indices.put_mapping(index=config.ES_INDEX, doc_type="user", body=user_mapping.USER)
+        app.es.indices.put_mapping(index=config.ES_INDEX, doc_type=config.RECORD_TYPE, body=user_mapping.USER)
 
 manager.add_command('sync', SyncUsers())
 manager.add_command('update', UpdateMapping())

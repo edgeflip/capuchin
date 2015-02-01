@@ -1,0 +1,35 @@
+mongodb:
+    image: dockerfile/mongodb
+    expose:
+        - "27017"
+
+elasticsearch:
+    image: dockerfile/elasticsearch
+    command: /elasticsearch/bin/elasticsearch -Des.config=/config/elasticsearch.yml
+    expose:
+        - "9200"
+        - "9300"
+    volumes:
+        - /var/lib/elasticsearch:/data
+        - /var/log/elasticsearch:/log
+        - ./config:/config
+
+web:
+    build: .
+    command: gunicorn --log-file=- --log-level debug wsgi:app -w 4 -b 0.0.0.0:8000
+    volumes:
+        - .:/app
+    links:
+        - mongodb:mongo
+        - elasticsearch:es
+    ports:
+        - "8000:8000"
+
+worker:
+    build: .
+    command: python manage.py sync
+    volumes:
+        - .:/app
+    links:
+        - mongodb:mongo
+        - elasticsearch:es

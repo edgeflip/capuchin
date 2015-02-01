@@ -7,11 +7,11 @@ REDSHIFT_USER = 'edgeflip'
 REDSHIFT_PASSWORD = 'XzriGDp2FfVy9K'
 
 ES_INDEX = "capuchin"
-ES_HOSTS = [{"host":"localhost", "port":9200},]
+ES_HOSTS = [{"host":"es", "port":9200},]
 
 TEMPLATES = "{}/capuchin/views/templates".format(os.getcwd())
 
-MONGO_HOST = "localhost"
+MONGO_HOST = "mongo"
 MONGO_PORT = 27017
 
 RECORDS_PER_PAGE = 10

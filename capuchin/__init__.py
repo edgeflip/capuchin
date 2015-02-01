@@ -5,9 +5,14 @@ import humongolus
 import config
 import user_mapping
 import logging
+import time
 
-ES = Elasticsearch(hosts=config.ES_HOSTS)
-MONGO = MongoClient(config.MONGO_HOST, config.MONGO_PORT)
+try:
+    time.sleep(10)
+    ES = Elasticsearch(hosts=config.ES_HOSTS)
+    MONGO = MongoClient(config.MONGO_HOST, config.MONGO_PORT)
+except Exception as e:
+    logging.exception(e)
 
 class Capuchin(Flask):
 
