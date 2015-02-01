@@ -25,11 +25,11 @@ web:
     ports:
         - "8000:8000"
 
-worker:
-    build: .
-    command: python manage.py sync
-    volumes:
-        - .:/app
-    links:
-        - mongodb:mongo
-        - elasticsearch:es
+#worker:
+#    build: .
+#    command: python manage.py sync
+#    volumes:
+#        - .:/app
+#    links:
+#        - mongodb:mongo
+#        - elasticsearch:es

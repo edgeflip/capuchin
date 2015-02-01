@@ -1,8 +1,6 @@
 server {
     listen 80;
 
-    server_name capuchin.dev;
-
     location / {
         add_header 'Access-Control-Allow-Credentials' 'true';
         add_header 'Access-Control-Allow-Headers' 'Content-Type,Accept,X-Requested-With';
@@ -15,6 +13,6 @@ server {
     }
 
     location /static {
-        alias /app/capuchin/views/static;
+        alias /home/ubuntu/capuchin/capuchin/views/static;
     }
 }

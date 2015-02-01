@@ -55,3 +55,5 @@ target/
 
 #terraform
 terraform/terraform.tfvars
+terraform/devops.pem
+terraform/.ssh

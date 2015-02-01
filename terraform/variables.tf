@@ -5,10 +5,11 @@ variable "region" {
 }
 variable "amis" {
     default = {
-        us-east-1 = "ami-408c7f28"
-        us-west-2 = "ami-3bebb50b"
+        us-east-1 = "ami-86562dee"
+        us-west-1 = "ami-50120b15"
     }
 }
 
 variable "git_repo" {}
 variable "app" {}
+variable "key_path" {}
