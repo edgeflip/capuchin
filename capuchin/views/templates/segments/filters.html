@@ -7,10 +7,12 @@
             {% include "widgets/range_filter.html" %}
         {% elif filter['type'] == "term" %}
             {% include "widgets/term_filter.html" %}
+        {% elif filter['type'] == "term_list" %}
+            {% include "widgets/term_list_filter.html" %}
         {% endif %}
     </li>
     {% endfor %}
     <li class="list-group-item">
-        <a href="#" class="btn btn-success center-block" id="filter-submit">Submit</a>
+        <a href="#" class="btn btn-success center-block" id="filter-submit">Filter</a>
     </li>
 </ul>

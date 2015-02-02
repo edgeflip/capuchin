@@ -40,6 +40,12 @@ FILTERS = [
         "type":"term",
         "aggregation_args":{}
     },
+    {
+        "display":"Gender",
+        "field":"gender",
+        "type":"term_list",
+        "aggregation_args":{}
+    },
 ]
 
 def range_filter(field, value):
@@ -59,9 +65,17 @@ def term_filter(field, value):
         }
     }
 
+def term_list_filter(field, value):
+    return {
+        "term":{
+            field:value
+        }
+    }
+
 FILTER_TYPES = {
     "range": range_filter,
     "term": term_filter,
+    "term_list": term_list_filter,
 }
 
 def get_filter(filters, field):

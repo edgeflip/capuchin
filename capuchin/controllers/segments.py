@@ -81,11 +81,15 @@ class SegmentsCreate(MethodView):
         if not id: return redirect(url_for(".id", id=_id))
         records = segment.records(from_=page*config.RECORDS_PER_PAGE)
         tmpl = template if template else "segments/create.html"
+        lists = segment.get_lists()
+        logging.info(lists)
         return render_template(
             tmpl,
             filters=filters.FILTERS,
+            filters_json=json.dumps(segment.filters),
             values=segment.filters,
             ranges=segment.get_ranges(),
+            lists=lists,
             records=records['hits'],
             id=id,
             total=records['total'],
@@ -96,6 +100,7 @@ class SegmentsCreate(MethodView):
 
     def post(self, id, page=0):
         filters = json.loads(request.form['filters'])
+        logging.info(filters)
         q = update_segment(id, filters)
         return self.get(id=id, page=page, template="segments/records.html")
 

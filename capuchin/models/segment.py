@@ -56,6 +56,23 @@ class Segment(orm.Document):
         )
         return res["aggregations"]
 
+    def get_lists(self):
+        q = {"aggregations":{}}
+        for f in filters.FILTERS:
+            if f["type"] == "term_list":
+                key = f["display"]
+                q["aggregations"][key] = {
+                    "terms":{"field":f["field"]}
+                }
+        res = ES.search(
+            config.ES_INDEX,
+            config.RECORD_TYPE,
+            _source=False,
+            size=0,
+            body=q,
+        )
+        return res["aggregations"]
+
     def records(self, from_=0):
         filters = self.build_query_filters()
         return self.get_records(filters, from_)

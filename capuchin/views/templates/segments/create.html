@@ -3,7 +3,9 @@
 {% block head %}
 <script>
     var id = "{{id}}";
-    var filters = {};
+    var filters = eval({{filters_json|safe}});
+
+    console.log(filters);
 
     function notify(text){
         $("#notification").html(text);
