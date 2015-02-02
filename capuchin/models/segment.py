@@ -63,7 +63,7 @@ class Segment(orm.Document):
                 key = f["display"]
                 q["aggregations"][key] = {
                     "terms":{"field":f["field"]}
-                }
+                }   
         res = ES.search(
             config.ES_INDEX,
             config.RECORD_TYPE,
