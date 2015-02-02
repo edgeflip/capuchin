@@ -63,7 +63,7 @@ class Segment(orm.Document):
                 key = f["display"]
                 q["aggregations"][key] = {
                     "terms":{"field":f["field"]}
-                }   
+                }
         res = ES.search(
             config.ES_INDEX,
             config.RECORD_TYPE,
@@ -77,6 +77,7 @@ class Segment(orm.Document):
         filters = self.build_query_filters()
         return self.get_records(filters, from_)
 
+    @property
     def count(self):
         filters = self.build_query_filters()
         q = None
