@@ -8,7 +8,7 @@ import logging
 import time
 
 try:
-    time.sleep(10)
+    time.sleep(15)
     ES = Elasticsearch(hosts=config.ES_HOSTS)
     MONGO = MongoClient(config.MONGO_HOST, config.MONGO_PORT)
 except Exception as e:

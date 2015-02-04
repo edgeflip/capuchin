@@ -14,7 +14,7 @@
         {% for seg in segments %}
         <tr>
             <td>{{seg.name}}</td>
-            <td>{{"{:,}".format(seg.count())}}</td>
+            <td>{{"{:,}".format(seg.count)}}</td>
             <td>
                 <a class='btn btn-primary' href="{{ url_for('.id', id=seg._id|string) }}" role="button">View</a>
             </td>

@@ -25,6 +25,13 @@ web:
     ports:
         - "8000:8000"
 
+kibana:
+    image: rednut/kibana
+    ports:
+        - "5601:5601"
+    links:
+        - elasticsearch:elasticsearch
+
 #worker:
 #    build: .
 #    command: python manage.py sync
