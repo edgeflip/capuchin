@@ -1,0 +1,8 @@
+<h2>Select one of your pages</h2>
+<div class="list-group">
+{% for p in current_user.facebook_pages %}
+    <a href="#" class="list-group-item">
+        {{p.name}}
+    </a>
+{% endfor %}
+</div>

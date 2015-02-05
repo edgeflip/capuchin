@@ -2,12 +2,16 @@ import humongolus as orm
 import humongolus.field as field
 from passlib.apps import custom_app_context as pwd_context
 
-class FacebookPage(orm.EmbeddedDocument):
-    category = field.Char()
+class PageCategory(orm.EmbeddedDocument):
+    id = field.Char()
     name = field.Char()
-    access_token = field.Char()
-    id = field.Integer()
-    perms = orm.List(type=unicode)
+
+class FacebookPage(orm.EmbeddedDocument):
+    name = field.Char()
+    token = field.Char()
+    id = field.Char()
+    permissions = orm.List(type=unicode)
+    categories = orm.List(type=PageCategory)
     default = field.Boolean(default=False)
 
 class SocialAccount(orm.EmbeddedDocument):
@@ -35,7 +39,7 @@ class Client(orm.Document):
 
     name = field.Char()
     description = field.Char()
-    facebook_pages = orm.List(type=FacebookPage)
+    facebook_page = FacebookPage()
 
 class Admin(orm.Document):
     _db = "capuchin"
@@ -50,6 +54,7 @@ class Admin(orm.Document):
     last_login = field.Date()
     client = field.DocumentId(type=Client)
     social_accounts = orm.List(type=SocialAccount)
+    facebook_pages = orm.List(type=FacebookPage)
 
     def social_account(self, account_type=None):
         for sa in self.social_accounts:

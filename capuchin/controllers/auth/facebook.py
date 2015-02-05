@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for
 from flask.views import MethodView
 from flask.ext.login import login_required, current_user
 from capuchin import config
-from capuchin.models.client import SocialAccount
+from capuchin.models.client import SocialAccount, FacebookPage, PageCategory
 from flask_oauth import OAuth
 import logging
 from urlparse import parse_qs, urlparse
@@ -75,6 +75,25 @@ def authorized(resp):
             sa.expires = token['expires']
             current_user.save()
             pages = get_pages(sa.id)
+            logging.info(pages)
+            for page in pages:
+                for p in current_user.facebook_pages:
+                    if page.get("id") == p.id: continue
+
+                fp = FacebookPage()
+                fp.name = page.get("name")
+                fp.token = page.get("access_token")
+                fp.id = page.get("id")
+                [fp.permissions.append(perm) for perm in page.get("perms")]
+                for pc in page.get("category_list", []):
+                    pca = PageCategory()
+                    logging.info(pc.get("id"))
+                    pca.id = pc.get("id")
+                    pca.name = pc.get("name")
+                    fp.categories.append(pca)
+                current_user.facebook_pages.append(fp)
+            current_user.save()
+
     except Exception as e:
         logging.exception(e)
 
@@ -84,8 +103,19 @@ def authorized(resp):
     return redirect(next_url)
 
 def get_pages(user_id):
+    pages = []
     res = fb_app.get("/{}/accounts".format(user_id))
-    logging.info(res.data)
+    pages = [p for p in res.data.get("data")]
+    while res.data.get("paging", {}).get("next"):
+        res = fb_app.get(
+            "/{}/accounts".format(user_id),
+            data={
+                "after":res.data.get("paging", {}).get("cursor").get("after")
+            }
+        )
+        pages+= [p for p in res.data.get("data")]
+
+    return pages
 
 def get_long_token(token):
     long_token = fb_app.get(
