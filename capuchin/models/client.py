@@ -10,6 +10,21 @@ class FacebookPage(orm.EmbeddedDocument):
     perms = orm.List(type=unicode)
     default = field.Boolean(default=False)
 
+class SocialAccount(orm.EmbeddedDocument):
+    TWITTER = 'twitter'
+    FACEBOOK = 'fb'
+    GOOGLE = 'google'
+    LINKEDIN = 'linkedin'
+
+    type = field.Char()
+    username = field.Char()
+    id = field.Char()
+    token = field.Char()
+    secret = field.Char()
+    avatar = field.Char()
+    app_id = field.Char()
+    permissions = orm.List(type=unicode)
+
 class Client(orm.Document):
     _db = "capuchin"
     _collection = "clients"
@@ -34,6 +49,14 @@ class Admin(orm.Document):
     password = field.Char()
     last_login = field.Date()
     client = field.DocumentId(type=Client)
+    social_accounts = orm.List(type=SocialAccount)
+
+    def social_account(self, account_type=None):
+        for sa in self.social_accounts:
+            if sa.type == account_type: return sa
+        sa = SocialAccount()
+        sa.type = account_type
+        return sa
 
     @staticmethod
     def passwords_match(pwd, cpwd):

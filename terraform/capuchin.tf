@@ -59,7 +59,7 @@ resource "aws_instance" "capuchin" {
         key_file = "${var.aws_key_path}"
     }
 
-    user_data = "${file(\"./user_data.txt\")}"
+    user_data = "${file(\"./user_data.yml\")}"
 
     security_groups = [
         "${module.vpc.aws_security_group_bastion_id}",

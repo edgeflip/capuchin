@@ -38,10 +38,11 @@ packages:
     - wget
 
 runcmd:
-    - [ curl, -sSL, "https://get.docker.com/ubuntu/",|, sudo, sh]
-    - [ wget, "https://bootstrap.pypa.io/get-pip.py" ]
-    - [ python, ./get-pip.py ]
-    - [ pip, install, fig]
-    - [ git, clone, "git@github.com:edgeflip/capuchin.git", /app]
-    - [ cd, /app]
-    - [ fig, up, -d]
+    - curl -sSL https://get.docker.com/ubuntu/ | sudo sh
+    - wget https://bootstrap.pypa.io/get-pip.py
+    - python ./get-pip.py
+    - pip install fig
+    - ssh-keyscan github.com >> ~/.ssh/known_hosts
+    - git clone git@github.com:edgeflip/capuchin.git /app
+    - cd /app
+    - fig up -d

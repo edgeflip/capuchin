@@ -19,10 +19,11 @@
         {% block head %}{% endblock %}
     </head>
     <body>
+        {% block container %}
         <div class='container'>
-            {% block container %}
+            {% block menu %}
             <nav class="navbar navbar-default">
-                {% block menu %}
+                {% block menu_items %}
                 <div class="container-fluid">
                     <div class="navbar-header">
                         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
@@ -60,28 +61,41 @@
                         </form>
                         <ul class="nav navbar-nav navbar-right">
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Environmental Defense Fund <span class="caret"></span></a>
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                                    <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+                                    {{ current_user.client.name }}
+                                    <span class="caret"></span>
+                                </a>
                                 <ul class="dropdown-menu" role="menu">
                                     <li><a href="#">Profile</a></li>
                                     <li><a href="#">Billing</a></li>
                                     <li><a href="#">Notifications</a></li>
                                     <li class="divider"></li>
-                                    <li><a href="#">Logout</a></li>
+                                    <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
                                 </ul>
                             </li>
                         </ul>
                     </div><!-- /.navbar-collapse -->
+                    {% endblock %}
                 </div><!-- /.container-fluid -->
                 {% endblock %}
             </nav>
-            <div id="notifications"></div>
             <div class='content'>
+                <div id="notifications">
+                    {% with messages = get_flashed_messages(with_categories=True) %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                {% include "widgets/notification.html" %}
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                </div>
                 {% block content %}{% endblock %}
             </div>
             <div class='footer'>
                 {% block footer %}{% endblock %}
             </div>
-            {% endblock %}
         </div>
+        {% endblock %}
     </body>
 </html>

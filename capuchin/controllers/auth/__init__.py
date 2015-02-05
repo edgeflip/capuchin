@@ -1,6 +1,7 @@
-from flask import Blueprint, render_template, flash, request, redirect, url_for, session
-from flask.ext.login import login_user, current_user
+from flask import Blueprint, render_template, flash, request, redirect, url_for, session, get_flashed_messages
+from flask.ext.login import login_user, current_user, logout_user
 from flask.views import MethodView
+from pymongo.errors import DuplicateKeyError
 from capuchin import config
 from capuchin.models.client import Client, Admin
 import logging
@@ -23,7 +24,9 @@ class AuthLogin(MethodView):
         pw = form['password']
         a = Admin.find_one({'email':em})
         if a and a.verify_pwd(pw):
-            success = login_user(a)
+            rem = False
+            if form.get("remember-me"): rem = True
+            success = login_user(a, remember=rem)
             logging.info("LOGGED IN: {}".format(success))
             return redirect(url_for("dashboard.index"))
         else:
@@ -39,25 +42,41 @@ class AuthRegister(MethodView):
     def post(self):
         form = request.form
         pwd = form['password']
-        logging.info(pwd)
         cpwd = form['confirm_password']
         if not Admin.passwords_match(pwd, cpwd):
-            logging.info(cpwd)
-            flash("Passwords do not match")
-            return render_template("auth/register", form=form)
+            flash("Passwords do not match", "danger")
+            return render_template("auth/register.html", form=form)
+        try:
+            cl = Client.find_one({"name":form['org']})
+            cl = cl if cl else Client()
+            cl.name = form['org']
+            cl.save()
+        except DuplicateKeyError as e:
+            logging.exception(e)
+            flash("Organization name already taken", "danger");
+            return render_template("auth/register.html", form=form)
+        try:
+            a = Admin()
+            a.name = form['name']
+            a.email = form['email']
+            a.password = form['password']
+            a.client = cl
+            a.save()
+        except DuplicateKeyError as e:
+            logging.exception(e)
+            flash("Email address already taken", "danger");
+            return render_template("auth/register.html", form=form)
 
-        cl = Client()
-        cl.name = form['org']
-        cl.save()
-        logging.info(cl)
-        a = Admin()
-        a.name = form['name']
-        a.email = form['email']
-        a.password = form['password']
-        a.client = cl
-        a.save()
         login_user(a)
-        return redirect(url_for("dashboard.index", first=True))
+        return redirect(url_for("facebook.index"))
+
+
+class AuthLogout(MethodView):
+
+    def get(self):
+        logout_user()
+        return redirect(url_for(".login"))
 
 auth.add_url_rule("/login", view_func=AuthLogin.as_view('login'))
+auth.add_url_rule("/logout", view_func=AuthLogout.as_view('logout'))
 auth.add_url_rule("/register", view_func=AuthRegister.as_view('register'))
