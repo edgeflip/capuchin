@@ -12,6 +12,11 @@ REDSHIFT_PORT = 5439
 REDSHIFT_USER = 'edgeflip'
 REDSHIFT_PASSWORD = 'XzriGDp2FfVy9K'
 
+HASH_ROUNDS = 3998
+HASH_ALGO = "pbkdf2-sha512"
+HASH_ALGO_CLS = "pbkdf2_sha512"
+HASH_SALT_SIZE = 32
+
 ES_INDEX = "capuchin"
 ES_HOSTS = [{"host":"es", "port":9200},]
 

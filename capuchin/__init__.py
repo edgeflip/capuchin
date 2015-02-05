@@ -5,19 +5,26 @@ from flask.ext.session import Session
 from pymongo import MongoClient
 from elasticsearch import Elasticsearch
 from capuchin.models.client import Admin
+from elasticsearch import TransportError
 import humongolus
 import config
 import user_mapping
 import logging
 import time
+import gevent
 
 logging.basicConfig(level=config.LOG_LEVEL)
+es_connected = False
 
-try:
-    ES = Elasticsearch(hosts=config.ES_HOSTS)
-    MONGO = MongoClient(config.MONGO_HOST, config.MONGO_PORT)
-except Exception as e:
-    logging.exception(e)
+while not es_connected:
+    try:
+        gevent.sleep(1)
+        ES = Elasticsearch(hosts=config.ES_HOSTS, sniff_on_start=True, sniff_on_connection_fail=True, sniffer_timeout=60)
+        es_connected = True
+    except TransportError as e:
+        logging.exception(e)
+
+MONGO = MongoClient(config.MONGO_HOST, config.MONGO_PORT)
 
 
 def create_index():

@@ -1,6 +1,6 @@
 import humongolus as orm
 import humongolus.field as field
-from passlib.apps import custom_app_context as pwd_context
+from capuchin.util import password
 
 class PageCategory(orm.EmbeddedDocument):
     id = field.Char()
@@ -68,12 +68,12 @@ class Admin(orm.Document):
         return False
 
     def save(self):
-        self.password = pwd_context.encrypt(self.password, category='admin')
+        pw = password.encrypt_password(self.password)
+        self.password = pw
         return super(Admin, self).save()
 
     def verify_pwd(self, pwd):
-        if pwd_context.verify(pwd, self.password): return True
-        return False
+        return password.check_password(pwd, self.password)
 
     def is_authenticated(self):
         if self._id: return True

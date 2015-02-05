@@ -4,6 +4,7 @@ from flask.views import MethodView
 from pymongo.errors import DuplicateKeyError
 from capuchin import config
 from capuchin.models.client import Client, Admin
+from capuchin.util import password
 import logging
 
 auth = Blueprint(
@@ -23,8 +24,8 @@ class AuthLogin(MethodView):
         em = form['email']
         pw = form['password']
         a = Admin.find_one({'email':em})
-        logging.info(a.json())
-        if a and a.verify_pwd(pw):
+        v = a.verify_pwd(pw)
+        if a and v:
             rem = False
             if form.get("remember-me"): rem = True
             success = login_user(a, remember=rem)
@@ -47,8 +48,7 @@ class AuthRegister(MethodView):
             flash("Passwords do not match", "danger")
             return render_template("auth/register.html", form=form)
         try:
-            cl = Client.find_one({"name":form['org']})
-            cl = cl if cl else Client()
+            cl = Client()
             cl.name = form['org']
             cl.save()
         except DuplicateKeyError as e:
@@ -56,7 +56,6 @@ class AuthRegister(MethodView):
             flash("Organization name already taken", "danger");
             return render_template("auth/register.html", form=form)
         try:
-            logging.info(form['password'])
             a = Admin()
             a.name = form['name']
             a.email = form['email']
