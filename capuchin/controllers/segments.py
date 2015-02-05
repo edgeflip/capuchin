@@ -118,7 +118,7 @@ class SegmentsSave(MethodView):
         s = Segment(id=id)
         s.name = request.form['name']
         s.save()
-        return render_template("widgets/notification.html", type='success', text='Segment Saved')
+        return render_template("widgets/notification.html", message=('success','Segment Saved'))
 
 segments.add_url_rule("/segments", view_func=SegmentsDefault.as_view('index'))
 segments.add_url_rule("/segments/create", view_func=SegmentsCreate.as_view('create'))

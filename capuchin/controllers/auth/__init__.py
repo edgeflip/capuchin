@@ -23,14 +23,14 @@ class AuthLogin(MethodView):
         em = form['email']
         pw = form['password']
         a = Admin.find_one({'email':em})
+        logging.info(a.json())
         if a and a.verify_pwd(pw):
             rem = False
             if form.get("remember-me"): rem = True
             success = login_user(a, remember=rem)
-            logging.info("LOGGED IN: {}".format(success))
             return redirect(url_for("dashboard.index"))
         else:
-            flash("Please try again")
+            flash("Please try again", "danger")
 
         return render_template("auth/login.html", form=form)
 
@@ -56,6 +56,7 @@ class AuthRegister(MethodView):
             flash("Organization name already taken", "danger");
             return render_template("auth/register.html", form=form)
         try:
+            logging.info(form['password'])
             a = Admin()
             a.name = form['name']
             a.email = form['email']

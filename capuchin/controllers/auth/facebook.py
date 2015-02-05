@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, Response
 from flask.views import MethodView
 from flask.ext.login import login_required, current_user
 from capuchin import config
@@ -6,6 +6,7 @@ from capuchin.models.client import SocialAccount, FacebookPage, PageCategory
 from flask_oauth import OAuth
 import logging
 from urlparse import parse_qs, urlparse
+import json
 
 oauth = OAuth()
 
@@ -25,7 +26,7 @@ fb_app = oauth.remote_app(
     authorize_url='https://www.facebook.com/dialog/oauth',
     consumer_key=config.FACEBOOK_APP_ID,
     consumer_secret=config.FACEBOOK_APP_SECRET,
-    request_token_params={'scope': 'manage_pages,'}
+    request_token_params={'scope': 'manage_pages,read_insights,ads_management'}
 )
 
 @fb_app.tokengetter
@@ -45,7 +46,6 @@ def login():
 @fb_app.authorized_handler
 @login_required
 def authorized(resp):
-    logging.info(resp)
     if resp is None:
         flash("You denied the request", "danger")
         return redirect(url_for(".index"))
@@ -57,50 +57,10 @@ def authorized(resp):
         sa.token = resp.get('access_token')
         if append: current_user.social_accounts.append(sa)
         current_user.save()
-        res = fb_app.get(
-            "/debug_token",
-            data={
-                'input_token':resp.get('access_token')
-            }
-        )
-        if res:
-            data = res.data.get('data')
-            sa.id = data.get("user_id")
-            sa.app_id = data.get("app_id")
-            [sa.permissions.append(p) for p in data.get("scopes")]
-            current_user.save()
-            logging.info(current_user.json())
-            token = get_long_token(sa.token)
-            sa.token = token['token']
-            sa.expires = token['expires']
-            current_user.save()
-            pages = get_pages(sa.id)
-            logging.info(pages)
-            for page in pages:
-                for p in current_user.facebook_pages:
-                    if page.get("id") == p.id: continue
-
-                fp = FacebookPage()
-                fp.name = page.get("name")
-                fp.token = page.get("access_token")
-                fp.id = page.get("id")
-                [fp.permissions.append(perm) for perm in page.get("perms")]
-                for pc in page.get("category_list", []):
-                    pca = PageCategory()
-                    logging.info(pc.get("id"))
-                    pca.id = pc.get("id")
-                    pca.name = pc.get("name")
-                    fp.categories.append(pca)
-                current_user.facebook_pages.append(fp)
-            current_user.save()
-
     except Exception as e:
         logging.exception(e)
 
-    next_url = request.args.get('next') or url_for('.index')
-    current_user.facebook_token = resp['access_token']
-    current_user.save()
-    return redirect(next_url)
+    return redirect(url_for(".verify"))
 
 def get_pages(user_id):
     pages = []
@@ -136,5 +96,68 @@ class Index(MethodView):
     def get(self):
         return render_template("auth/facebook/index.html")
 
+class Verify(MethodView):
+    decorators = [ login_required, ]
+    def get(self):
+        return render_template("auth/facebook/load_pages.html")
+
+class LoadPages(MethodView):
+    decorators = [ login_required, ]
+    def get(self):
+        sa = current_user.social_account(SocialAccount.FACEBOOK)
+        res = fb_app.get(
+            "/debug_token",
+            data={
+                'input_token':sa.token
+            }
+        )
+        if res:
+            data = res.data.get('data')
+            sa.id = data.get("user_id")
+            sa.app_id = data.get("app_id")
+            [sa.permissions.append(p) for p in data.get("scopes") if p not in sa.permissions]
+            current_user.save()
+            token = get_long_token(sa.token)
+            sa.token = token['token']
+            sa.expires = token['expires']
+            current_user.save()
+            pages = get_pages(sa.id)
+            logging.info(pages)
+            for page in pages:
+                for p in current_user.facebook_pages:
+                    if page.get("id") == p.id:
+                        break
+                else:
+                    fp = FacebookPage()
+                    fp.name = page.get("name")
+                    fp.token = page.get("access_token")
+                    fp.id = page.get("id")
+                    [fp.permissions.append(perm) for perm in page.get("perms")]
+                    for pc in page.get("category_list", []):
+                        pca = PageCategory()
+                        pca.id = pc.get("id")
+                        pca.name = pc.get("name")
+                        fp.categories.append(pca)
+                    current_user.facebook_pages.append(fp)
+            current_user.save()
+        return render_template("auth/facebook/pages.html")
+
+class SavePage(MethodView):
+    decorators = [login_required,]
+
+    def post(self):
+        id = request.form["id"]
+        logging.info(id);
+        cfp = current_user.client.facebook_page
+        for p in current_user.facebook_pages:
+            if p.id == id:
+                res = current_user.client.update({"$set":{"facebook_page":p._json()}})
+                logging.info(res)
+                break
+
+        return Response(json.dumps({'id':id}), mimetype='application/json')
 
 facebook.add_url_rule("/", view_func=Index.as_view('index'))
+facebook.add_url_rule("/verify", view_func=Verify.as_view('verify'))
+facebook.add_url_rule("/loadpages", view_func=LoadPages.as_view('load_pages'))
+facebook.add_url_rule("/save_page", view_func=SavePage.as_view('save_page'))

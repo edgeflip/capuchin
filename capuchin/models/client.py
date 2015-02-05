@@ -12,7 +12,6 @@ class FacebookPage(orm.EmbeddedDocument):
     id = field.Char()
     permissions = orm.List(type=unicode)
     categories = orm.List(type=PageCategory)
-    default = field.Boolean(default=False)
 
 class SocialAccount(orm.EmbeddedDocument):
     TWITTER = 'twitter'
