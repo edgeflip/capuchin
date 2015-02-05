@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, current_app, redirect, url_for, request, Response
 from flask.views import MethodView
+from flask.ext.login import current_user
 from capuchin import config
 from capuchin import filters
 from capuchin.models.segment import Segment
@@ -29,6 +30,7 @@ def get_segment(id):
         s = Segment(id=id)
     else:
         s = Segment()
+        s.client = current_user.client
         id = s.save()
     return (s, id,)
 
@@ -71,7 +73,7 @@ def update_segment(id, filters):
 class SegmentsDefault(MethodView):
 
     def get(self):
-        segments = Segment.find({"name":{"$ne":None}})
+        segments = current_user.client.segments(query={"name":{"$ne":None}})
         return render_template("segments/index.html", segments=segments)
 
 class SegmentsCreate(MethodView):

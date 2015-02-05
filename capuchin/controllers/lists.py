@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for
+from flask.ext.login import current_user
 from flask.views import MethodView
 from capuchin import config
 from capuchin.models.list import List
@@ -12,7 +13,7 @@ lists = Blueprint(
 class ListsDefault(MethodView):
 
     def get(self):
-        lists = [l for l in List.find()]
+        lists = [l for l in current_user.client.lists()]
         return render_template("lists/index.html", lists=lists)
 
 class ListsCreate(MethodView):
@@ -25,6 +26,7 @@ class ListsCreate(MethodView):
         l.name = request.form['name']
         l.auth_url = request.form['auth_url']
         l.thanks_url = request.form['thanks_url']
+        l.client = current_user.client
         l.save()
         return redirect(url_for('.index'))
 

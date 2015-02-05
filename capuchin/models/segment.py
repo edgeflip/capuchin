@@ -3,12 +3,17 @@ import humongolus.field as field
 from capuchin import config
 from capuchin import filters
 from capuchin import ES
+from capuchin.models.client import Client
 
 class Segment(orm.Document):
     _db = "capuchin"
     _collection = "segments"
+    _indexes = [
+        orm.Index('client', key=('client', 1), unique=True),
+    ]
     name = field.Char()
     filters = orm.Field(default={})
+    client = field.DocumentId(type=Client)
 
     def add_filter(self, key, value):
         self.filters[key] = value
@@ -91,3 +96,5 @@ class Segment(orm.Document):
             body=q
         )
         return res['count']
+
+Client.segments = orm.Lazy(type=Segment, key='client')
