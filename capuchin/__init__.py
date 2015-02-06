@@ -14,6 +14,9 @@ import user_mapping
 import logging
 import time
 import gevent
+from gevent import monkey
+
+monkey.patch_all()
 
 logging.basicConfig(level=config.LOG_LEVEL)
 es_connected = False
@@ -21,19 +24,33 @@ es_connected = False
 while not es_connected:
     try:
         gevent.sleep(1)
-        ES = Elasticsearch(hosts=config.ES_HOSTS, sniff_on_start=True, sniff_on_connection_fail=True, sniffer_timeout=60)
+        ES = Elasticsearch(
+            hosts=config.ES_HOSTS,
+            sniff_on_start=True,
+            sniff_on_connection_fail=True,
+            sniffer_timeout=60
+        )
         es_connected = True
     except TransportError as e:
         logging.exception(e)
 
 MONGO = MongoClient(config.MONGO_HOST, config.MONGO_PORT)
-INFLUX = influxdb.InfluxDBClient(
-    config.INFLUX_HOST,
-    config.INFLUX_PORT,
-    config.INFLUX_USER,
-    config.INFLUX_PASSWORD,
-    config.INFLUX_DATABASE
-)
+influx_connected = False
+while not influx_connected:
+    gevent.sleep(1)
+    logging.info("INflux Not connected")
+    INFLUX = influxdb.InfluxDBClient(
+        config.INFLUX_HOST,
+        config.INFLUX_PORT,
+        config.INFLUX_USER,
+        config.INFLUX_PASSWORD,
+        config.INFLUX_DATABASE,
+    )
+    try:
+        res = INFLUX.request("cluster_admins")
+        influx_connected = True
+    except Exception as e:
+        logging.exception(e)
 
 
 def create_index():
@@ -61,10 +78,10 @@ class Capuchin(Flask):
         humongolus.settings(logging, MONGO)
 
         try:
+            self.init_influx()
             self.init_session()
             self.init_login()
             self.init_blueprints()
-            self.init_influx()
             self.init_pjax()
         except Exception as e:
             logging.exception(e)
@@ -112,7 +129,9 @@ class Capuchin(Flask):
             )
             logging.debug(res)
         except Exception as e:
+
             logging.warning(e)
+
 
     def init_blueprints(self):
         from controllers.dashboard import db

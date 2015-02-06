@@ -20,8 +20,10 @@ class FBInsightsChart(object):
         self.client = client
         self.typ = typ
         self.where=where
-        self.data = self.query()
-        self.data = self.massage(self.data)
+        try:
+            self.data = self.query()
+            self.data = self.massage(self.data)
+        except: self.data = []
 
     def query(self): pass
     def massage(self, data):pass
@@ -29,13 +31,17 @@ class FBInsightsChart(object):
 class FBInsightsPieChart(FBInsightsChart):
 
     def query(self):
-        q = "SELECT sum(value), typ FROM /^insights.{}.{}.*/ {} GROUP BY typ;".format(
+        q = "SELECT sum(value) as value,typ FROM /^insights.{}.{}.*/ {} GROUP BY typ;".format(
             self.client._id,
             self.typ,
             self.where
         )
-        data = INFLUX.query(q)
-        return data
+        data = INFLUX.request(
+            "db/{0}/series".format(config.INFLUX_DATABASE),
+            params={"q":q},
+        )
+        logging.info(data.status_code)
+        return data.json()
 
     def massage(self, data):
         data = [{
@@ -49,14 +55,17 @@ class FBInsightsMultiBarChart(FBInsightsChart):
     def query(self):
         res = {}
         for t in self.typ:
-            data = INFLUX.query(
-                "SELECT value FROM insights.{}.{} {};".format(
-                    self.client._id,
-                    t['type'],
-                    self.where,
-                )
+            data = INFLUX.request(
+                "db/{0}/series".format(config.INFLUX_DATABASE),
+                params={'q':
+                    "SELECT value FROM insights.{}.{};".format(
+                        self.client._id,
+                        t['type'],
+                    )
+                }
             )
-            res[t['display']] = data
+            res[t['display']] = data.json()
+
         return res
 
     def massage(self, data):

@@ -14,16 +14,26 @@ elasticsearch:
         - /var/log/elasticsearch:/log
         - ./config:/config
 
+influxdb:
+    image: tutum/influxdb
+    expose:
+        - "8086"
+        - "8083"
+
 web:
     build: .
-    command: gunicorn --log-file=- --log-level debug wsgi:app -w 4 -b 0.0.0.0:8000
+    command: gunicorn -c /config/gunicorn.conf wsgi:app --reload
     volumes:
         - .:/app
+        - ./config:/config
     links:
         - mongodb:mongo
         - elasticsearch:es
+        - influxdb:influx
     ports:
         - "8000:8000"
+
+
 
 #worker:
 #    build: .
