@@ -2,7 +2,7 @@ img.brand{
     height: 100%;
 }
 
-#chart1 svg {
+.dash-chart svg {
     height: 400px;
 }
 

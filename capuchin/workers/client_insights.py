@@ -127,7 +127,7 @@ class ClientInsights():
             dict(
                 name = "insights.{}.{}".format(self.client._id, typ),
                 columns = ["time", "value", "typ"], #typ is probably redundant cause it's in the name
-                points = [[time, val, typ]]
+                points = [[time, val, typ.split(".")[-1]]]
             )
         ]
         logging.info("Writing: {}".format(data))
