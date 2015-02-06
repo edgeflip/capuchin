@@ -6,6 +6,8 @@ import psycopg2.extras
 import capuchin.config as config
 from capuchin import Capuchin
 from capuchin.models.user import User
+from capuchin.models.client import Client
+from capuchin.workers.client_insights import ClientInsights
 from capuchin import user_mapping
 from capuchin import ES
 import logging
@@ -14,6 +16,12 @@ app = Capuchin()
 manager = Manager(app)
 
 TOTAL = 1000000
+
+class RunWorker(Command):
+
+    def run(self):
+        for client in Client.find():
+            i = ClientInsights(client=client)
 
 class SyncUsers(Command):
     "syncs users from RedShift to ElasticSearch"
@@ -62,6 +70,7 @@ class UpdateMapping(Command):
 
 manager.add_command('sync', SyncUsers())
 manager.add_command('update', UpdateMapping())
+manager.add_command('insights', RunWorker())
 
 if __name__ == "__main__":
     manager.run()

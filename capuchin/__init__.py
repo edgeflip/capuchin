@@ -6,6 +6,8 @@ from pymongo import MongoClient
 from elasticsearch import Elasticsearch
 from capuchin.models.client import Admin
 from elasticsearch import TransportError
+from capuchin import influx
+import influxdb
 import humongolus
 import config
 import user_mapping
@@ -25,6 +27,13 @@ while not es_connected:
         logging.exception(e)
 
 MONGO = MongoClient(config.MONGO_HOST, config.MONGO_PORT)
+INFLUX = influxdb.InfluxDBClient(
+    config.INFLUX_HOST,
+    config.INFLUX_PORT,
+    config.INFLUX_USER,
+    config.INFLUX_PASSWORD,
+    config.INFLUX_DATABASE
+)
 
 
 def create_index():
@@ -55,6 +64,7 @@ class Capuchin(Flask):
             self.init_session()
             self.init_login()
             self.init_blueprints()
+            self.init_influx()
             self.init_pjax()
         except Exception as e:
             logging.exception(e)
@@ -87,6 +97,22 @@ class Capuchin(Flask):
 
     def init_pjax(self):
         PJAX(self)
+
+    def init_influx(self):
+        data = {
+            "name":config.INFLUX_DATABASE,
+            "spaces":influx.SPACES,
+            "continuousQueries":influx.QUERIES,
+        }
+        try:
+            res = INFLUX.request(
+                url="cluster/database_configs/{}".format(config.INFLUX_DATABASE),
+                data=data,
+                method="POST"
+            )
+            logging.debug(res)
+        except Exception as e:
+            logging.warning(e)
 
     def init_blueprints(self):
         from controllers.dashboard import db

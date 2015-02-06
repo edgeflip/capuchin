@@ -35,6 +35,12 @@ REMEMBER_COOKIE_NAME = "well_hello_there"
 REMEMBER_COOKIE_DURATION = datetime.timedelta(days=5)
 REMEMBER_COOKIE_DOMAIN = ".{}".format(SERVER_NAME)
 
+INFLUX_HOST = "influx"
+INFLUX_PORT = 8086
+INFLUX_USER = "root"
+INFLUX_PASSWORD = "root"
+INFLUX_DATABASE = "capuchin"
+
 LOGGER_NAME = "capuchin"
 JSON_AS_ASCII = False
 
