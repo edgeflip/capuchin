@@ -4,14 +4,11 @@
 
 {% block content %}
     <div class="row">
-        <div id="chart1" class="col-md-6 dash-chart">
-            <h3>Page Engagement</h3>
-            <svg></svg>
-        </div>
-        <div id="chart2" class="col-md-6 dash-chart">
-            <h3>Engagment by Story Type</h3>
-            <svg></svg>
-        </div>
+        {% import "widgets/charts/chart.html" as chart %}
+        {{chart.multibar("engaged", 6, "Page Engagement", engaged_users)}}
+        {{chart.pie("online", 6, "Fans Online by Hour", online)}}
+        {{chart.pie("engagement_story", 6, "Engagment by Story Type", page_by_type)}}
+        {{chart.pie("country", 6, "Engagment by Country", country)}}
     </div>
     <div class="row">
         {% if first %}
@@ -120,64 +117,4 @@
             </table>
         </div>
     </div>
-
-    <script>
-
-        nv.addGraph(function() {
-            var chart = nv.models.multiBarChart();
-
-            chart.xAxis
-            .tickFormat(function(d) {
-                return d3.time.format("%m/%d/%y")(new Date(d*1000));
-            });
-
-            chart.yAxis
-            .tickFormat(d3.format(',.1f'));
-            var dat = data();
-            d3.select('#chart1 svg')
-            .datum(dat)
-            .transition().duration(500)
-            .call(chart)
-            ;
-
-
-
-            nv.utils.windowResize(chart.update);
-
-            return chart;
-        });
-        function data() {
-            return [
-                {key:"Page Consumption", values:eval({{page_adds|safe}})},
-                {key:"Engaged Users", values:eval({{page_posts|safe}})}
-            ];
-        }
-
-        //Donut chart example
-        nv.addGraph(function() {
-            var chart = nv.models.pieChart()
-            .x(function(d) { return d.label })
-            .y(function(d) { return d.value })
-            .showLabels(true)     //Display pie labels
-            .labelThreshold(.05)  //Configure the minimum slice size for labels to show up
-            .labelType("percent") //Configure what type of data to show in the label. Can be "key", "value" or "percent"
-            .donut(true)          //Turn on Donut mode. Makes pie chart look tasty!
-            .donutRatio(0.35)     //Configure how big you want the donut hole size to be.
-            ;
-
-            d3.select("#chart2 svg")
-            .datum(exampleData())
-            .transition().duration(350)
-            .call(chart);
-
-            return chart;
-        });
-
-        //Pie chart example data. Note how there is only a single array of key-value pairs.
-        function exampleData() {
-            return eval({{page_stories|safe}})
-        }
-
-
-    </script>
 {% endblock %}

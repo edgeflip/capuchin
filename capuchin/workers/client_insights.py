@@ -4,6 +4,7 @@ from capuchin import INFLUX
 from flask_oauth import OAuth
 import logging
 import time
+from slugify import slugify
 
 date_format = "%Y-%m-%dT%H:%M:%S+0000"
 
@@ -115,7 +116,7 @@ class ClientInsights():
                     val = event.get("value")
                     if isinstance(val, dict):
                         for k,v in val.iteritems():
-                            t = "{}.{}".format(name, "-".join(k.split(" ")))
+                            t = "{}.{}".format(name, slugify(k))
                             self.write_influx((tm, v, t))
                     else:
                         self.write_influx((tm, val, name))
