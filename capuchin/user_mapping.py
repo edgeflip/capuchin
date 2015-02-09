@@ -34,7 +34,12 @@ SETTINGS = {
 
 USER = {
     "efid": {"type": "long",},
-    "clients":{"type":"string", "index":"not_analyzed"},
+    "clients":{
+        "properties":{
+            "asid":{"type":"string", "index":"not_analyzed"},
+            "id":{"type":"string", "index":"not_analyzed"},
+        }
+    },
     "first_name": {"type": "string",},
     "last_name": {"type": "string",},
     "location":{
