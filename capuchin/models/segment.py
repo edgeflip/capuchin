@@ -16,12 +16,14 @@ class Segment(orm.Document):
     client = field.DocumentId(type=Client)
 
     def add_filter(self, key, value):
+        key = key.replace(".", "___")#can't store fieldnames with dot notation
         self.filters[key] = value
         self._get('filters')._dirty = None
 
     def build_query_filters(self):
         and_ = []
         for k,v in self.filters.iteritems():
+            k = k.replace("___", ".")#can't store fieldnames with dot notation, restore for query
             filt = filters.get_filter(filters.FILTERS, k)
             if v: and_.append(filters.FILTER_TYPES[filt['type']](k,v))
 

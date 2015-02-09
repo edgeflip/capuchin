@@ -7,6 +7,7 @@ from elasticsearch import Elasticsearch
 from capuchin.models.client import Admin
 from elasticsearch import TransportError
 from capuchin import influx
+from slugify import slugify
 import influxdb
 import humongolus
 import config
@@ -64,8 +65,7 @@ def create_index():
                     "properties":user_mapping.USER
                 }
             }
-        },
-        ignore=400
+        }
     )
 
 class Capuchin(Flask):
@@ -83,6 +83,7 @@ class Capuchin(Flask):
             self.init_login()
             self.init_blueprints()
             self.init_pjax()
+            self.init_templates()
         except Exception as e:
             logging.exception(e)
 
@@ -94,6 +95,9 @@ class Capuchin(Flask):
         except Exception as e:
             logging.exception(e)
             return None
+
+    def init_templates(self):
+        self.jinja_env.filters['slugify'] = slugify
 
     def init_session(self):
         self.config['SESSION_MONGODB'] = MONGO

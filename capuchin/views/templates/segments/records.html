@@ -16,12 +16,12 @@
             <tbody>
                 {% for p in records %}
                 <tr>
-                    <td>{{p['fields']['fname'][0]}}</td>
-                    <td>{{p['fields']['lname'][0]}}</td>
+                    <td>{{p['fields']['first_name'][0]}}</td>
+                    <td>{{p['fields']['last_name'][0]}}</td>
                     <td>{{p['fields'].get('age', [''])[0]}}</td>
-                    <td>{{p['fields'].get('city', [''])[0]}}, {{p['fields'].get('state',[''])[0]}}</td>
+                    <td>{{p['fields'].get('location.location', [""])[0]}}</td>
                     <td>
-                        <a target="_blank" class='btn btn-primary' href="http://facebook.com/{{p['fields']['fbid'][0]}}" role="button">View</a>
+                        <a target="_blank" class='btn btn-primary' href="http://facebook.com/{{p['fields']['efid'][0]}}" role="button">View</a>
                     </td>
                 </tr>
                 {% endfor %}

@@ -5,7 +5,6 @@ import datetime
 LOG_LEVEL = logging.INFO
 DEBUG = True
 
-
 REDSHIFT_DATABASE = 'edgeflip'
 REDSHIFT_HOST = 'analytics.cd5t1q8wfrkk.us-east-1.redshift.amazonaws.com'
 REDSHIFT_PORT = 5439
@@ -17,7 +16,7 @@ HASH_ALGO = "pbkdf2-sha512"
 HASH_ALGO_CLS = "pbkdf2_sha512"
 HASH_SALT_SIZE = 32
 
-ES_INDEX = "capuchin"
+ES_INDEX = "capuchin_v2"
 ES_HOSTS = [{"host":"es", "port":9200},]
 
 AUTH_SUBDOMAIN = "auth"
@@ -51,10 +50,9 @@ MONGO_HOST = "mongo"
 MONGO_PORT = 27017
 
 RECORDS_PER_PAGE = 10
-
 RECORD_TYPE = "user"
 
-RECORD_FIELDS = ["fname", "lname", "age", "fbid", "city", "state"]
+RECORD_FIELDS = ["first_name", "last_name", "age", "efid", "location.location",]
 
 FACEBOOK_APP_ID = "341894559353627"
 FACEBOOK_APP_SECRET = "c1107e87bddcc6902eb692a528fd43d5"

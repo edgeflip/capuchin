@@ -11,7 +11,7 @@ FILTERS = [
     },
     {
         "display":"Popularity",
-        "field":"num_friends_interacted_with_my_posts",
+        "field":"num_people_interacted_with_my_posts",
         "type":"range",
         "aggregation_args":{
             "interval" : 100,
@@ -24,19 +24,13 @@ FILTERS = [
     },
     {
         "display":"State",
-        "field":"state",
+        "field":"location.state",
         "type":"term",
         "aggregation_args":{}
     },
     {
         "display":"City",
-        "field":"city",
-        "type":"term",
-        "aggregation_args":{}
-    },
-    {
-        "display":"Religion",
-        "field":"religion",
+        "field":"location.city",
         "type":"term",
         "aggregation_args":{}
     },

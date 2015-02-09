@@ -33,15 +33,50 @@ SETTINGS = {
 }
 
 USER = {
-    "fbid": {"type": "long",},
-    "fname": {"type": "string",},
-    "lname": {"type": "string",},
-    "city": {
+    "efid": {"type": "long",},
+    "clients":{"type":"string", "index":"not_analyzed"},
+    "first_name": {"type": "string",},
+    "last_name": {"type": "string",},
+    "location":{
+        "properties":{
+            "location":{"type": "string"},
+            "city": {
+                "type": "multi_field",
+                "fields":{
+                    "facet":{
+                        "type":"string",
+                        "index": "not_analyzed"
+                    },
+                    "suggest": {
+                        "type": "string",
+                        "analyzer": "autocomplete"
+                    }
+                }
+            },
+            "state": {
+                "type": "multi_field",
+                "fields":{
+                    "facet":{
+                        "type":"string",
+                        "index": "not_analyzed"
+                    },
+                    "suggest": {
+                        "type": "string",
+                        "analyzer": "autocomplete"
+                    }
+                }
+            },
+        }
+    },
+    "locale":{
         "type": "multi_field",
-        "fields":{
-            "facet":{
-                "type":"string",
-                "index": "not_analyzed"
+        "fields": {
+            "search": {
+                "type": "string"
+            },
+            "facet": {
+                "type": "string",
+                "index": "not_analyzed",
             },
             "suggest": {
                 "type": "string",
@@ -49,104 +84,20 @@ USER = {
             }
         }
     },
-    "state": {
-        "type": "multi_field",
-        "fields":{
-            "facet":{
-                "type":"string",
-                "index": "not_analyzed"
-            },
-            "suggest": {
-                "type": "string",
-                "analyzer": "autocomplete"
-            }
-        }
-    },
-    "country":{
-        "type": "multi_field",
-        "fields":{
-            "facet":{
-                "type":"string",
-                "index": "not_analyzed"
-            },
-            "suggest": {
-                "type": "string",
-                "analyzer": "autocomplete"
-            }
-        }
-    },
-    "updated": {"type": "date",},
-    "profile_update_time":{"type": "date"},
-    "quotes": {"type": "string",},
-    "religion": {
-        "type": "multi_field",
-        "fields":{
-            "facet":{
-                "type":"string",
-                "index": "not_analyzed"
-            },
-            "suggest": {
-                "type": "string",
-                "analyzer": "autocomplete"
-            }
-        }
-    },
+    "last_activity": {"type": "date",},
+    "first_activity": {"type": "date",},
     "birthday": {"type": "date",},
     "gender": {"type": "string", "index": "not_analyzed",},
-    "music": {
-        "type": "multi_field",
-        "fields": {
-            "search": {
-                "type": "string"
-            },
-            "facet": {
-                "type": "string",
-                "index": "not_analyzed",
-            },
-            "suggest": {
-                "type": "string",
-                "analyzer": "autocomplete"
-            }
-        }
-    },
-    "political": {
-        "type": "multi_field",
-        "fields": {
-            "search": {
-                "type": "string"
-            },
-            "facet": {
-                "type": "string",
-                "index": "not_analyzed",
-            },
-            "suggest": {
-                "type": "string",
-                "analyzer": "autocomplete"
-            }
-        }
-    },
-    "relationship_status": {"type": "string", "index": "not_analyzed",},
-    "likes_count": {"type": "integer",},
-    "wall_count": {"type": "integer", "index": "not_analyzed",},
-    "friend_request_count": {"type": "integer",},
     "age":{"type": "integer",},
-    "first_activity": {"type": "date",},
-    "last_activity":{"type": "date",},
     "num_friends":{"type": "integer",},
     "num_posts":{"type": "integer",},
-    "num_posts_interacted_with":{"type": "integer"},
-    "num_i_like":{"type": "integer",},
-    "num_i_comm":{"type": "integer",},
-    "num_shared_w_me":{"type": "integer",},
     "num_mine_liked":{"type": "integer",},
     "num_mine_commented":{"type": "integer",},
     "num_i_shared":{"type": "integer",},
     "num_stat_upd":{"type": "integer",},
-    "num_friends_interacted_with_my_posts":{"type": "integer"},
-    "num_friends_i_interacted_with":{"type": "integer"},
+    "num_people_interacted_with_my_posts":{"type": "integer"},
     "avg_time_between_activity":{"type": "integer"},
-    "avg_friends_interacted_with_my_posts":{"type": "integer"},
-    "avg_friends_i_interacted_with":{"type": "integer"},
+    "avg_people_interacted_with_my_posts":{"type": "integer"},
     "top_words":{
         "type": "multi_field",
         "fields": {
@@ -165,7 +116,7 @@ USER = {
     },
     "affiliations": {
         "properties":{
-            "type": {"type": "string", "index": "not_analyzed"},
+            "category": {"type": "string", "index": "not_analyzed"},
             "name": {
                 "type": "multi_field",
                 "fields": {
@@ -184,67 +135,10 @@ USER = {
             }
         }
     },
-    "devices": {
+    "likes": {
         "properties":{
-            "hardware": {"type": "string", "index": "not_analyzed"},
-            "os": {"type": "string", "index": "not_analyzed"},
-        }
-    },
-    "books": {
-        "type": "multi_field",
-        "fields": {
-            "search": {
-                "type": "string"
-            },
-            "facet": {
-                "type": "string",
-                "index": "not_analyzed",
-            },
-            "suggest": {
-                "type": "string",
-                "analyzer": "autocomplete"
-            }
-        }
-    },
-    "tv": {
-        "type": "multi_field",
-        "fields": {
-            "search": {
-                "type": "string",
-            },
-            "facet": {
-                "type": "string",
-                "index": "not_analyzed",
-            },
-            "suggest": {
-                "type": "string",
-                "analyzer": "autocomplete"
-            }
-        }
-    },
-    "sports":{
-        "properties":{
-            "name":{
-                "type": "multi_field",
-                "fields": {
-                    "search": {
-                        "type": "string",
-                    },
-                    "facet": {
-                        "type": "string",
-                        "index": "not_analyzed",
-                    },
-                    "suggest": {
-                        "type": "string",
-                        "analyzer": "autocomplete"
-                    }
-                }
-            }
-        }
-    },
-    "languages": {
-        "properties":{
-            "name":{
+            "category": {"type": "string", "index": "not_analyzed"},
+            "name": {
                 "type": "multi_field",
                 "fields": {
                     "search": {
@@ -283,38 +177,6 @@ USER = {
                         "analyzer": "autocomplete"
                     }
                 }
-            }
-        }
-    },
-    "interests": {
-        "type": "multi_field",
-        "fields": {
-            "search": {
-                "type": "string"
-            },
-            "facet": {
-                "type": "string",
-                "index": "not_analyzed",
-            },
-            "suggest": {
-                "type": "string",
-                "analyzer": "autocomplete"
-            }
-        }
-    },
-    "movies": {
-        "type": "multi_field",
-        "fields": {
-            "search": {
-                "type": "string"
-            },
-            "facet": {
-                "type": "string",
-                "index": "not_analyzed",
-            },
-            "suggest": {
-                "type": "string",
-                "analyzer": "autocomplete"
             }
         }
     },

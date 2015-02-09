@@ -1,10 +1,10 @@
-<div id="term_list{{filter['field']}}"></div>
+<div id="term_list{{filter['field']|string|slugify}}"></div>
 <div class="row">
     <ul class="list-group">
     {% for l in lists[filter['display']]['buckets'] %}
         <li class="list-group-item">
             <label>
-                <input class="term-list-{{filter['field']}}" type="checkbox" data-field="{{filter['field']}}" value="{{l['key']}}" {% if l['key'] in values[filter['field']] %}checked{% endif %}/>
+                <input class="term-list-{{filter['field']|string|slugify}}" type="checkbox" data-field="{{filter['field']}}" value="{{l['key']}}" {% if l['key'] in values[filter['field'].replace(".", "___")] %}checked{% endif %}/>
                 {{l['key']}}
             </label>
         </li>
@@ -16,7 +16,7 @@
 
 
 
-    function filter_exists_{{filter['field']}}(val){
+    function filter_exists_{{filter['field']|string|slugify}}(val){
         console.log("Exists");
         var field = "{{filter['field']}}";
         for(var f in filters[field]){
@@ -26,7 +26,7 @@
         return false;
     };
 
-    function filter_remove_{{filter['field']}}(val){
+    function filter_remove_{{filter['field']|string|slugify}}(val){
         var field = "{{filter['field']}}";
         for(var f in filters[field]){
             if(filters[field][f] == val){
@@ -36,7 +36,7 @@
         }
     };
 
-    $(".term-list-{{filter['field']}}").click(function(){
+    $(".term-list-{{filter['field']|string|slugify}}").click(function(){
         if($(this).is(":checked")){
             if(filters["{{filter['field']}}"]){
                 if(!filter_exists_{{filter['field']}}($(this).val())){

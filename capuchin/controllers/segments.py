@@ -6,6 +6,7 @@ from capuchin import filters
 from capuchin.models.segment import Segment
 from capuchin import ES
 import logging
+import slugify
 import math
 import json
 

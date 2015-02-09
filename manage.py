@@ -29,7 +29,7 @@ class SyncUsers(Command):
 
     def get_rows(self, offset=0, limit=1000):
         def execute():
-            self.cur.execute("SELECT * FROM users u, user_aggregates ua WHERE ua.fbid = u.fbid LIMIT %s OFFSET %s", (limit, offset))
+            self.cur.execute("SELECT * FROM v2_users u LIMIT %s OFFSET %s", (limit, offset))
             rows = self.cur.fetchmany(size=100)
             while rows:
                 for i in rows:
@@ -55,9 +55,9 @@ class SyncUsers(Command):
         except: pass
 
     def run(self):
-        offset = ES.count(config.ES_INDEX, config.RECORD_TYPE)['count']
-        logging.info(offset)
-        for i in self.get_rows(offset=offset):
+        #offset = ES.count(config.ES_INDEX, config.RECORD_TYPE)['count']
+        #logging.info(offset)
+        for i in self.get_rows(offset=0):
             for row in i:
                 u = User(row)
                 logging.info(u)
@@ -69,7 +69,7 @@ class SyncUsers(Command):
 class UpdateMapping(Command):
 
     def run(self):
-        app.es.indices.put_mapping(index=config.ES_INDEX, doc_type=config.RECORD_TYPE, body=user_mapping.USER)
+        ES.indices.put_mapping(index=config.ES_INDEX, doc_type=config.RECORD_TYPE, body=user_mapping.USER)
 
 manager.add_command('sync', SyncUsers())
 manager.add_command('update', UpdateMapping())
