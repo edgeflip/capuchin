@@ -68,11 +68,13 @@ class Admin(orm.Document):
         return False
 
     def save(self):
-        pw = password.encrypt_password(self.password)
-        self.password = pw
+        if not password.identify(self.password):
+            self.password = password.encrypt_password(self.password)
         return super(Admin, self).save()
 
     def verify_pwd(self, pwd):
+        self.logger.info(password.encrypt_password(pwd))
+        self.logger.info(self.password)
         return password.check_password(pwd, self.password)
 
     def is_authenticated(self):

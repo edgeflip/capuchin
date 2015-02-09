@@ -12,3 +12,7 @@ def encrypt_password(password):
 
 def check_password(password, encrypted):
     return lib.verify(password, encrypted)
+
+
+def identify(password):
+    return lib.identify(password)

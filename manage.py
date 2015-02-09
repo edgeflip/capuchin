@@ -21,6 +21,7 @@ class RunWorker(Command):
 
     def run(self):
         for client in Client.find():
+            logging.info(client.name)
             i = ClientInsights(client=client)
 
 class SyncUsers(Command):
@@ -42,14 +43,16 @@ class SyncUsers(Command):
 
 
     def __init__(self):
-        self.con = psycopg2.connect(
-            database=config.REDSHIFT_DATABASE,
-            port=config.REDSHIFT_PORT,
-            user=config.REDSHIFT_USER,
-            host=config.REDSHIFT_HOST,
-            password=config.REDSHIFT_PASSWORD);
+        try:
+            self.con = psycopg2.connect(
+                database=config.REDSHIFT_DATABASE,
+                port=config.REDSHIFT_PORT,
+                user=config.REDSHIFT_USER,
+                host=config.REDSHIFT_HOST,
+                password=config.REDSHIFT_PASSWORD);
 
-        self.cur = self.con.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+            self.cur = self.con.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        except: pass
 
     def run(self):
         offset = ES.count(config.ES_INDEX, config.RECORD_TYPE)['count']

@@ -65,6 +65,7 @@ class FBInsightsMultiBarChart(FBInsightsChart):
                 }
             )
             res[t['display']] = data.json()
+            logging.info(res[t['display']])
 
         return res
 

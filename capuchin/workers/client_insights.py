@@ -100,6 +100,20 @@ class ClientInsights():
     def get_token(self):
         return (self.client.facebook_page.token, config.FACEBOOK_APP_SECRET)
 
+    def write_data(self, data):
+        for insight in data.get("data", []):
+            name = insight.get("name")
+            for event in insight.get("values"):
+                tm = time.mktime(time.strptime(event.get("end_time"), date_format))
+
+                val = event.get("value")
+                if isinstance(val, dict):
+                    for k,v in val.iteritems():
+                        t = "{}.{}".format(name, slugify(k))
+                        self.write_influx((tm, v, t))
+                else:
+                    self.write_influx((tm, val, name))
+
     def get_insights(self):
         id = self.client.facebook_page.id
         for i in self.INSIGHTS:
@@ -108,19 +122,7 @@ class ClientInsights():
                 data={"period":"day"}
             )
             logging.info(res.data)
-            for insight in res.data.get("data", []):
-                name = insight.get("name")
-                for event in insight.get("values"):
-                    tm = time.mktime(time.strptime(event.get("end_time"), date_format))
-
-                    val = event.get("value")
-                    if isinstance(val, dict):
-                        for k,v in val.iteritems():
-                            t = "{}.{}".format(name, slugify(k))
-                            self.write_influx((tm, v, t))
-                    else:
-                        self.write_influx((tm, val, name))
-
+            self.write_data(res.data)
 
     def write_influx(self, event):
         time, val, typ = event
