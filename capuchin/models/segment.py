@@ -21,13 +21,18 @@ class Segment(orm.Document):
         self._get('filters')._dirty = None
 
     def build_query_filters(self):
-        and_ = []
+        and_ = [{
+            "term": {
+                "clients": str(self.client._id)
+            }
+        }]
         for k,v in self.filters.iteritems():
             k = k.replace("___", ".")#can't store fieldnames with dot notation, restore for query
             filt = filters.get_filter(filters.FILTERS, k)
             if v: and_.append(filters.FILTER_TYPES[filt['type']](k,v))
 
         query = {"filtered":{"filter":{"and":and_}}}
+        self.logger.info(query)
         return query
 
     def get_records(self, filters, from_=0):
