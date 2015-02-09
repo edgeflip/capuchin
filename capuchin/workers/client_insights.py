@@ -81,7 +81,7 @@ class ClientInsights():
         data = [
             dict(
                 name = "insights.{}.{}".format(self.client._id, typ),
-                columns = ["time", "value", "typ"], #typ is probably redundant cause it's in the name
+                columns = ["time", "value", "typ"], 
                 points = [[time, val, typ.split(".")[-1]]]
             )
         ]

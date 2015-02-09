@@ -2,6 +2,7 @@ import humongolus as orm
 import humongolus.field as field
 from capuchin.models.segment import Segment
 from capuchin.models.client import Client
+from capuchin.models.event import Event
 from capuchin import config
 from flask_oauth import OAuth
 import requests
@@ -34,4 +35,6 @@ class Notification(orm.Document):
                     "ref":"test",
                 }
             )
-            self.logger.info(res.json())
+            j = res.json()
+            event_type = "notification_sent" if j.get("success") else "notification_failure"
+            Event(self.client, event_type, user=asid, notification=str(self._id))

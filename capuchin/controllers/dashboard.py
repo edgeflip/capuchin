@@ -16,14 +16,17 @@ db = Blueprint(
 
 class FBInsightsChart(object):
 
-    def __init__(self, client, typ, where=""):
+    def __init__(self, client, typ, where="", prefix="insights"):
         self.client = client
         self.typ = typ
         self.where=where
+        self.prefix = prefix
         try:
             self.data = self.query()
             self.data = self.massage(self.data)
-        except: self.data = []
+        except Exception as e:
+            logging.exception(e)
+            self.data = []
 
     def query(self): pass
     def massage(self, data):pass
@@ -31,7 +34,8 @@ class FBInsightsChart(object):
 class FBInsightsPieChart(FBInsightsChart):
 
     def query(self):
-        q = "SELECT sum(value) as value,typ FROM /^insights.{}.{}.*/ {} GROUP BY typ;".format(
+        q = "SELECT sum(value) as value,typ FROM /^{}.{}.{}.*/ {} GROUP BY typ;".format(
+            self.prefix,
             self.client._id,
             self.typ,
             self.where
@@ -58,7 +62,8 @@ class FBInsightsMultiBarChart(FBInsightsChart):
             data = INFLUX.request(
                 "db/{0}/series".format(config.INFLUX_DATABASE),
                 params={'q':
-                    "SELECT value FROM insights.{}.{};".format(
+                    "SELECT value FROM {}.{}.{};".format(
+                        self.prefix,
                         self.client._id,
                         t['type'],
                     )
@@ -73,6 +78,37 @@ class FBInsightsMultiBarChart(FBInsightsChart):
         ar = []
         for v in data:
             vals = [{"x":a[0], "y":a[2]} for a in data[v][0]['points']]
+            vals.reverse()
+            ar.append({
+                "key":v,
+                "values":vals
+            })
+        return ar;
+
+class HistogramMultiBarChart(FBInsightsChart):
+
+    def query(self):
+        res = {}
+        for t in self.typ:
+            data = INFLUX.request(
+                "db/{0}/series".format(config.INFLUX_DATABASE),
+                params={'q':
+                    "SELECT count(type) as count FROM {}.{}.{} GROUP BY time(10m);".format(
+                        self.prefix,
+                        self.client._id,
+                        t['type'],
+                    )
+                }
+            )
+            res[t['display']] = data.json()
+            logging.info(res[t['display']])
+
+        return res
+
+    def massage(self, data):
+        ar = []
+        for v in data:
+            vals = [{"x":a[0], "y":a[1]} for a in data[v][0]['points']]
             vals.reverse()
             ar.append({
                 "key":v,
@@ -95,6 +131,16 @@ class DashboardDefault(MethodView):
                 {"type":"page_engaged_users", "display":"Engaged Users"},
                 {"type":"page_consumptions", "display":"Page Consumptions"},
             ]
+        )
+
+        notifications = HistogramMultiBarChart(
+            current_user.client,
+            [
+                {"type":"notification_sent", "display":"Sent"},
+                #{"type":"notification_failure", "display":"Failures"},
+            ],
+            prefix="events"
+
         )
 
         online = FBInsightsPieChart(
@@ -120,6 +166,7 @@ class DashboardDefault(MethodView):
             engaged_users=json.dumps(engaged_users.data),
             country=json.dumps(country.data),
             online=json.dumps(online.data),
+            notifications=json.dumps(notifications.data)
         )
 
 db.add_url_rule("/", view_func=DashboardDefault.as_view('index'))
