@@ -76,6 +76,7 @@ class Capuchin(Flask):
     def __init__(self):
         super(Capuchin, self).__init__("capuchin")
         self.config.from_object('capuchin.config')
+        logging.info("SERVER_NAME: {}".format(self.config['SERVER_NAME']))
         if not ES.indices.exists(config.ES_INDEX):
             create_index()
         humongolus.settings(logging, MONGO)
