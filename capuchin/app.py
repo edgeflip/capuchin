@@ -36,7 +36,11 @@ while not es_connected:
     except TransportError as e:
         logging.error(e)
 
-MONGO = MongoClient(config.MONGO_HOST, config.MONGO_PORT)
+try:
+    MONGO = MongoClient(config.MONGO_HOST, config.MONGO_PORT)
+except Exception as e:
+    logging.error(e)
+
 influx_connected = False
 while not influx_connected:
     gevent.sleep(1)

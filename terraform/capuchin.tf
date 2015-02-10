@@ -17,9 +17,6 @@ module "vpc" {
 resource "aws_elb" "web" {
     name = "capuchin-elb"
 
-    # The same availability zone as our instance
-    availability_zones = ["${aws_instance.capuchin.availability_zone}"]
-
     subnets = [
         "${module.vpc.bastion_subnet}",
     ]
@@ -35,12 +32,12 @@ resource "aws_elb" "web" {
         healthy_threshold = 2
         unhealthy_threshold = 2
         timeout = 3
-        target = "HTTP:8000/"
+        target = "HTTP:8000/healthcheck"
         interval = 30
     }
 
     security_groups = [
-        "${aws_security_group.web.name}"
+        "${aws_security_group.web.id}"
     ]
 
     instances = ["${aws_instance.capuchin.id}"]
@@ -50,7 +47,7 @@ resource "aws_instance" "capuchin" {
     ami = "${lookup(var.amis, var.aws_region)}"
     instance_type = "t2.medium"
     key_name = "devops"
-    subnet_id = "${module.vpc.bastion_subnet}"
+    subnet_id = "${module.vpc.aws_subnet_app_id}"
     connection {
         # The default username for our AMI
         user = "ubuntu"
@@ -62,13 +59,35 @@ resource "aws_instance" "capuchin" {
     user_data = "${file(\"./user_data.yml\")}"
 
     security_groups = [
-        "${module.vpc.aws_security_group_bastion_id}",
+        "${aws_security_group.app.id}",
     ]
+}
+
+resource "aws_security_group" "app" {
+    name = "edgflip_app"
+    description = "Allows ssh and elb connections to app nodes"
+    vpc_id = "${module.vpc.aws_vpc_id}"
+
+    # HTTP access from anywhere
+    ingress {
+        from_port = 8000
+        to_port = 8000
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    ingress {
+        from_port = 22
+        to_port = 22
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
 }
 
 resource "aws_security_group" "web" {
     name = "edgflip_public"
     description = "Allows all requests to ELB on port 80"
+    vpc_id = "${module.vpc.aws_vpc_id}"
 
     # HTTP access from anywhere
     ingress {

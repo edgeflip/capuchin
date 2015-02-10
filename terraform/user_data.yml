@@ -1,4 +1,5 @@
 #cloud-config
+output : { all : '| tee -a /var/log/cloud-init-output.log' }
 
 ssh_keys:
     rsa_private: |
@@ -35,14 +36,14 @@ ssh_keys:
 
 packages:
     - git
-    - wget
+    - python-pip
 
 runcmd:
+    - sed -i -e '$a    IdentityFile /etc/ssh/ssh_host_rsa_key' /etc/ssh/ssh_config
+    - restart ssh
     - curl -sSL https://get.docker.com/ubuntu/ | sudo sh
-    - wget https://bootstrap.pypa.io/get-pip.py
-    - python ./get-pip.py
     - pip install fig
-    - ssh-keyscan github.com >> ~/.ssh/known_hosts
+    - ssh-keyscan github.com >> /root/.ssh/known_hosts
     - git clone git@github.com:edgeflip/capuchin.git /app
     - cd /app
     - fig up -d

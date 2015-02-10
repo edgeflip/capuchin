@@ -1,26 +1,6 @@
 digraph {
 	compound = true;
 	subgraph {
-		"0_aws_vpc.edgeflip" [
-			label="aws_vpc.edgeflip"
-			shape=box
-		];
-		"0_aws_internet_gateway.hello" [
-			label="aws_internet_gateway.hello"
-			shape=box
-		];
-		"0_aws_subnet.capuchin" [
-			label="aws_subnet.capuchin"
-			shape=box
-		];
-		"0_aws_route_table.rt" [
-			label="aws_route_table.rt"
-			shape=box
-		];
-		"0_aws_route_table_association.at" [
-			label="aws_route_table_association.at"
-			shape=box
-		];
 		"0_aws_elb.web" [
 			label="aws_elb.web"
 			shape=box
@@ -29,8 +9,8 @@ digraph {
 			label="aws_instance.capuchin"
 			shape=box
 		];
-		"0_aws_security_group.ssh" [
-			label="aws_security_group.ssh"
+		"0_aws_security_group.app" [
+			label="aws_security_group.app"
 			shape=box
 		];
 		"0_aws_security_group.web" [
@@ -39,26 +19,16 @@ digraph {
 		];
 	}
 
-	"0_aws_vpc.edgeflip" -> "0_provider.aws";
-	"0_aws_internet_gateway.hello" -> "0_provider.aws";
-	"0_aws_internet_gateway.hello" -> "0_aws_vpc.edgeflip";
-	"0_aws_subnet.capuchin" -> "0_provider.aws";
-	"0_aws_subnet.capuchin" -> "0_aws_vpc.edgeflip";
-	"0_aws_route_table.rt" -> "0_provider.aws";
-	"0_aws_route_table.rt" -> "0_aws_vpc.edgeflip";
-	"0_aws_route_table.rt" -> "0_aws_internet_gateway.hello";
-	"0_aws_route_table_association.at" -> "0_provider.aws";
-	"0_aws_route_table_association.at" -> "0_aws_subnet.capuchin";
-	"0_aws_route_table_association.at" -> "0_aws_route_table.rt";
 	"0_aws_elb.web" -> "0_provider.aws";
+	"0_aws_elb.web" -> "0_aws_instance.capuchin";
+	"0_aws_elb.web" -> "0_module.vpc_hidden" [lhead="cluster_0_module.vpc"];
 	"0_aws_elb.web" -> "0_aws_security_group.web";
 	"0_aws_elb.web" -> "0_aws_instance.capuchin";
-	"0_aws_elb.web" -> "0_aws_instance.capuchin";
-	"0_aws_elb.web" -> "0_aws_subnet.capuchin";
-	"0_aws_elb.web" -> "0_aws_security_group.ssh";
 	"0_aws_instance.capuchin" -> "0_provider.aws";
-	"0_aws_instance.capuchin" -> "0_aws_security_group.ssh";
-	"0_aws_security_group.ssh" -> "0_provider.aws";
+	"0_aws_instance.capuchin" -> "0_aws_security_group.app";
+	"0_aws_instance.capuchin" -> "0_module.vpc_hidden" [lhead="cluster_0_module.vpc"];
+	"0_aws_security_group.app" -> "0_provider.aws";
+	"0_aws_security_group.app" -> "0_module.vpc_hidden" [lhead="cluster_0_module.vpc"];
 	"0_aws_security_group.web" -> "0_provider.aws";
 
 	subgraph {
@@ -71,5 +41,95 @@ digraph {
 		];
 	}
 
+	subgraph "cluster_0_module.vpc" {
+		label = "module.vpc";
+		"0_module.vpc_hidden" [fixedsize=true,width=0,height=0,label="",style=invisible];
+		subgraph {
+			"1_aws_vpc.default" [
+				label="aws_vpc.default"
+				shape=box
+			];
+			"1_aws_internet_gateway.default" [
+				label="aws_internet_gateway.default"
+				shape=box
+			];
+			"1_aws_instance.bastion" [
+				label="aws_instance.bastion"
+				shape=box
+			];
+			"1_aws_eip.bastion" [
+				label="aws_eip.bastion"
+				shape=box
+			];
+			"1_aws_subnet.bastion" [
+				label="aws_subnet.bastion"
+				shape=box
+			];
+			"1_aws_route_table.public" [
+				label="aws_route_table.public"
+				shape=box
+			];
+			"1_aws_route_table_association.bastion-public" [
+				label="aws_route_table_association.bastion-public"
+				shape=box
+			];
+			"1_aws_subnet.app" [
+				label="aws_subnet.app"
+				shape=box
+			];
+			"1_aws_route_table.private" [
+				label="aws_route_table.private"
+				shape=box
+			];
+			"1_aws_route_table_association.app-private" [
+				label="aws_route_table_association.app-private"
+				shape=box
+			];
+			"1_aws_security_group.bastion" [
+				label="aws_security_group.bastion"
+				shape=box
+			];
+		}
+	
+			"1_aws_vpc.default" -> "1_provider.aws";
+			"1_aws_internet_gateway.default" -> "1_provider.aws";
+			"1_aws_internet_gateway.default" -> "1_aws_vpc.default";
+			"1_aws_instance.bastion" -> "1_provider.aws";
+			"1_aws_instance.bastion" -> "1_aws_security_group.bastion";
+			"1_aws_instance.bastion" -> "1_aws_subnet.bastion";
+			"1_aws_eip.bastion" -> "1_provider.aws";
+			"1_aws_eip.bastion" -> "1_aws_instance.bastion";
+			"1_aws_subnet.bastion" -> "1_provider.aws";
+			"1_aws_subnet.bastion" -> "1_aws_vpc.default";
+			"1_aws_route_table.public" -> "1_provider.aws";
+			"1_aws_route_table.public" -> "1_aws_vpc.default";
+			"1_aws_route_table.public" -> "1_aws_internet_gateway.default";
+			"1_aws_route_table_association.bastion-public" -> "1_provider.aws";
+			"1_aws_route_table_association.bastion-public" -> "1_aws_subnet.bastion";
+			"1_aws_route_table_association.bastion-public" -> "1_aws_route_table.public";
+			"1_aws_subnet.app" -> "1_provider.aws";
+			"1_aws_subnet.app" -> "1_aws_subnet.bastion";
+			"1_aws_subnet.app" -> "1_aws_vpc.default";
+			"1_aws_route_table.private" -> "1_provider.aws";
+			"1_aws_route_table.private" -> "1_aws_vpc.default";
+			"1_aws_route_table.private" -> "1_aws_instance.bastion";
+			"1_aws_route_table_association.app-private" -> "1_provider.aws";
+			"1_aws_route_table_association.app-private" -> "1_aws_subnet.app";
+			"1_aws_route_table_association.app-private" -> "1_aws_route_table.private";
+			"1_aws_security_group.bastion" -> "1_provider.aws";
+			"1_aws_security_group.bastion" -> "1_aws_vpc.default";
+	
+		subgraph {
+		}
+	
+		subgraph {
+			"1_provider.aws" [
+				label="provider.aws"
+				shape=diamond
+			];
+		}
+	
+	}
+	"0_module.vpc_hidden" -> "0_provider.aws" [ltail="cluster_0_module.vpc"];
 }
 
