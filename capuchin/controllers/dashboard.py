@@ -154,7 +154,8 @@ class DashboardDefault(MethodView):
                 {"type":"notification_sent", "display":"Sent"},
                 #{"type":"notification_failure", "display":"Failures"},
             ],
-            prefix="events"
+            prefix="events",
+            date_format = "%H:%M:00",
 
         )
 

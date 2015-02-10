@@ -151,11 +151,13 @@ class Capuchin(Flask):
         from controllers.redirect import redirect
         from controllers.auth import auth
         from controllers.auth.facebook import facebook
+        from controllers.healthcheck import hc
         db.before_request(self.user_logged_in)
         notif.before_request(self.user_logged_in)
         lists.before_request(self.user_logged_in)
         segments.before_request(self.user_logged_in)
         campaigns.before_request(self.user_logged_in)
+        self.register_blueprint(hc)
         self.register_blueprint(db)
         self.register_blueprint(notif)
         self.register_blueprint(lists)
