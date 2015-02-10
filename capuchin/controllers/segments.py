@@ -4,7 +4,7 @@ from flask.ext.login import current_user
 from capuchin import config
 from capuchin import filters
 from capuchin.models.segment import Segment
-from capuchin import ES
+from capuchin.app import ES
 import logging
 import slugify
 import math

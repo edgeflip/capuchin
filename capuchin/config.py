@@ -26,13 +26,13 @@ SERVER_NAME = os.getenv("SERVER_NAME", "capuchin.dev")
 
 SESSION_COOKIE_NAME = "capuchin"
 SESSION_COOKIE_SECURE = False
-#SESSION_COOKIE_DOMAIN = ".{}".format(SERVER_NAME)
+SESSION_COOKIE_DOMAIN = ".{}".format(SERVER_NAME)
 SESSION_TYPE = 'mongodb'
 PERMANENT_SESSION_LIFETIME = datetime.timedelta(hours=24)
 
 REMEMBER_COOKIE_NAME = "well_hello_there"
 REMEMBER_COOKIE_DURATION = datetime.timedelta(days=5)
-#REMEMBER_COOKIE_DOMAIN = ".{}".format(SERVER_NAME)
+REMEMBER_COOKIE_DOMAIN = ".{}".format(SERVER_NAME)
 
 INFLUX_HOST = "influx"
 INFLUX_PORT = 8086

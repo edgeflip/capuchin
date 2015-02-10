@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request
 from flask.views import MethodView
 from flask.ext.login import current_user
-from capuchin import INFLUX
+from capuchin.app import INFLUX
 from capuchin import config
 from capuchin.models.list import List
 from capuchin.models.segment import Segment

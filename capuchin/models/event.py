@@ -1,4 +1,4 @@
-from capuchin import INFLUX
+from capuchin.app import INFLUX
 import logging
 
 class Event(object):

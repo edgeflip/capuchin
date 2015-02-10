@@ -1,7 +1,7 @@
 from flask import url_for
 import humongolus as orm
 import humongolus.field as field
-from capuchin import ES
+from capuchin.app import ES
 from capuchin import config
 from capuchin.models.client import Client
 
