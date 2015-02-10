@@ -9,7 +9,7 @@ class List(orm.Document):
     _db = "capuchin"
     _collection = "lists"
     _indexes = [
-        orm.Index('client', key=('client', 1), unique=True),
+        orm.Index('client', key=('client', 1)),
     ]
     name = field.Char()
     auth_url = field.Char()

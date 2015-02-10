@@ -9,7 +9,7 @@ class Segment(orm.Document):
     _db = "capuchin"
     _collection = "segments"
     _indexes = [
-        orm.Index('client', key=('client', 1), unique=True),
+        orm.Index('client', key=('client', 1)),
     ]
     name = field.Char()
     filters = orm.Field(default={})
