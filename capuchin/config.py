@@ -22,7 +22,7 @@ ES_HOSTS = [{"host":"es", "port":9200},]
 AUTH_SUBDOMAIN = "auth"
 
 SECRET_KEY = "!!capuch1n!!"
-SERVER_NAME = "capuchin.dev"
+SERVER_NAME = os.getenv("SERVER_NAME", "capuchin.dev")
 
 SESSION_COOKIE_NAME = "capuchin"
 SESSION_COOKIE_SECURE = False
