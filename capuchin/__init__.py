@@ -25,6 +25,7 @@ es_connected = False
 while not es_connected:
     try:
         gevent.sleep(1)
+        logging.info("Elasticsearch not connected")
         ES = Elasticsearch(
             hosts=config.ES_HOSTS,
             sniff_on_start=True,
@@ -33,13 +34,13 @@ while not es_connected:
         )
         es_connected = True
     except TransportError as e:
-        logging.exception(e)
+        logging.error(e)
 
 MONGO = MongoClient(config.MONGO_HOST, config.MONGO_PORT)
 influx_connected = False
 while not influx_connected:
     gevent.sleep(1)
-    logging.info("INflux Not connected")
+    logging.info("Influxdb not connected")
     INFLUX = influxdb.InfluxDBClient(
         config.INFLUX_HOST,
         config.INFLUX_PORT,
@@ -51,7 +52,9 @@ while not influx_connected:
         res = INFLUX.request("cluster_admins")
         influx_connected = True
     except Exception as e:
-        logging.exception(e)
+        logging.error(e)
+
+logging.info("Databases UP")
 
 
 def create_index():
@@ -76,7 +79,7 @@ class Capuchin(Flask):
         if not ES.indices.exists(config.ES_INDEX):
             create_index()
         humongolus.settings(logging, MONGO)
-
+        logging.info("Initialized")
         try:
             self.init_influx()
             self.init_session()
@@ -86,6 +89,8 @@ class Capuchin(Flask):
             self.init_templates()
         except Exception as e:
             logging.exception(e)
+
+        logging.info("Running")
 
     def load_user(self, id):
         try:

@@ -1,4 +1,4 @@
-{% macro multibar(id, columns, title, data) %}
+{% macro multibar(id, columns, title, data, date_format="%m/%d/%y %H:%M:00") %}
     <div id="chart{{id}}" class="col-md-{{columns}} dash-chart">
         <h3>{{title}}</h3>
         <svg></svg>
@@ -13,7 +13,7 @@
 
                 chart.xAxis
                 .tickFormat(function(d) {
-                    return d3.time.format("%m/%d/%y")(new Date(d));
+                    return d3.time.format("{{date_format}}")(new Date(d));
                 });
 
                 chart.yAxis

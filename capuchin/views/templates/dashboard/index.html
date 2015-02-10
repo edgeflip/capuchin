@@ -5,11 +5,11 @@
 {% block content %}
     <div class="row">
         {% import "widgets/charts/chart.html" as chart %}
-        {{chart.multibar("engaged", 6, "Page Engagement", engaged_users)}}
-        {{chart.multibar("notifications", 6, "Notifications", notifications)}}
-        {{chart.pie("online", 6, "Fans Online by Hour", online)}}
-        {{chart.pie("engagement_story", 6, "Engagment by Story Type", page_by_type)}}
-        {{chart.pie("country", 6, "Engagment by Country", country)}}
+        {{chart.multibar("engaged", 6, "Page Engagement", engaged_users.dump(), engaged_users.date_format)}}
+        {{chart.multibar("notifications", 6, "Notifications", notifications.dump())}}
+        {{chart.pie("online", 6, "Fans Online by Hour", online.dump())}}
+        {{chart.pie("engagement_story", 6, "Engagment by Story Type", page_by_type.dump())}}
+        {{chart.pie("country", 6, "Engagment by Country", country.dump())}}
     </div>
     <div class="row">
         {% if first %}

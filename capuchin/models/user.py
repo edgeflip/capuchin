@@ -76,14 +76,17 @@ class User(dict):
     def __init__(self, obj):
         super(User, self).__init__()
         self.parse(obj)
-        self.con = psycopg2.connect(
-            database=config.REDSHIFT_DATABASE,
-            port=config.REDSHIFT_PORT,
-            user=config.REDSHIFT_USER,
-            host=config.REDSHIFT_HOST,
-            password=config.REDSHIFT_PASSWORD
-        );
-        self.cur = self.con.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        try:
+            self.con = psycopg2.connect(
+                database=config.REDSHIFT_DATABASE,
+                port=config.REDSHIFT_PORT,
+                user=config.REDSHIFT_USER,
+                host=config.REDSHIFT_HOST,
+                password=config.REDSHIFT_PASSWORD
+            );
+            self.cur = self.con.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        except Exception as e:
+            logging.error(e)
         for t in TABLES:
             q = "SELECT * FROM {} WHERE efid=%s".format(t['table'])
             self.cur.execute(q, (obj.get("efid"),))

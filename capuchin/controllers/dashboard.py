@@ -14,13 +14,14 @@ db = Blueprint(
     template_folder=config.TEMPLATES,
 )
 
-class FBInsightsChart(object):
+class InfluxChart(object):
 
-    def __init__(self, client, typ, where="", prefix="insights"):
+    def __init__(self, client, typ, where="", prefix="insights", date_format="%m/%d/%y"):
         self.client = client
         self.typ = typ
         self.where=where
         self.prefix = prefix
+        self.date_format = date_format
         try:
             self.data = self.query()
             self.data = self.massage(self.data)
@@ -30,8 +31,10 @@ class FBInsightsChart(object):
 
     def query(self): pass
     def massage(self, data):pass
+    def dump(self):
+        return json.dumps(self.data)
 
-class FBInsightsPieChart(FBInsightsChart):
+class FBInsightsPieChart(InfluxChart):
 
     def query(self):
         q = "SELECT sum(value) as value,typ FROM /^{}.{}.{}.*/ {} GROUP BY typ;".format(
@@ -54,7 +57,7 @@ class FBInsightsPieChart(FBInsightsChart):
         } for a in data]
         return data
 
-class FBInsightsMultiBarChart(FBInsightsChart):
+class FBInsightsMultiBarChart(InfluxChart):
 
     def query(self):
         res = {}
@@ -62,10 +65,11 @@ class FBInsightsMultiBarChart(FBInsightsChart):
             data = INFLUX.request(
                 "db/{0}/series".format(config.INFLUX_DATABASE),
                 params={'q':
-                    "SELECT value FROM {}.{}.{};".format(
+                    "SELECT value FROM {}.{}.{} {};".format(
                         self.prefix,
                         self.client._id,
                         t['type'],
+                        self.where
                     )
                 }
             )
@@ -85,22 +89,32 @@ class FBInsightsMultiBarChart(FBInsightsChart):
             })
         return ar;
 
-class HistogramMultiBarChart(FBInsightsChart):
+class HistogramMultiBarChart(InfluxChart):
+
+    def __init__(self, client, typ, where="WHERE time > now()-24h", prefix="insights", date_format="%m/%d/%y %H:%M:00", buckets="1h"):
+        self.buckets = buckets
+        super(HistogramMultiBarChart, self).__init__(client, typ, where, prefix, date_format)
 
     def query(self):
         res = {}
         for t in self.typ:
-            data = INFLUX.request(
-                "db/{0}/series".format(config.INFLUX_DATABASE),
-                params={'q':
-                    "SELECT count(type) as count FROM {}.{}.{} GROUP BY time(10m);".format(
-                        self.prefix,
-                        self.client._id,
-                        t['type'],
-                    )
-                }
-            )
-            res[t['display']] = data.json()
+            try:
+                data = INFLUX.request(
+                    "db/{0}/series".format(config.INFLUX_DATABASE),
+                    params={'q':
+                        "SELECT count(type) as count FROM {}.{}.{} GROUP BY time({}) fill(0) {};".format(
+                            self.prefix,
+                            self.client._id,
+                            t['type'],
+                            self.buckets,
+                            self.where,
+                        )
+                    }
+                )
+                res[t['display']] = data.json()
+            except Exception as e:
+                logging.exception(e)
+                res[t['display']] = [{"points":[]}]
             logging.info(res[t['display']])
 
         return res
@@ -130,7 +144,8 @@ class DashboardDefault(MethodView):
             [
                 {"type":"page_engaged_users", "display":"Engaged Users"},
                 {"type":"page_consumptions", "display":"Page Consumptions"},
-            ]
+            ],
+            date_format = "%m/%d/%y"
         )
 
         notifications = HistogramMultiBarChart(
@@ -162,11 +177,11 @@ class DashboardDefault(MethodView):
             lists=lists,
             segments=segments,
             first=first,
-            page_by_type=json.dumps(page_by_type.data),
-            engaged_users=json.dumps(engaged_users.data),
-            country=json.dumps(country.data),
-            online=json.dumps(online.data),
-            notifications=json.dumps(notifications.data)
+            page_by_type=page_by_type,
+            engaged_users=engaged_users,
+            country=country,
+            online=online,
+            notifications=notifications
         )
 
 db.add_url_rule("/", view_func=DashboardDefault.as_view('index'))
