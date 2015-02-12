@@ -2,6 +2,7 @@ from capuchin.app import Capuchin
 from capuchin import config
 from capuchin import db
 from capuchin.insights import POST_INSIGHTS
+from capuchin.workers.client.insights import Insights
 from flask_oauth import OAuth
 import urlparse
 import logging
@@ -35,6 +36,17 @@ class ClientPosts():
     def get_token(self):
         return (self.client.facebook_page.token, config.FACEBOOK_APP_SECRET)
 
+    def get_count(self, url):
+        name = "insights.{}.post.{}".format(self.client._id, url)
+        q = "select count(type) from {}".format(name)
+        try:
+            res = self.INFLUX.query(q)
+            return res[0]['points'][0][1]
+        except Exception as e:
+            logging.warn(e)
+            return None
+
+
     def write_data(self, post):
         p_id = post.get("id")
         post['client'] = str(self.client._id)
@@ -45,15 +57,20 @@ class ClientPosts():
             id=p_id
         )
         for i in POST_INSIGHTS:
-            points = []
             url = "{}.{}".format(p_id, i)
+            count = self.get_count(url)
+            points = [(time.time(), 0, i)] if count == None else []
             data = post.get(i)
-            for d in data:
-                tm = time.time()
-                if d.get("created_time"):
+            for d in data[count:]:
+                ct = d.get("created_time")
+                if ct:
                     tm = time.mktime(time.strptime(d.get("created_time"), date_format))
+                    logging.info("Comment Time:{}".format(tm))
+                else:
+                    tm = time.time()
 
                 points.append((tm, 1, i))
+
             self.write_influx(points, url)
 
     def get_feed(self):
@@ -62,7 +79,6 @@ class ClientPosts():
             "/v2.2/{}/feed".format(id),
             data={"limit":250},
         )
-        logging.info(res.data)
         for p in res.data.get('data'):
             pprint(p)
             p_id = p.get("id")
@@ -71,6 +87,7 @@ class ClientPosts():
                 p[i] = self.page(p_id, i, p.get(i, {}))
                 pprint(p[i])
             self.write_data(p)
+            #i = Insights(client=self.client, id=p.get('id'), typ="post")
 
     def page(self, post_id, typ, data):
         res = [a for a in data.get("data", [])]

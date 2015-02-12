@@ -9,6 +9,7 @@ import logging
 import slugify
 import math
 import json
+import time
 
 posts = Blueprint(
     'posts',
@@ -49,23 +50,31 @@ class PostsIndex(MethodView):
 class PostsView(MethodView):
 
     def get(self, id):
+        date_format = "%Y-%m-%dT%H:%M:%S+0000"
         post = g.ES.get(
             config.ES_INDEX,
             id,
             config.POST_RECORD_TYPE,
-            fields=['message',],
+            fields=['message', 'created_time'],
             _source=False,
         )
-        logging.info(post)
+        tm = time.mktime(
+            time.strptime(
+                post['fields']["created_time"][0],
+                date_format
+            )
+        )
         engagement = HistogramMultiBarChart(
             current_user.client,
             [
                 {"type":"post.{}.likes".format(post.get("_id")), "display":"Likes"},
                 {"type":"post.{}.comments".format(post.get("_id")), "display":"Comments"},
+                {"type":"post.{}.shares".format(post.get("_id")), "display":"Shares"},
             ],
             prefix="insights",
-            where="WHERE time > now()-10d",
-            buckets="12h",
+            where="WHERE time > {}s".format(tm),
+            buckets="1d",
+            date_format="%m/%d"
         )
         return render_template(
             "posts/view.html",

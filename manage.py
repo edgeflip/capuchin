@@ -7,7 +7,7 @@ import capuchin.config as config
 from capuchin.app import Capuchin
 from capuchin.models.user import User
 from capuchin.models.client import Client
-from capuchin.workers.client.insights import ClientInsights
+from capuchin.workers.client.insights import Insights
 from capuchin.workers.client.posts import ClientPosts
 from capuchin import user_mapping
 from capuchin import db
@@ -23,7 +23,7 @@ class PageInsights(Command):
     def run(self):
         for client in Client.find():
             logging.info(client.name)
-            i = ClientInsights(client=client)
+            i = Insights(client=client, id=client.facebook_page.id)
 
 class PageFeed(Command):
 

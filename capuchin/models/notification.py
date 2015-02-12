@@ -37,6 +37,6 @@ class Notification(orm.Document):
                 }
             )
             j = res.json()
-            logging.info(j)
+            logging.info("Notification:{}".format(j))
             event_type = "notification_sent" if j.get("success") else "notification_failure"
-            Event(self.client, event_type, user=asid, notification=str(self._id))
+            Event(self.client, event_type, value=1, user=asid, notification=str(self._id))

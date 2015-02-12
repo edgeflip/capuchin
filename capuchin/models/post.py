@@ -30,6 +30,11 @@ class Post(object):
                 "term":{
                     "client":str(client._id)
                 }
+            },
+            "sort":{
+                "created_time":{
+                    "order": "desc"
+                }
             }
         }
         return q

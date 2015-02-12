@@ -23,7 +23,9 @@ class InfluxChart(object):
         self.date_format = date_format
         try:
             self.data = self.query()
+            logging.info(self.data)
             self.data = self.massage(self.data)
+            logging.info(self.data)
         except Exception as e:
             logging.exception(e)
             self.data = []
@@ -36,24 +38,24 @@ class InfluxChart(object):
 class FBInsightsPieChart(InfluxChart):
 
     def query(self):
-        q = "SELECT sum(value) as value,type FROM /^{}.{}.{}.*/ {} GROUP BY type;".format(
+        q = "SELECT sum(value), type FROM {}.{}.{} {} GROUP BY type;".format(
             self.prefix,
             self.client._id,
             self.typ,
             self.where
         )
+        logging.info(q)
         data = g.INFLUX.request(
             "db/{0}/series".format(config.INFLUX_DATABASE),
             params={"q":q},
         )
-        logging.info(data.status_code)
         return data.json()
 
     def massage(self, data):
         data = [{
-            "label":a['points'][0][2],
-            "value":a['points'][0][1]
-        } for a in data]
+            "label":a[2],
+            "value":a[1]
+        } for a in data[0]['points']]
         return data
 
 class FBInsightsMultiBarChart(InfluxChart):
@@ -61,19 +63,18 @@ class FBInsightsMultiBarChart(InfluxChart):
     def query(self):
         res = {}
         for t in self.typ:
+            q = "SELECT value FROM {}.{}.{} {};".format(
+                self.prefix,
+                self.client._id,
+                t['type'],
+                self.where
+            )
+            logging.info(q)
             data = g.INFLUX.request(
                 "db/{0}/series".format(config.INFLUX_DATABASE),
-                params={'q':
-                    "SELECT value FROM {}.{}.{} {};".format(
-                        self.prefix,
-                        self.client._id,
-                        t['type'],
-                        self.where
-                    )
-                }
+                params={'q':q}
             )
             res[t['display']] = data.json()
-            logging.info(res[t['display']])
 
         return res
 
@@ -98,7 +99,7 @@ class HistogramMultiBarChart(InfluxChart):
         res = {}
         for t in self.typ:
             try:
-                q = "SELECT count(type) as count FROM {}.{}.{} GROUP BY time({}) fill(0) {};".format(
+                q = "SELECT sum(value) FROM {}.{}.{} GROUP BY time({}), type fill(0) {};".format(
                     self.prefix,
                     self.client._id,
                     t['type'],
@@ -113,13 +114,11 @@ class HistogramMultiBarChart(InfluxChart):
                 res[t['display']] = data.json()
             except Exception as e:
                 res[t['display']] = [{"points":[]}]
-            logging.info(res[t['display']])
 
         return res
 
     def massage(self, data):
         ar = []
-        logging.info(data)
         for v in data:
             try:
                 vals = [{"x":a[0], "y":a[1]} for a in data[v][0]['points']]
@@ -138,14 +137,14 @@ class DashboardDefault(MethodView):
 
         page_by_type = FBInsightsPieChart(
             current_user.client,
-            typ="page_stories_by_story_type",
+            typ="page_stories_by_story_type.day",
         )
 
         engaged_users = FBInsightsMultiBarChart(
             current_user.client,
             [
-                {"type":"page_engaged_users", "display":"Engaged Users"},
-                {"type":"page_consumptions", "display":"Page Consumptions"},
+                {"type":"page_engaged_users.day", "display":"Engaged Users"},
+                {"type":"page_consumptions.day", "display":"Page Consumptions"},
             ],
             date_format = "%m/%d/%y"
         )
@@ -157,18 +156,19 @@ class DashboardDefault(MethodView):
                 {"type":"notification_failure", "display":"Failures"},
             ],
             prefix="events",
+            where="",
             date_format = "%H:%M:00",
 
         )
 
         online = FBInsightsPieChart(
             current_user.client,
-            "page_fans_online",
+            "page_fans_online.day",
         )
 
         country = FBInsightsPieChart(
             current_user.client,
-            typ="page_impressions_by_country_unique",
+            typ="page_impressions_by_country_unique.day",
         )
 
 

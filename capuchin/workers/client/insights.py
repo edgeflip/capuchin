@@ -9,13 +9,16 @@ import time
 import requests
 import datetime
 from slugify import slugify
+from pprint import pprint
 
 date_format = "%Y-%m-%dT%H:%M:%S+0000"
 
-class ClientInsights():
+class Insights():
 
-    def __init__(self, client):
+    def __init__(self, client, id, typ=None):
         self.oauth = OAuth()
+        self.id = id
+        self.type = typ
         self.client = client
         self.INFLUX = db.init_influxdb()
         self.fb_app = self.oauth.remote_app(
@@ -35,55 +38,62 @@ class ClientInsights():
 
     def write_data(self, data):
         for insight in data.get("data", []):
-            name = insight.get("name")
-            for event in insight.get("values"):
-                tm = time.mktime(time.strptime(event.get("end_time"), date_format))
+            if insight.get("period") not in ["day", "lifetime"]: continue
+            period = insight.get("period")
+            url = "{}.{}".format(insight.get("name"), period)
+            pprint(insight)
+            if self.type:
+                url = "{}.{}.{}".format(self.type, self.id, url)
 
+            points = []
+            for event in insight.get("values"):
+                if event.get("end_time"):
+                    tm = time.mktime(time.strptime(event.get("end_time"), date_format))
+                else:
+                    tm = time.time()
                 val = event.get("value")
+                if val == []: continue
                 if isinstance(val, dict):
                     for k,v in val.iteritems():
-                        t = "{}.{}".format(name, slugify(k))
-                        self.write_influx((tm, v, t))
+                        t = slugify(k)
+                        points.append((tm, v, t))
                 else:
-                    self.write_influx((tm, val, name))
+                    points.append((tm, val, insight.get("name")))
+            self.write_influx(points, url)
 
     def get_insights(self):
-        id = self.client.facebook_page.id
-        for i in PAGE_INSIGHTS:
-            res = self.fb_app.get(
-                "/v2.2/{}/insights/{}".format(id, i),
-                data={"period":"day"}
-            )
-            logging.info(res.data)
-            self.write_data(res.data)
-            self.page(res.data)
+        id = self.id
+        res = self.fb_app.get(
+            "/v2.2/{}/insights".format(id),
+        )
+        self.write_data(res.data)
+        self.page(res.data)
 
     def page(self, data):
         nex = data.get("paging", {}).get("previous")
         end_date = int(urlparse.parse_qs(urlparse.urlparse(nex).query)['until'][0])
         end_date = datetime.datetime.fromtimestamp(end_date)
-        stop = end_date - datetime.timedelta(days=90)
-        logging.info(end_date)
+        stop = end_date - datetime.timedelta(days=30)
+        logging.info("End Date:{}".format(end_date))
         last = nex
         while nex:
             res = requests.get(nex)
             data = res.json()
-            logging.info(data)
             self.write_data(data)
             nex = data.get("paging", {}).get("previous")
-            end_date = int(urlparse.parse_qs(urlparse.urlparse(nex).query)['until'][0])
-            end_date = datetime.datetime.fromtimestamp(end_date)
-            if end_date < stop or not data.get("data"): nex = None
+            end = int(urlparse.parse_qs(urlparse.urlparse(nex).query)['until'][0])
+            end_date = datetime.datetime.fromtimestamp(end)
+            logging.info("Should Page: {}".format(nex))
+            if end_date < stop or not data.get("data") or not end: nex = None
 
         return True
 
-    def write_influx(self, event):
-        time, val, typ = event
+    def write_influx(self, points, url):
         data = [
             dict(
-                name = "insights.{}.{}".format(self.client._id, typ),
+                name = "insights.{}.{}".format(self.client._id, url),
                 columns = ["time", "value", "type"],
-                points = [[time, val, typ.split(".")[-1]]]
+                points = points
             )
         ]
         logging.info("Writing: {}".format(data))

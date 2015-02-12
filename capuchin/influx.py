@@ -2,8 +2,8 @@ SPACES= [
 {
     "name": "insights",
     "retentionPolicy": "inf",
-    "shardDuration": "1d",
-    "regex": "/.*/",
+    "shardDuration": "35d",
+    "regex": "/^insights.*/",
     "replicationFactor": 1,
     "split": 1
 },
@@ -11,7 +11,7 @@ SPACES= [
     "name": "events",
     "retentionPolicy": "7d",
     "shardDuration": "2h",
-    "regex": "/.*/",
+    "regex": "/^events.*/",
     "replicationFactor": 1,
     "split": 1
 },
@@ -44,6 +44,14 @@ SPACES= [
     "retentionPolicy": "inf",
     "shardDuration": "24h",
     "regex": "/^24h.*/",
+    "replicationFactor": 1,
+    "split": 1
+},
+{
+    "name": "weekly_insights",
+    "retentionPolicy": "inf",
+    "shardDuration": "1y",
+    "regex": "/^week.*/",
     "replicationFactor": 1,
     "split": 1
 }]

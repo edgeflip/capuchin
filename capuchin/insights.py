@@ -78,6 +78,5 @@ POST_INSIGHTS = [
     "likes",
     "comments",
     "sharedposts",
-    "insights",
     "attachments",
 ]
