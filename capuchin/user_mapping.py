@@ -32,6 +32,13 @@ SETTINGS = {
     }
 }
 
+POST = {
+    "client":{
+        "type":"string",
+        "index": "not_analyzed"
+    }
+}
+
 USER = {
     "efid": {"type": "long",},
     "clients":{

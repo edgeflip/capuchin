@@ -1,7 +1,7 @@
-from capuchin import Capuchin
+from capuchin.app import Capuchin
 from capuchin import config
-from capuchin import INFLUX
-from capuchin.insights import INSIGHTS
+from capuchin import db
+from capuchin.insights import PAGE_INSIGHTS
 from flask_oauth import OAuth
 import urlparse
 import logging
@@ -17,6 +17,7 @@ class ClientInsights():
     def __init__(self, client):
         self.oauth = OAuth()
         self.client = client
+        self.INFLUX = db.init_influxdb()
         self.fb_app = self.oauth.remote_app(
             'facebook',
             base_url='https://graph.facebook.com/',
@@ -48,7 +49,7 @@ class ClientInsights():
 
     def get_insights(self):
         id = self.client.facebook_page.id
-        for i in INSIGHTS:
+        for i in PAGE_INSIGHTS:
             res = self.fb_app.get(
                 "/v2.2/{}/insights/{}".format(id, i),
                 data={"period":"day"}
@@ -81,13 +82,13 @@ class ClientInsights():
         data = [
             dict(
                 name = "insights.{}.{}".format(self.client._id, typ),
-                columns = ["time", "value", "typ"], 
+                columns = ["time", "value", "type"],
                 points = [[time, val, typ.split(".")[-1]]]
             )
         ]
         logging.info("Writing: {}".format(data))
         try:
-            res = INFLUX.write_points(data)
+            res = self.INFLUX.write_points(data)
             logging.info(res)
         except Exception as e:
             logging.warning(e)

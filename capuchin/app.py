@@ -1,79 +1,18 @@
-from flask import Flask, redirect, url_for, request
+from flask import Flask, redirect, url_for, request, g
 from flask_pjax import PJAX
 from flask.ext.login import LoginManager, current_user
 from flask.ext.session import Session
-from pymongo import MongoClient
-from elasticsearch import Elasticsearch
 from capuchin.models.client import Admin
+from capuchin import db
 from elasticsearch import TransportError
-from capuchin import influx
 from slugify import slugify
-import influxdb
 import humongolus
-import config
-import user_mapping
+from capuchin import config
 import logging
 import time
 import gevent
-from gevent import monkey
-
-monkey.patch_all()
 
 logging.basicConfig(level=config.LOG_LEVEL)
-es_connected = False
-
-while not es_connected:
-    try:
-        gevent.sleep(1)
-        logging.info("Elasticsearch not connected")
-        ES = Elasticsearch(
-            hosts=config.ES_HOSTS,
-            sniff_on_start=True,
-            sniff_on_connection_fail=True,
-            sniffer_timeout=60
-        )
-        es_connected = True
-    except TransportError as e:
-        logging.error(e)
-
-try:
-    MONGO = MongoClient(config.MONGO_HOST, config.MONGO_PORT)
-except Exception as e:
-    logging.error(e)
-
-influx_connected = False
-while not influx_connected:
-    gevent.sleep(1)
-    logging.info("Influxdb not connected")
-    INFLUX = influxdb.InfluxDBClient(
-        config.INFLUX_HOST,
-        config.INFLUX_PORT,
-        config.INFLUX_USER,
-        config.INFLUX_PASSWORD,
-        config.INFLUX_DATABASE,
-    )
-    try:
-        res = INFLUX.request("cluster_admins")
-        influx_connected = True
-    except Exception as e:
-        logging.error(e)
-
-logging.info("Databases UP")
-
-
-def create_index():
-    ES.indices.create(
-        index=config.ES_INDEX,
-        body = {
-            "settings":user_mapping.SETTINGS,
-            "mappings":{
-                "user":{
-                    "_source":{"enabled":True},
-                    "properties":user_mapping.USER
-                }
-            }
-        }
-    )
 
 class Capuchin(Flask):
 
@@ -81,12 +20,9 @@ class Capuchin(Flask):
         super(Capuchin, self).__init__("capuchin")
         self.config.from_object('capuchin.config')
         logging.info("SERVER_NAME: {}".format(self.config['SERVER_NAME']))
-        if not ES.indices.exists(config.ES_INDEX):
-            create_index()
-        humongolus.settings(logging, MONGO)
-        logging.info("Initialized")
+        self.before_request(self.init_dbs)
+        humongolus.settings(logging, db.init_mongodb())
         try:
-            self.init_influx()
             self.init_session()
             self.init_login()
             self.init_blueprints()
@@ -95,7 +31,6 @@ class Capuchin(Flask):
         except Exception as e:
             logging.exception(e)
 
-        logging.info("Running")
 
     def load_user(self, id):
         try:
@@ -110,7 +45,7 @@ class Capuchin(Flask):
         self.jinja_env.filters['slugify'] = slugify
 
     def init_session(self):
-        self.config['SESSION_MONGODB'] = MONGO
+        self.config['SESSION_MONGODB'] = db.init_mongodb()
         self.config['SESSION_MONGODB_DB'] = "capuchin_sessions"
         self.config['SESSION_MONGODB_COLLECT'] = "sessions"
         Session(self)
@@ -129,23 +64,16 @@ class Capuchin(Flask):
     def init_pjax(self):
         PJAX(self)
 
-    def init_influx(self):
-        data = {
-            "name":config.INFLUX_DATABASE,
-            "spaces":influx.SPACES,
-            "continuousQueries":influx.QUERIES,
-        }
-        try:
-            res = INFLUX.request(
-                url="cluster/database_configs/{}".format(config.INFLUX_DATABASE),
-                data=data,
-                method="POST"
-            )
-            logging.debug(res)
-        except Exception as e:
+    def configure_dbs(self):
+        es = db.init_elasticsearch()
+        db.create_index(es)
+        influx = db.init_influxdb()
+        db.create_shards(influx)
 
-            logging.warning(e)
-
+    def init_dbs(self):
+        g.ES = db.init_elasticsearch()
+        g.INFLUX = db.init_influxdb()
+        g.MONGO = db.init_mongodb()
 
     def init_blueprints(self):
         from controllers.dashboard import db
@@ -157,11 +85,13 @@ class Capuchin(Flask):
         from controllers.auth import auth
         from controllers.auth.facebook import facebook
         from controllers.healthcheck import hc
+        from controllers.posts import posts
         db.before_request(self.user_logged_in)
         notif.before_request(self.user_logged_in)
         lists.before_request(self.user_logged_in)
         segments.before_request(self.user_logged_in)
         campaigns.before_request(self.user_logged_in)
+        posts.before_request(self.user_logged_in)
         self.register_blueprint(hc)
         self.register_blueprint(db)
         self.register_blueprint(notif)
@@ -171,3 +101,4 @@ class Capuchin(Flask):
         self.register_blueprint(redirect)
         self.register_blueprint(auth)
         self.register_blueprint(facebook)
+        self.register_blueprint(posts)

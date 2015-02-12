@@ -2,7 +2,7 @@ import humongolus as orm
 import humongolus.field as field
 from capuchin import config
 from capuchin import filters
-from capuchin.app import ES
+from capuchin import db
 from capuchin.models.client import Client
 
 class Segment(orm.Document):
@@ -38,10 +38,11 @@ class Segment(orm.Document):
     def get_records(self, filters, from_=0):
         q = {}
         if len(filters['filtered']['filter']['and']): q["query"] = filters
+        ES = db.init_elasticsearch()
         res = ES.search(
             config.ES_INDEX,
-            config.RECORD_TYPE,
-            fields=config.RECORD_FIELDS,
+            config.USER_RECORD_TYPE,
+            fields=config.USER_RECORD_FIELDS,
             size=config.RECORDS_PER_PAGE,
             from_=from_,
             _source=False,
@@ -59,9 +60,10 @@ class Segment(orm.Document):
                         "field":f["field"]
                     }
                 }
+        ES = db.init_elasticsearch()
         res = ES.search(
             config.ES_INDEX,
-            config.RECORD_TYPE,
+            config.USER_RECORD_TYPE,
             _source=False,
             size=0,
             body=q,
@@ -76,9 +78,10 @@ class Segment(orm.Document):
                 q["aggregations"][key] = {
                     "terms":{"field":f["field"]}
                 }
+        ES = db.init_elasticsearch()
         res = ES.search(
             config.ES_INDEX,
-            config.RECORD_TYPE,
+            config.USER_RECORD_TYPE,
             _source=False,
             size=0,
             body=q,
@@ -97,9 +100,10 @@ class Segment(orm.Document):
         if len(filters['filtered']['filter']['and']):
             q = {}
             q["query"] = filters
+        ES = db.init_elasticsearch()
         res = ES.count(
             config.ES_INDEX,
-            config.RECORD_TYPE,
+            config.USER_RECORD_TYPE,
             body=q
         )
         return res['count']

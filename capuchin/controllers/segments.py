@@ -1,10 +1,9 @@
-from flask import Blueprint, render_template, current_app, redirect, url_for, request, Response
+from flask import Blueprint, render_template, current_app, redirect, url_for, request, Response, g
 from flask.views import MethodView
 from flask.ext.login import current_user
 from capuchin import config
 from capuchin import filters
 from capuchin.models.segment import Segment
-from capuchin.app import ES
 import logging
 import slugify
 import math
@@ -37,9 +36,9 @@ def get_segment(id):
 
 def get_suggestions(field, text):
     q = {}
-    res = ES.search(
+    res = g.ES.search(
         config.ES_INDEX,
-        config.RECORD_TYPE,
+        config.USER_RECORD_TYPE,
         size=0,
         _source=False,
         body={

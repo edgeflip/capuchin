@@ -1,7 +1,6 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, g
 from flask.views import MethodView
 from flask.ext.login import current_user
-from capuchin.app import INFLUX
 from capuchin import config
 from capuchin.models.list import List
 from capuchin.models.segment import Segment
@@ -37,13 +36,13 @@ class InfluxChart(object):
 class FBInsightsPieChart(InfluxChart):
 
     def query(self):
-        q = "SELECT sum(value) as value,typ FROM /^{}.{}.{}.*/ {} GROUP BY typ;".format(
+        q = "SELECT sum(value) as value,type FROM /^{}.{}.{}.*/ {} GROUP BY type;".format(
             self.prefix,
             self.client._id,
             self.typ,
             self.where
         )
-        data = INFLUX.request(
+        data = g.INFLUX.request(
             "db/{0}/series".format(config.INFLUX_DATABASE),
             params={"q":q},
         )
@@ -62,7 +61,7 @@ class FBInsightsMultiBarChart(InfluxChart):
     def query(self):
         res = {}
         for t in self.typ:
-            data = INFLUX.request(
+            data = g.INFLUX.request(
                 "db/{0}/series".format(config.INFLUX_DATABASE),
                 params={'q':
                     "SELECT value FROM {}.{}.{} {};".format(
@@ -99,21 +98,20 @@ class HistogramMultiBarChart(InfluxChart):
         res = {}
         for t in self.typ:
             try:
-                data = INFLUX.request(
+                q = "SELECT count(type) as count FROM {}.{}.{} GROUP BY time({}) fill(0) {};".format(
+                    self.prefix,
+                    self.client._id,
+                    t['type'],
+                    self.buckets,
+                    self.where,
+                )
+                logging.info(q)
+                data = g.INFLUX.request(
                     "db/{0}/series".format(config.INFLUX_DATABASE),
-                    params={'q':
-                        "SELECT count(type) as count FROM {}.{}.{} GROUP BY time({}) fill(0) {};".format(
-                            self.prefix,
-                            self.client._id,
-                            t['type'],
-                            self.buckets,
-                            self.where,
-                        )
-                    }
+                    params={'q':q}
                 )
                 res[t['display']] = data.json()
             except Exception as e:
-                logging.exception(e)
                 res[t['display']] = [{"points":[]}]
             logging.info(res[t['display']])
 
@@ -121,13 +119,17 @@ class HistogramMultiBarChart(InfluxChart):
 
     def massage(self, data):
         ar = []
+        logging.info(data)
         for v in data:
-            vals = [{"x":a[0], "y":a[1]} for a in data[v][0]['points']]
-            vals.reverse()
-            ar.append({
-                "key":v,
-                "values":vals
-            })
+            try:
+                vals = [{"x":a[0], "y":a[1]} for a in data[v][0]['points']]
+                vals.reverse()
+                ar.append({
+                    "key":v,
+                    "values":vals
+                })
+            except:pass
+
         return ar;
 
 class DashboardDefault(MethodView):
@@ -152,7 +154,7 @@ class DashboardDefault(MethodView):
             current_user.client,
             [
                 {"type":"notification_sent", "display":"Sent"},
-                #{"type":"notification_failure", "display":"Failures"},
+                {"type":"notification_failure", "display":"Failures"},
             ],
             prefix="events",
             date_format = "%H:%M:00",

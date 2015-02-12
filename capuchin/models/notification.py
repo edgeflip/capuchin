@@ -6,6 +6,7 @@ from capuchin.models.event import Event
 from capuchin import config
 from flask_oauth import OAuth
 import requests
+import logging
 
 class Notification(orm.Document):
     _db = "capuchin"
@@ -21,7 +22,7 @@ class Notification(orm.Document):
             self.post(i)
 
     def post(self, user):
-        asid = "10153561577764377"#ASID for Chris Cote for CapuchinDev app, should be None
+        asid = "10153577819234377"#ASID for Chris Cote for CapuchinDev app, should be None
         for i in user.get('clients', []):
             if str(i.get('id')) == str(self.client._id):
                 asid = i.get('asid')
@@ -36,5 +37,6 @@ class Notification(orm.Document):
                 }
             )
             j = res.json()
+            logging.info(j)
             event_type = "notification_sent" if j.get("success") else "notification_failure"
             Event(self.client, event_type, user=asid, notification=str(self._id))

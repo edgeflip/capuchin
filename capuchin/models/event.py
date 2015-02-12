@@ -1,9 +1,10 @@
-from capuchin.app import INFLUX
+from capuchin import db
 import logging
 
 class Event(object):
 
     def __init__(self, client, event, **kwargs):
+        INFLUX = db.init_influxdb()
         super(Event, self).__init__()
         columns = ["type"]
         values = [event]

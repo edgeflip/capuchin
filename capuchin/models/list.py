@@ -1,7 +1,7 @@
 from flask import url_for
 import humongolus as orm
 import humongolus.field as field
-from capuchin.app import ES
+from capuchin import db
 from capuchin import config
 from capuchin.models.client import Client
 
@@ -22,9 +22,10 @@ class List(orm.Document):
 
     @property
     def users(self):
+        ES = db.init_elasticsearch()
         res = ES.count(
             config.ES_INDEX,
-            config.RECORD_TYPE
+            config.USER_RECORD_TYPE
         )
 
         return res['count']

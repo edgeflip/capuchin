@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Posts{% endblock %}
+
+{% block head %}
+<script>
+    $(document).pjax(".pager", "#records", {push:false});
+</script>
+{% endblock %}
+
+{% block content %}
+<div id="records">
+    {% include "posts/records.html" %}
+</div>
+{% endblock %}

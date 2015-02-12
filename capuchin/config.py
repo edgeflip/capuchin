@@ -50,9 +50,11 @@ MONGO_HOST = "mongo"
 MONGO_PORT = 27017
 
 RECORDS_PER_PAGE = 10
-RECORD_TYPE = "user"
+USER_RECORD_TYPE = "user"
+POST_RECORD_TYPE = "post"
 
-RECORD_FIELDS = ["first_name", "last_name", "age", "efid", "location.location",]
+USER_RECORD_FIELDS = ["first_name", "last_name", "age", "efid", "location.location",]
+POST_RECORD_FIELDS = ["id", "message", "picture", "link", "created_time", "from.name", "shares.count", "comments.id", "likes.id"]
 
-FACEBOOK_APP_ID = "341894559353627"
-FACEBOOK_APP_SECRET = "c1107e87bddcc6902eb692a528fd43d5"
+FACEBOOK_APP_ID = "919803718054428"
+FACEBOOK_APP_SECRET = "76bab438d5d4a14b87468ddf3a39d4da"

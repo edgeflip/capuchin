@@ -1,4 +1,4 @@
-INSIGHTS = [
+PAGE_INSIGHTS = [
     "page_stories",
     "page_stories_by_story_type",
     "page_storytellers",
@@ -68,4 +68,16 @@ INSIGHTS = [
     "page_posts_impressions_frequency_distribution",
     "page_posts_impressions_by_paid_non_paid",
     "page_posts_impressions_by_paid_non_paid_unique",
+    "page_views",
+    "page_views_unique",
+    "page_views_external_referrals",
+]
+
+
+POST_INSIGHTS = [
+    "likes",
+    "comments",
+    "sharedposts",
+    "insights",
+    "attachments",
 ]

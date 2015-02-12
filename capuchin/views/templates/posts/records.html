@@ -1,0 +1,50 @@
+<div class="row">
+    <div class="col-md-8">
+        <form action="{{url_for('.index')}}" method="GET">
+            <div class="input-group">
+                <input name="q" type="text" class="form-control" placeholder="Search for..." value="{{q}}">
+                <span class="input-group-btn">
+                    <button class="btn btn-default " type="button">Go!</button>
+                </span>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-4">
+        <h4 class="pull-right">Posts: {{"{:,}".format(total)}}</h4>
+    </div>
+</row>
+<div class="row">
+    <div class="col-md-12">
+        <table class="table table-striped">
+            <thead>
+                <th>Message</th>
+                <th>From</th>
+                <th>Shares</th>
+                <th>Likes</th>
+                <th>Comments</th>
+                <th>Created</th>
+                <th></th>
+            </thead>
+            <tbody>
+                {% for p in records %}
+                <tr>
+                    <td>{{p['fields']['message'][0]|truncate(100)}}</td>
+                    <td>{{p['fields']['from.name'][0]}}</td>
+                    <td>{{p['fields'].get('shares.count', [0])[0]}}</td>
+                    <td>{{p['fields'].get('likes.id', [])|length}}</td>
+                    <td>{{p['fields'].get('comments.id', [])|length}}</td>
+                    <td>{{p['fields'].get('created_time', [0])[0]}}</td>
+                    <td>
+                        <a class='btn btn-primary' href="{{ url_for('posts.view', id=p['fields']['id'][0])}}" role="button">View</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        {% include "posts/pagination.html" %}
+    </div>
+</div>
