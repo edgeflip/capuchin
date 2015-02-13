@@ -11,6 +11,7 @@ from capuchin.workers.client.insights import Insights
 from capuchin.workers.client.posts import ClientPosts
 from capuchin import user_mapping
 from capuchin import db
+import datetime
 import logging
 
 app = Capuchin()
@@ -23,14 +24,21 @@ class PageInsights(Command):
     def run(self):
         for client in Client.find():
             logging.info(client.name)
-            i = Insights(client=client, id=client.facebook_page.id)
+            last = client.last_insights
+            if not last:
+                last = datetime.datetime.utcnow() - datetime.timedelta(days=90)
+            i = Insights(client=client, id=client.facebook_page.id, since=last)
+            client.last_insights = datetime.datetime.utcnow()
+            client.save()
 
 class PageFeed(Command):
 
     def run(self):
         for client in Client.find():
-            logging.info(client.name)
-            i = ClientPosts(client=client)
+            last = client.last_post
+            i = ClientPosts(client=client, since=last)
+            client.last_post = datetime.datetime.utcnow()
+            client.save()
 
 class SyncUsers(Command):
     "syncs users from RedShift to ElasticSearch"

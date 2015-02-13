@@ -16,9 +16,10 @@ date_format = "%Y-%m-%dT%H:%M:%S+0000"
 
 class ClientPosts():
 
-    def __init__(self, client):
+    def __init__(self, client, since):
         self.oauth = OAuth()
         self.client = client
+        self.since = since
         self.INFLUX = db.init_influxdb()
         self.ES = db.init_elasticsearch()
         self.fb_app = self.oauth.remote_app(
@@ -56,6 +57,9 @@ class ClientPosts():
             body=post,
             id=p_id
         )
+        shares = post.get("shares", {}).get("count", 0)
+        tm = time.time()
+        self.write_influx([(tm, shares, 'shares')], url="{}.{}".format(p_id, "shares"))
         for i in POST_INSIGHTS:
             url = "{}.{}".format(p_id, i)
             count = self.get_count(url)
@@ -75,19 +79,20 @@ class ClientPosts():
 
     def get_feed(self):
         id = self.client.facebook_page.id
+        data = {"limit":250}
+        if self.since:
+            data['since'] = time.mktime(self.since.timetuple())
         res = self.fb_app.get(
             "/v2.2/{}/feed".format(id),
-            data={"limit":250},
+            data=data,
         )
         for p in res.data.get('data'):
-            pprint(p)
             p_id = p.get("id")
             for i in POST_INSIGHTS:
-                logging.info("INSIGHT: {}".format(i))
                 p[i] = self.page(p_id, i, p.get(i, {}))
-                pprint(p[i])
             self.write_data(p)
-            #i = Insights(client=self.client, id=p.get('id'), typ="post")
+            since = datetime.datetime.strptime(p.get("created_time"), date_format)
+            i = Insights(client=self.client, id=p.get('id'), since=since, typ="post")
 
     def page(self, post_id, typ, data):
         res = [a for a in data.get("data", [])]

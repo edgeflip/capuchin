@@ -39,6 +39,8 @@ class Client(orm.Document):
     name = field.Char()
     description = field.Char()
     facebook_page = FacebookPage()
+    last_post = field.Date()
+    last_insights = field.Date()
 
 class Admin(orm.Document):
     _db = "capuchin"

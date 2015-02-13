@@ -1,7 +1,6 @@
 from capuchin.app import Capuchin
 from capuchin import config
 from capuchin import db
-from capuchin.insights import PAGE_INSIGHTS
 from flask_oauth import OAuth
 import urlparse
 import logging
@@ -15,11 +14,12 @@ date_format = "%Y-%m-%dT%H:%M:%S+0000"
 
 class Insights():
 
-    def __init__(self, client, id, typ=None):
+    def __init__(self, client, id, since, typ=None):
         self.oauth = OAuth()
         self.id = id
         self.type = typ
         self.client = client
+        self.since = since
         self.INFLUX = db.init_influxdb()
         self.fb_app = self.oauth.remote_app(
             'facebook',
@@ -41,7 +41,6 @@ class Insights():
             if insight.get("period") not in ["day", "lifetime"]: continue
             period = insight.get("period")
             url = "{}.{}".format(insight.get("name"), period)
-            pprint(insight)
             if self.type:
                 url = "{}.{}.{}".format(self.type, self.id, url)
 
@@ -59,32 +58,29 @@ class Insights():
                         points.append((tm, v, t))
                 else:
                     points.append((tm, val, insight.get("name")))
-            self.write_influx(points, url)
+            if points:
+                self.write_influx(points, url)
 
     def get_insights(self):
         id = self.id
+        data = {}
+        data['since'] = time.mktime(self.since.timetuple())
+        data['until'] = time.mktime(datetime.datetime.utcnow().timetuple())
         res = self.fb_app.get(
             "/v2.2/{}/insights".format(id),
+            data=data,
         )
         self.write_data(res.data)
         self.page(res.data)
 
     def page(self, data):
-        nex = data.get("paging", {}).get("previous")
-        end_date = int(urlparse.parse_qs(urlparse.urlparse(nex).query)['until'][0])
-        end_date = datetime.datetime.fromtimestamp(end_date)
-        stop = end_date - datetime.timedelta(days=30)
-        logging.info("End Date:{}".format(end_date))
+        nex = data.get("paging", {}).get("next")
         last = nex
         while nex:
             res = requests.get(nex)
             data = res.json()
             self.write_data(data)
-            nex = data.get("paging", {}).get("previous")
-            end = int(urlparse.parse_qs(urlparse.urlparse(nex).query)['until'][0])
-            end_date = datetime.datetime.fromtimestamp(end)
-            logging.info("Should Page: {}".format(nex))
-            if end_date < stop or not data.get("data") or not end: nex = None
+            nex = data.get("paging", {}).get("nex")
 
         return True
 

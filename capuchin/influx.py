@@ -2,7 +2,7 @@ SPACES= [
 {
     "name": "insights",
     "retentionPolicy": "inf",
-    "shardDuration": "35d",
+    "shardDuration": "365d",
     "regex": "/^insights.*/",
     "replicationFactor": 1,
     "split": 1
