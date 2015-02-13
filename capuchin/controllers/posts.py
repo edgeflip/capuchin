@@ -4,7 +4,7 @@ from flask.ext.login import current_user
 from capuchin import config
 from capuchin import filters
 from capuchin.models.post import Post
-from capuchin.controllers.dashboard import HistogramMultiBarChart
+from capuchin.insights.charts import HistogramChart
 import logging
 import slugify
 import math
@@ -64,7 +64,7 @@ class PostsView(MethodView):
                 date_format
             )
         )
-        engagement = HistogramMultiBarChart(
+        engagement = HistogramChart(
             current_user.client,
             [
                 {"type":"post.{}.likes".format(post.get("_id")), "display":"Likes"},

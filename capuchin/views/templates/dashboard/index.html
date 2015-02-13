@@ -6,7 +6,8 @@
     <div class="row">
         {% import "widgets/charts/chart.html" as chart %}
         {{chart.multibar("engaged", 6, "Page Engagement", engaged_users.dump(), engaged_users.date_format)}}
-        
+        {{chart.stackedline("likes", 6, "Likes", likes.dump(), likes.date_format)}}
+        {{chart.lineplusbar("like_gains", 6, "Likes", like_gains.dump(), like_gains.date_format)}}
         {{chart.pie("online", 6, "Fans Online by Hour", online.dump())}}
         {{chart.pie("engagement_story", 6, "Engagment by Story Type", page_by_type.dump())}}
         {{chart.pie("country", 6, "Engagment by Country", country.dump())}}

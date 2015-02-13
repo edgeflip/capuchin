@@ -1,7 +1,9 @@
 {% macro multibar(id, columns, title, data, date_format="%m/%d/%y %H:%M:00") %}
-    <div id="chart{{id}}" class="col-md-{{columns}} dash-chart">
+    <div class="col-md-{{columns}} dash-chart">
         <h3>{{title}}</h3>
-        <svg></svg>
+        <div id="chart{{id}}">
+            <svg></svg>
+        </div>
     </div>
     <script>
         $(document).ready(build_multibarchart_{{id}});
@@ -34,9 +36,11 @@
 
 
 {% macro pie(id, columns, title, data) %}
-    <div id="chart{{id}}" class="col-md-{{columns}} dash-chart pie">
+    <div class="col-md-{{columns}} dash-chart pie">
         <h3>{{title}}</h3>
-        <svg></svg>
+        <div id="chart{{id}}">
+            <svg></svg>
+        </div>
     </div>
     <script>
     $(document).ready(build_piechart_{{id}});
@@ -63,4 +67,86 @@
         });
     }
     </script>
+{% endmacro %}
+
+{% macro stackedline(id, columns, title, data, date_format) %}
+    <div class="col-md-{{columns}} dash-chart stackedline">
+        <h3>{{title}}</h3>
+        <div id="chart{{id}}">
+            <svg></svg>
+        </div>
+    </div>
+    <script>
+    $(document).ready(build_stackedline_{{id}});
+
+    function build_stackedline_{{id}}(){
+        var data = eval({{data|safe}});
+        console.log(data);
+        nv.addGraph(function() {
+            var chart = nv.models.stackedAreaChart()
+            .x(function(d) { return d.x })   //We can modify the data accessor functions...
+            .y(function(d) { return d.y })   //...in case your data is formatted differently.
+            .useInteractiveGuideline(true)    //Tooltips which show all data points. Very nice!
+            .transitionDuration(500);
+
+            //Format x-axis labels with custom function.
+            chart.xAxis
+            .tickFormat(function(d) {
+                return d3.time.format("{{date_format}}")(new Date(d))
+            });
+
+            chart.yAxis
+            .tickFormat(d3.format(',.2f'));
+
+            d3.select('#chart{{id}} svg')
+            .datum(data)
+            .call(chart);
+
+            nv.utils.windowResize(chart.update);
+        });
+    };
+    </script>
+{% endmacro %}
+
+
+{% macro lineplusbar(id, columns, title, data, date_format) %}
+<div class="col-md-{{columns}} dash-chart stackedline">
+    <h3>{{title}}</h3>
+    <div id="chart{{id}}">
+        <svg></svg>
+    </div>
+</div>
+<script>
+$(document).ready(build_stackedline_{{id}});
+
+function build_stackedline_{{id}}(){
+    var data = eval({{data|safe}});
+    console.log(data);
+    nv.addGraph(function() {
+        var chart = nv.models.linePlusBarChart()
+        .x(function(d) { return d.x })   //We can modify the data accessor functions...
+        .y(function(d) { return d.y })   //...in case your data is formatted differently.
+
+        //Format x-axis labels with custom function.
+        chart.xAxis
+        .tickFormat(function(d) {
+            return d3.time.format("{{date_format}}")(new Date(d))
+        });
+
+        chart.y1Axis
+        .tickFormat(d3.format(',.2f'));
+
+        chart.y2Axis
+        .tickFormat(d3.format(',.2f'));
+
+        chart.bars.forceY([0]);
+
+        d3.select('#chart{{id}} svg')
+        .datum(data)
+        .call(chart);
+
+        nv.utils.windowResize(chart.update);
+    });
+};
+</script>
 {% endmacro %}

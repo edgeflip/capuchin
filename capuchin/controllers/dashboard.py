@@ -4,6 +4,11 @@ from flask.ext.login import current_user
 from capuchin import config
 from capuchin.models.list import List
 from capuchin.models.segment import Segment
+from capuchin.insights.charts import \
+    FBInsightsPieChart,\
+    FBInsightsMultiBarChart,\
+    HistogramChart,\
+    FreeHistogramChart
 import logging
 import json
 
@@ -13,127 +18,46 @@ db = Blueprint(
     template_folder=config.TEMPLATES,
 )
 
-class InfluxChart(object):
-
-    def __init__(self, client, typ, where="", prefix="insights", date_format="%m/%d/%y"):
-        self.client = client
-        self.typ = typ
-        self.where=where
-        self.prefix = prefix
-        self.date_format = date_format
-        try:
-            self.data = self.query()
-            logging.info(self.data)
-            self.data = self.massage(self.data)
-            logging.info(self.data)
-        except Exception as e:
-            logging.exception(e)
-            self.data = []
-
-    def query(self): pass
-    def massage(self, data):pass
-    def dump(self):
-        return json.dumps(self.data)
-
-class FBInsightsPieChart(InfluxChart):
-
-    def query(self):
-        q = "SELECT sum(value), type FROM {}.{}.{} {} GROUP BY type;".format(
-            self.prefix,
-            self.client._id,
-            self.typ,
-            self.where
-        )
-        logging.info(q)
-        data = g.INFLUX.request(
-            "db/{0}/series".format(config.INFLUX_DATABASE),
-            params={"q":q},
-        )
-        return data.json()
-
-    def massage(self, data):
-        data = [{
-            "label":a[2],
-            "value":a[1]
-        } for a in data[0]['points']]
-        return data
-
-class FBInsightsMultiBarChart(InfluxChart):
-
-    def query(self):
-        res = {}
-        for t in self.typ:
-            q = "SELECT value FROM {}.{}.{} {};".format(
-                self.prefix,
-                self.client._id,
-                t['type'],
-                self.where
-            )
-            logging.info(q)
-            data = g.INFLUX.request(
-                "db/{0}/series".format(config.INFLUX_DATABASE),
-                params={'q':q}
-            )
-            res[t['display']] = data.json()
-
-        return res
-
-    def massage(self, data):
-        ar = []
-        for v in data:
-            vals = [{"x":a[0], "y":a[2]} for a in data[v][0]['points']]
-            vals.reverse()
-            ar.append({
-                "key":v,
-                "values":vals
-            })
-        return ar;
-
-class HistogramMultiBarChart(InfluxChart):
-
-    def __init__(self, client, typ, where="WHERE time > now()-24h", prefix="insights", date_format="%m/%d/%y %H:%M:00", buckets="1h"):
-        self.buckets = buckets
-        super(HistogramMultiBarChart, self).__init__(client, typ, where, prefix, date_format)
-
-    def query(self):
-        res = {}
-        for t in self.typ:
-            try:
-                q = "SELECT sum(value) FROM {}.{}.{} GROUP BY time({}), type fill(0) {};".format(
-                    self.prefix,
-                    self.client._id,
-                    t['type'],
-                    self.buckets,
-                    self.where,
-                )
-                logging.info(q)
-                data = g.INFLUX.request(
-                    "db/{0}/series".format(config.INFLUX_DATABASE),
-                    params={'q':q}
-                )
-                res[t['display']] = data.json()
-            except Exception as e:
-                res[t['display']] = [{"points":[]}]
-
-        return res
-
-    def massage(self, data):
-        ar = []
-        for v in data:
-            try:
-                vals = [{"x":a[0], "y":a[1]} for a in data[v][0]['points']]
-                vals.reverse()
-                ar.append({
-                    "key":v,
-                    "values":vals
-                })
-            except:pass
-
-        return ar;
-
 class DashboardDefault(MethodView):
 
     def get(self):
+        like_gains = FreeHistogramChart(
+            current_user.client,
+            [
+                {
+                    "display":"Net Likes",
+                    "q":"SELECT MEDIAN(value) FROM insights.{}.page_fans.lifetime GROUP BY time(2d)",
+
+                },
+                {
+                    "display":"Like Change",
+                    "q":"SELECT DIFFERENCE(value) FROM insights.{}.page_fans.lifetime GROUP BY time(2d)",
+                    "kwargs":{"bar":True}
+                }
+            ],
+            date_format = "%m/%d/%y"
+
+        )
+
+        likes = FreeHistogramChart(
+            current_user.client,
+            [
+                {
+                    "display":"Likes",
+                    "q": "SELECT value FROM insights.{}.page_fan_adds.day",
+                },
+                {
+                    "display":"Unlikes",
+                    "q": "SELECT value*-1 FROM insights.{}.page_fan_removes.day",
+                },
+                {
+                    "display":"Paid Likes",
+                    "q":"SELECT value FROM insights.{}.page_fan_adds_by_paid_non_paid_unique.day WHERE type='paid'",
+                }
+            ],
+            date_format = "%m/%d/%y"
+
+        )
 
         page_by_type = FBInsightsPieChart(
             current_user.client,
@@ -149,7 +73,7 @@ class DashboardDefault(MethodView):
             date_format = "%m/%d/%y"
         )
 
-        notifications = HistogramMultiBarChart(
+        notifications = HistogramChart(
             current_user.client,
             [
                 {"type":"notification_sent", "display":"Sent"},
@@ -184,7 +108,9 @@ class DashboardDefault(MethodView):
             engaged_users=engaged_users,
             country=country,
             online=online,
-            notifications=notifications
+            notifications=notifications,
+            likes=likes,
+            like_gains = like_gains,
         )
 
 db.add_url_rule("/", view_func=DashboardDefault.as_view('index'))
