@@ -96,7 +96,7 @@ class User(dict):
             else:
                 self[t['key']] = t['parser'](rows)
 
-        self['clients'] = [str(c._id) for c in Client.find()]
+        self['clients'] = [{'asid':self['efid'], 'id':str(c._id)} for c in Client.find()]
 
     def parse(self, obj):
         for k,v in obj.iteritems():

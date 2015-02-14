@@ -70,13 +70,14 @@ class SyncUsers(Command):
 
     def run(self):
         ES = db.init_elasticsearch()
-        #offset = ES.count(config.ES_INDEX, config.USER_RECORD_TYPE)['count']
-        #logging.info(offset)
-        for i in self.get_rows(offset=0):
+        offset = ES.count(config.ES_INDEX, config.USER_RECORD_TYPE)['count']
+        logging.info(offset)
+        for i in self.get_rows(offset=offset):
             for row in i:
+                logging.info(row)
                 u = User(row)
                 logging.info(u)
-                ES.index(index=config.ES_INDEX, doc_type=config.USER_RECORD_TYPE, body=u)
+                ES.index(index=config.ES_INDEX, doc_type=config.USER_RECORD_TYPE, body=u, id=u['efid'])
 
         self.cur.close()
         self.con.close()
@@ -85,6 +86,7 @@ class UpdateMapping(Command):
 
     def run(self):
         ES = db.init_elasticsearch()
+        db.create_index(ES)
         ES.indices.put_mapping(index=config.ES_INDEX, doc_type=config.USER_RECORD_TYPE, body=user_mapping.USER)
 
 manager.add_command('sync', SyncUsers())
