@@ -204,7 +204,7 @@ function build_usa_{{id}}(){
                 .attr("cx", d.x)
                 .attr("cy", d.y)
                 .attr("class", "bubble")
-                .attr("r", function() { console.log(d); return radius(d.count); });
+                .attr("r", function() { return radius(d.count); });
 
                 c.append("title").text(function(){
                     return d.name+": "+d.count;
@@ -213,5 +213,150 @@ function build_usa_{{id}}(){
         });
     });
 };
+</script>
+{% endmacro %}
+
+{% macro vertical_circle(id, columns, title, data, date_format) %}
+<div class="col-md-{{columns}} dash-chart vertical-circle">
+    <h3>{{title}}</h3>
+    <div id="chart{{id}}"></div>
+</div>
+<script>
+$(document).ready(build_vertical_circle_{{id}});
+
+function truncate(str, maxLength, suffix) {
+    if(str.length > maxLength) {
+        str = str.substring(0, maxLength + 1);
+        str = str.substring(0, Math.min(str.length, str.lastIndexOf(" ")));
+        str = str + suffix;
+    }
+    return str;
+}
+
+function build_vertical_circle_{{id}}(){
+    var data = eval({{data|safe}});
+    var margin = {top: 20, right: 200, bottom: 0, left: 20},
+    width = $("#chart{{id}}").width()-200,
+    height = $("#chart{{id}}").height();
+
+    var c = d3.scale.category20c();
+
+    var x = d3.scale.linear()
+        .range([0, width]);
+
+    for(var i in data){
+        var max = d3.max(data[i].articles, function(array){
+            return array[0];
+        })
+        var min = d3.min(data[i].articles, function(array){
+            return array[0];
+        })
+        var max_count = d3.max(data[i].articles, function(array){
+            return array[1];
+        })
+        var ticks = [];
+        for(var a in data[i].articles){
+            ticks.push(data[i].articles[a][0]);
+        }
+        break;
+    }
+
+    var xAxis = d3.svg.axis()
+        .scale(x)
+        .orient("top")
+        .tickValues(ticks)
+        .tickFormat(function(d) {
+            return d3.time.format("{{date_format}}")(new Date(d))
+        });
+
+    var svg = d3.select("#chart{{id}}").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .style("margin-left", margin.left + "px")
+        .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    for(var i in data){
+        var max = d3.max(data[i].articles, function(array){
+            return array[0];
+        })
+        var min = d3.min(data[i].articles, function(array){
+            return array[0];
+        })
+        break;
+    }
+
+    x.domain([min, max]);
+    var xScale = d3.scale.linear()
+        .domain([min, max])
+        .range([0, width]);
+
+    svg.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + 0 + ")")
+    .call(xAxis);
+
+    var max_count = 0
+    for(var i in data){
+        for(var a in data[i].articles){
+            var art = data[i].articles[a];
+            max_count = art[1] > max_count ? art[1] : max_count;
+        }
+    }
+
+    for (var j = 0; j < data.length; j++) {
+        var g = svg.append("g").attr("class","journal");
+
+        var circles = g.selectAll("circle")
+        .data(data[j]['articles'])
+        .enter()
+        .append("circle");
+
+        var text = g.selectAll("text")
+        .data(data[j]['articles'])
+        .enter()
+        .append("text");
+
+        var rScale = d3.scale.linear()
+        .domain([0, max_count])
+        .range([1, 15]);
+
+        circles
+        .attr("cx", function(d, i) { return xScale(d[0]); })
+        .attr("cy", j*20+20)
+        .attr("r", function(d) { return rScale(d[1]); })
+        .style("fill", function(d) { return c(j); });
+
+        text
+        .attr("y", j*20+25)
+        .attr("x",function(d, i) { return xScale(d[0])-5; })
+        .attr("class","value")
+        .text(function(d){ return d[1]; })
+        .style("fill", function(d) { return c(j); })
+        .style("display","none");
+
+        g.append("text")
+        .attr("y", j*20+25)
+        .attr("x",width+20)
+        .attr("class","label")
+        .text(truncate(data[j]['name'],30,"..."))
+        .style("fill", function(d) { return c(j); })
+        .on("mouseover", mouseover)
+        .on("mouseout", mouseout);
+    };
+
+    function mouseover(p) {
+        var g = d3.select(this).node().parentNode;
+        d3.select(g).selectAll("circle").style("display","none");
+        d3.select(g).selectAll("text.value").style("display","block");
+    };
+
+    function mouseout(p) {
+        var g = d3.select(this).node().parentNode;
+        d3.select(g).selectAll("circle").style("display","block");
+        d3.select(g).selectAll("text.value").style("display","none");
+    };
+};
+
 </script>
 {% endmacro %}

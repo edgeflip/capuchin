@@ -5,7 +5,7 @@ import json
 
 class InfluxChart(object):
 
-    def __init__(self, client, typ, where="", prefix="insights", date_format="%m/%d/%y"):
+    def __init__(self, client, typ, where="", prefix="insights", date_format="%m/%d/%y", massage=True):
         self.INFLUX = db.init_influxdb()
         self.client = client
         self.typ = typ
@@ -15,8 +15,9 @@ class InfluxChart(object):
         try:
             self.data = self.query()
             logging.info(self.data)
-            self.data = self.massage(self.data)
-            logging.info(self.data)
+            if massage:
+                self.data = self.massage(self.data)
+                logging.info(self.data)
         except Exception as e:
             logging.exception(e)
             self.data = []
@@ -82,15 +83,15 @@ class FBInsightsMultiBarChart(InfluxChart):
 
 class HistogramChart(InfluxChart):
 
-    def __init__(self, client, typ, where="WHERE time > now()-24h", prefix="insights", date_format="%m/%d/%y %H:%M:00", buckets="1h"):
+    def __init__(self, client, typ, where="WHERE time > now()-24h", prefix="insights", date_format="%m/%d/%y %H:%M:00", buckets="1h", massage=True):
         self.buckets = buckets
-        super(HistogramChart, self).__init__(client, typ, where, prefix, date_format)
+        super(HistogramChart, self).__init__(client, typ, where, prefix, date_format, massage)
 
     def query(self):
         res = {}
         for t in self.typ:
             try:
-                q = "SELECT sum(value) FROM {}.{}.{} GROUP BY time({}), type fill(0) {};".format(
+                q = "SELECT sum(value) FROM {}.{}.{} GROUP BY time({}) fill(0) {};".format(
                     self.prefix,
                     self.client._id,
                     t['type'],

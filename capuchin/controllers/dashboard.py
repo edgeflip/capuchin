@@ -22,8 +22,35 @@ db = Blueprint(
 class DashboardDefault(MethodView):
 
     def get(self):
-
         city_population = CityPopulation(client=current_user.client)
+
+        referrers = FreeHistogramChart(
+            current_user.client,
+            [
+                {
+                    "display":"Referrers",
+                    "q":"SELECT SUM(value), type FROM insights.{}.page_views_external_referrals.day GROUP BY time(32d), type fill(0)",
+                }
+
+            ],
+            date_format = "%m/%y",
+            massage=False
+        )
+
+        objs = {}
+        for i in referrers.data['Referrers']['values'][0]['points']:
+            objs.setdefault(i[2], {
+                "total":0,
+                "articles":[]
+            })
+            objs[i[2]]['total']+=i[1]
+            objs[i[2]]['articles'].append([i[0], i[1]])
+
+        referrers.data = []
+        for k,v in objs.iteritems():
+            v['name'] = k
+            referrers.data.append(v)
+
 
         like_gains = FreeHistogramChart(
             current_user.client,
@@ -116,6 +143,7 @@ class DashboardDefault(MethodView):
             likes=likes,
             like_gains = like_gains,
             city_population = city_population,
+            referrers=referrers,
         )
 
 db.add_url_rule("/", view_func=DashboardDefault.as_view('index'))
