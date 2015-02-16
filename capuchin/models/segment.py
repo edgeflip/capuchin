@@ -23,7 +23,7 @@ class Segment(orm.Document):
     def build_query_filters(self):
         and_ = [{
             "term": {
-                "clients": str(self.client._id)
+                "clients.id": str(self.client._id)
             }
         }]
         for k,v in self.filters.iteritems():
