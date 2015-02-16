@@ -51,7 +51,22 @@ USER = {
     "last_name": {"type": "string",},
     "location":{
         "properties":{
-            "location":{"type": "string"},
+            "location":{
+                "type": "multi_field",
+                "fields":{
+                    "facet":{
+                        "type":"string",
+                        "index": "not_analyzed"
+                    },
+                    "suggest": {
+                        "type": "string",
+                        "analyzer": "autocomplete"
+                    },
+                    "search": {
+                        "type": "string"
+                    }
+                }
+            },
             "city": {
                 "type": "multi_field",
                 "fields":{

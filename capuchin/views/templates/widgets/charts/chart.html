@@ -150,3 +150,68 @@ function build_stackedline_{{id}}(){
 };
 </script>
 {% endmacro %}
+
+{% macro usa(id, columns, title, data) %}
+<div class="col-md-{{columns}} dash-chart usa">
+    <h3>{{title}}</h3>
+    <div id="chart{{id}}" class="geo"></div>
+</div>
+<script>
+$(document).ready(build_usa_{{id}});
+
+function build_usa_{{id}}(){
+    var data = eval({{data|safe}});
+    var width = "100%",
+    height = "100%";
+
+    var projection = d3.geo.albersUsa()
+    .scale(800)
+    .translate([$("#chart{{id}}").width() / 2, $("#chart{{id}}").height() / 2]);
+
+    var path = d3.geo.path()
+    .projection(projection);
+
+    var svg = d3.select("#chart{{id}}").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+    var radius = d3.scale.sqrt()
+    .domain([0, 300])
+    .range([0, 15]);
+
+    d3.json("/static/json/us.json", function(error, us) {
+        svg.insert("path", ".graticule")
+        .datum(topojson.feature(us, us.objects.land))
+        .attr("class", "land")
+        .attr("d", path);
+
+        svg.insert("path", ".graticule")
+        .datum(topojson.mesh(us, us.objects.counties, function(a, b) { return a !== b && !(a.id / 1000 ^ b.id / 1000); }))
+        .attr("class", "county-boundary")
+        .attr("d", path);
+
+        svg.insert("path", ".graticule")
+        .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
+        .attr("class", "state-boundary")
+        .attr("d", path);
+
+        data.forEach(function(d) {
+            var p = projection([+d.lng, +d.lat]);
+            if (p){
+                d.x = Math.round(p[0]);
+                d.y = Math.round(p[1]);
+                var c = svg.append("circle")
+                .attr("cx", d.x)
+                .attr("cy", d.y)
+                .attr("class", "bubble")
+                .attr("r", function() { console.log(d); return radius(d.count); });
+
+                c.append("title").text(function(){
+                    return d.name+": "+d.count;
+                })
+            }
+        });
+    });
+};
+</script>
+{% endmacro %}

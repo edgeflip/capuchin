@@ -35,3 +35,33 @@ img.brand{
 .form-signin .form-control:focus {
     z-index: 2;
 }
+
+.geo{
+    height: 400px;
+}
+
+.land {
+    fill: #CCCCCC;
+}
+
+.county-boundary {
+    fill: none;
+    stroke: #AAAAAA;
+    stroke-width: .5px;
+}
+
+.state-boundary {
+    fill: none;
+    stroke: #999999;
+}
+
+.bubble {
+    fill: brown;
+    fill-opacity: .5;
+    stroke: #fff;
+    stroke-width: .5px;
+}
+
+.bubble :hover {
+    stroke: #000;
+}

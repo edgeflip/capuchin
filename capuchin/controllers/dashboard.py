@@ -4,6 +4,7 @@ from flask.ext.login import current_user
 from capuchin import config
 from capuchin.models.list import List
 from capuchin.models.segment import Segment
+from capuchin.insights.geo import CityPopulation
 from capuchin.insights.charts import \
     FBInsightsPieChart,\
     FBInsightsMultiBarChart,\
@@ -21,6 +22,9 @@ db = Blueprint(
 class DashboardDefault(MethodView):
 
     def get(self):
+
+        city_population = CityPopulation(client=current_user.client)
+
         like_gains = FreeHistogramChart(
             current_user.client,
             [
@@ -111,6 +115,7 @@ class DashboardDefault(MethodView):
             notifications=notifications,
             likes=likes,
             like_gains = like_gains,
+            city_population = city_population,
         )
 
 db.add_url_rule("/", view_func=DashboardDefault.as_view('index'))

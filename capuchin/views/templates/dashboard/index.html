@@ -2,9 +2,17 @@
 
 {% block title %}Dashboard{% endblock %}
 
+{% block head %}
+<script src="http://d3js.org/topojson.v1.min.js"></script>
+{% endblock %}
+
 {% block content %}
+    {% import "widgets/charts/chart.html" as chart %}
     <div class="row">
-        {% import "widgets/charts/chart.html" as chart %}
+        {{chart.usa("usa", 12, "Users by City", city_population.dump())}}
+    </div>
+    <div class="row">
+
         {{chart.multibar("engaged", 6, "Page Engagement", engaged_users.dump(), engaged_users.date_format)}}
         {{chart.stackedline("likes", 6, "Likes", likes.dump(), likes.date_format)}}
         {{chart.lineplusbar("like_gains", 6, "Likes", like_gains.dump(), like_gains.date_format)}}

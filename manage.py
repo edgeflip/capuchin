@@ -7,10 +7,12 @@ import capuchin.config as config
 from capuchin.app import Capuchin
 from capuchin.models.user import User
 from capuchin.models.client import Client
+from capuchin.models.city import City
 from capuchin.workers.client.insights import Insights
 from capuchin.workers.client.posts import ClientPosts
 from capuchin import user_mapping
 from capuchin import db
+import csv
 import datetime
 import logging
 
@@ -87,12 +89,31 @@ class UpdateMapping(Command):
     def run(self):
         ES = db.init_elasticsearch()
         db.create_index(ES)
-        ES.indices.put_mapping(index=config.ES_INDEX, doc_type=config.USER_RECORD_TYPE, body=user_mapping.USER)
+        ES.indices.put_mapping(index=config.ES_INDEX, doc_type=config.USER_RECORD_TYPE, body=user_mapping.USER, ignore_conflicts=True)
+
+class LoadCities(Command):
+
+    def run(self):
+        with open("./data/states_abbreviations.csv") as states:
+            rows = csv.DictReader(states, delimiter=",")
+            abbrvs = {r['Abbreviation']:r['State'] for r in rows}
+        with open("./data/cities.csv") as cities:
+            rows = csv.DictReader(cities, delimiter=",")
+            for r in rows:
+                r['full_state'] = abbrvs[r['state']]
+                c = City(data=r)
+                logging.info(c.json())
+                try:
+                    c.save()
+                except Exception as e:
+                    logging.exception(e)
+
 
 manager.add_command('sync', SyncUsers())
 manager.add_command('update', UpdateMapping())
 manager.add_command('insights', PageInsights())
 manager.add_command('feeds', PageFeed())
+manager.add_command('load_cities', LoadCities())
 
 if __name__ == "__main__":
     manager.run()
