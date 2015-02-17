@@ -3,23 +3,23 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block head %}
-<script src="http://d3js.org/topojson.v1.min.js"></script>
+<script src="/static/vendor/topojson.v1.min.js"></script>
 {% endblock %}
 
 {% block content %}
     {% import "widgets/charts/chart.html" as chart %}
     <div class="row">
-        {{chart.usa("usa", 8, "Users by City", city_population.dump())}}
-        {{chart.vertical_circle("referrers", 4, "Top referrers", referrers.dump(), referrers.date_format)}}
+        {{chart.usa("city_population", 8, "Users by City")}}
+        {{chart.vertical_circle("referrers", 4, "Top referrers")}}
     </div>
     <div class="row">
-        {{chart.word_bubble("top_words", 6, "Top Words", top_words.dump())}}
-        {{chart.multibar("engaged", 6, "Page Engagement", engaged_users.dump(), engaged_users.date_format)}}
-        {{chart.stackedline("likes", 6, "Likes", likes.dump(), likes.date_format)}}
-        {{chart.lineplusbar("like_gains", 6, "Likes", like_gains.dump(), like_gains.date_format)}}
-        {{chart.pie("online", 6, "Fans Online by Hour", online.dump())}}
-        {{chart.pie("engagement_story", 6, "Engagment by Story Type", page_by_type.dump())}}
-        {{chart.pie("country", 6, "Engagment by Country", country.dump())}}
+        {{chart.multibar("engaged_users", 6, "Page Engagement")}}
+        {{chart.word_bubble("top_words", 6, "Top Words")}}
+        {{chart.stackedline("likes", 6, "Likes")}}
+        {{chart.lineplusbar("like_gains", 6, "Likes")}}
+        {#{{chart.pie("online", 6, "Fans Online by Hour")}}#}
+        {{chart.pie("page_by_type", 6, "Engagment by Story Type")}}
+        {{chart.pie("country", 6, "Engagment by Country")}}
     </div>
     <div class="row">
         {% if first %}

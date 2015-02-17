@@ -14,10 +14,10 @@ class InfluxChart(object):
         self.date_format = date_format
         try:
             self.data = self.query()
-            logging.info(self.data)
+            logging.debug(self.data)
             if massage:
                 self.data = self.massage(self.data)
-                logging.info(self.data)
+                logging.debug(self.data)
         except Exception as e:
             logging.exception(e)
             self.data = []
@@ -36,7 +36,7 @@ class FBInsightsPieChart(InfluxChart):
             self.typ,
             self.where
         )
-        logging.info(q)
+        logging.debug(q)
         data = self.INFLUX.request(
             "db/{0}/series".format(config.INFLUX_DATABASE),
             params={"q":q},
@@ -61,7 +61,7 @@ class FBInsightsMultiBarChart(InfluxChart):
                 t['type'],
                 self.where
             )
-            logging.info(q)
+            logging.debug(q)
             data = self.INFLUX.request(
                 "db/{0}/series".format(config.INFLUX_DATABASE),
                 params={'q':q}
@@ -98,7 +98,7 @@ class HistogramChart(InfluxChart):
                     self.buckets,
                     self.where,
                 )
-                logging.info(q)
+                logging.debug(q)
                 data = self.INFLUX.request(
                     "db/{0}/series".format(config.INFLUX_DATABASE),
                     params={'q':q}
@@ -129,7 +129,7 @@ class FreeHistogramChart(HistogramChart):
         res = {}
         for t in self.typ:
             try:
-                logging.info(t['q'])
+                logging.debug(t['q'])
                 data = self.INFLUX.request(
                     "db/{0}/series".format(config.INFLUX_DATABASE),
                     params={'q':t['q'].format(self.client._id)}
@@ -195,10 +195,10 @@ class WordBubble(object):
             _source=False,
             body=query
         )
-        logging.info(res)
+        logging.debug(res)
         self.data = {"name":"Words", "children":[]}
         for i in res['aggregations']['words']['buckets']:
-            logging.info(i)
+            logging.debug(i)
             self.data['children'].append({
                 "name":i['key'],
                 "size":i['doc_count']

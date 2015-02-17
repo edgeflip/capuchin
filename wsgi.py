@@ -1,15 +1,15 @@
 from werkzeug.wsgi import peek_path_info
 from capuchin import config
 from capuchin.app import Capuchin
+from gevent import monkey
 import logging
+
+monkey.patch_all()
 
 def create_app():
     logging.info("Initializing")
-    try:
-        _app = Capuchin()
-        _app.configure_dbs()
-    except Exception as e:
-        logging.exception(e)
+    _app = Capuchin()
+    _app.configure_dbs()
     def app(env, start_response):
         if peek_path_info(env) == "healthcheck":
             _app.config['SERVER_NAME'] = None

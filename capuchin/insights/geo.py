@@ -33,10 +33,10 @@ class CityPopulation(object):
             _source=False,
             body=query
         )
-        logging.info(res)
+        logging.debug(res)
         self.data = []
         for i in res['aggregations']['cities']['buckets']:
-            logging.info(i)
+            logging.debug(i)
             city, state = i['key'].split(",")
             if city:
                 c = City.find_one({"full_state":state, "city":city})
