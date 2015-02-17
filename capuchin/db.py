@@ -40,7 +40,6 @@ def init_mongodb():
     return MONGO
 
 def init_influxdb():
-    logging.info("INFLUX")
     influx_connected = False
     while not influx_connected:
         INFLUX = influxdb.InfluxDBClient(

@@ -8,6 +8,6 @@
         {{post['fields']['message'][0]}}
     </div>
     {% import "widgets/charts/chart.html" as chart %}
-    {{chart.multibar("engagement", 9, "Engagement", engagement.dump(), engagement.date_format)}}
+    {{chart.multibar("engagement", 9, "Engagement", post_id=post['_id'])}}
 </div>
 {% endblock %}

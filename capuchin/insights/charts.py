@@ -206,3 +206,45 @@ class WordBubble(object):
 
     def dump(self):
         return json.dumps(self.data)
+
+class HorizontalBarChart(object):
+
+    def __init__(self, client, facet):
+        and_ = [{
+            "term": {
+                "clients.id": str(client._id)
+            }
+        }]
+        query = {
+            "query":{
+                "filtered":{"filter":{"and":and_}},
+            },
+            "aggregations":{
+                facet:{
+                    "terms":{
+                        "field":"{}.facet".format(facet),
+                        "size":10,
+                    }
+                }
+            }
+        }
+        ES = db.init_elasticsearch()
+        res = ES.search(
+            config.ES_INDEX,
+            config.USER_RECORD_TYPE,
+            size=0,
+            _source=False,
+            body=query
+        )
+        logging.debug(res)
+        self.data = {"key":facet, "values":[]}
+        for i in res['aggregations'][facet]['buckets']:
+            self.data['values'].append({
+                "label":i['key'],
+                "value":i['doc_count']
+            })
+
+        self.data = [self.data]
+
+    def dump(self):
+        return json.dumps(self.data)

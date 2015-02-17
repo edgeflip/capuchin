@@ -10,7 +10,8 @@ from capuchin.insights.charts import \
     FBInsightsMultiBarChart,\
     HistogramChart,\
     FreeHistogramChart,\
-    WordBubble
+    WordBubble, \
+    HorizontalBarChart
 import logging
 import json
 
@@ -19,6 +20,12 @@ db = Blueprint(
     __name__,
     template_folder=config.TEMPLATES,
 )
+
+def top_likes():
+    return HorizontalBarChart(
+        client=current_user.client,
+        facet="likes.name"
+    )
 
 def city_population():
     return CityPopulation(client=current_user.client)
@@ -160,6 +167,7 @@ class DashboardChart(MethodView):
         "city_population": city_population,
         "referrers":referrers,
         "top_words":top_words,
+        "top_likes":top_likes,
     }
 
 

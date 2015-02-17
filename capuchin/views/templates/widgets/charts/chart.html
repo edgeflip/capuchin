@@ -1,4 +1,4 @@
-{% macro multibar(id, columns, title, data, date_format="%m/%d/%y %H:%M:00") %}
+{% macro multibar(id, columns, title, data, date_format) %}
     <div class="col-md-{{columns}} dash-chart">
         <h3>{{title}}</h3>
         <div id="chart{{id}}">
@@ -9,7 +9,7 @@
         $(document).ready(build_multibarchart_{{id}});
 
         function build_multibarchart_{{id}}(){
-            d3.json("{{url_for('.chart', chart_id=id)}}", function(err, res){
+            d3.json("{{url_for('.chart', chart_id=id, **kwargs)}}", function(err, res){
                 var data = res.data;
                 nv.addGraph(function() {
                     var chart = nv.models.multiBarChart();
@@ -36,6 +36,46 @@
     </script>
 {% endmacro %}
 
+{% macro horizontal_multibar(id, columns, title, data) %}
+<div class="col-md-{{columns}} dash-chart">
+    <h3>{{title}}</h3>
+    <div id="chart{{id}}">
+        <svg></svg>
+    </div>
+</div>
+<script>
+$(document).ready(build_horizontal_multibarchart_{{id}});
+
+function build_horizontal_multibarchart_{{id}}(){
+    d3.json("{{url_for('.chart', chart_id=id, **kwargs)}}", function(err, res){
+        var data = res.data;
+        nv.addGraph(function() {
+            var chart = nv.models.multiBarHorizontalChart()
+            .x(function(d) { return d.label })
+            .y(function(d) { return d.value })
+            .margin({top: 30, right: 20, bottom: 50, left: 175})
+            .showValues(true)           //Show bar value next to each bar.
+            .tooltips(true)             //Show tooltips on hover.
+            .transitionDuration(350)
+            .showControls(false);        //Allow user to switch between "Grouped" and "Stacked" mode.
+
+            chart.yAxis
+            .tickFormat(d3.format(',.0f'));
+
+            d3.select('#chart{{id}} svg')
+            .datum(data)
+            .transition().duration(500)
+            .call(chart);
+
+            nv.utils.windowResize(chart.update);
+
+            return chart;
+        });
+    });
+}
+</script>
+{% endmacro %}
+
 
 {% macro pie(id, columns, title, data) %}
     <div class="col-md-{{columns}} dash-chart pie">
@@ -48,7 +88,7 @@
     $(document).ready(build_piechart_{{id}});
 
     function build_piechart_{{id}}(){
-        d3.json("{{url_for('.chart', chart_id=id)}}", function(err, res){
+        d3.json("{{url_for('.chart', chart_id=id, **kwargs)}}", function(err, res){
             var data = res.data;
             nv.addGraph(function() {
                 var chart = nv.models.pieChart()
@@ -84,7 +124,7 @@
     $(document).ready(build_stackedline_{{id}});
 
     function build_stackedline_{{id}}(){
-        d3.json("{{url_for('.chart', chart_id=id)}}", function(err, res){
+        d3.json("{{url_for('.chart', chart_id=id, **kwargs)}}", function(err, res){
             var data = res.data;
             nv.addGraph(function() {
                 var chart = nv.models.stackedAreaChart()
@@ -125,7 +165,7 @@
 $(document).ready(build_stackedline_{{id}});
 
 function build_stackedline_{{id}}(){
-    d3.json("{{url_for('.chart', chart_id=id)}}", function(err, res){
+    d3.json("{{url_for('.chart', chart_id=id, **kwargs)}}", function(err, res){
         var data = res.data;
 
         nv.addGraph(function() {
@@ -167,7 +207,7 @@ function build_stackedline_{{id}}(){
 $(document).ready(build_usa_{{id}});
 
 function build_usa_{{id}}(){
-    d3.json("{{url_for('.chart', chart_id=id)}}", function(err, res){
+    d3.json("{{url_for('.chart', chart_id=id, **kwargs)}}", function(err, res){
         var data = res.data;
         var width = "100%",
         height = "100%";
@@ -243,7 +283,7 @@ function truncate(str, maxLength, suffix) {
 }
 
 function build_vertical_circle_{{id}}(){
-    d3.json("{{url_for('.chart', chart_id=id)}}", function(err, res){
+    d3.json("{{url_for('.chart', chart_id=id, **kwargs)}}", function(err, res){
         var data = res.data;
         var margin = {top: 20, right: 200, bottom: 0, left: 20},
         width = $("#chart{{id}}").width()-200,
@@ -381,7 +421,7 @@ function build_vertical_circle_{{id}}(){
 $(document).ready(build_word_bubble_{{id}});
 
 function build_word_bubble_{{id}}(){
-    d3.json("{{url_for('.chart', chart_id=id)}}", function(err, res){
+    d3.json("{{url_for('.chart', chart_id=id, **kwargs)}}", function(err, res){
         var data = res.data;
         width = $("#chart{{id}}").width(),
         height = $("#chart{{id}}").height();

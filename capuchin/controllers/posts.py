@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, current_app, redirect, url_for, request, Response, g
+from flask import Blueprint, render_template, current_app, redirect, url_for, request, Response, g, jsonify
 from flask.views import MethodView
 from flask.ext.login import current_user
 from capuchin import config
@@ -47,41 +47,59 @@ class PostsIndex(MethodView):
     def post(self, page=0):
         return self.get(page=page, template="posts/records.html")
 
+def get_post(id):
+    return g.ES.get(
+        config.ES_INDEX,
+        id,
+        config.POST_RECORD_TYPE,
+        fields=['message', 'created_time'],
+        _source=False,
+    )
+
 class PostsView(MethodView):
 
     def get(self, id):
-        date_format = "%Y-%m-%dT%H:%M:%S+0000"
-        post = g.ES.get(
-            config.ES_INDEX,
-            id,
-            config.POST_RECORD_TYPE,
-            fields=['message', 'created_time'],
-            _source=False,
-        )
-        tm = time.mktime(
-            time.strptime(
-                post['fields']["created_time"][0],
-                date_format
-            )
-        )
-        engagement = HistogramChart(
-            current_user.client,
-            [
-                {"type":"post.{}.likes".format(post.get("_id")), "display":"Likes"},
-                {"type":"post.{}.comments".format(post.get("_id")), "display":"Comments"},
-                {"type":"post.{}.shares".format(post.get("_id")), "display":"Shares"},
-            ],
-            prefix="insights",
-            where="WHERE time > {}s".format(tm),
-            buckets="1d",
-            date_format="%m/%d"
-        )
+        post = get_post(id)
         return render_template(
             "posts/view.html",
             post=post,
-            engagement=engagement,
         )
+
+def engagement(post):
+    date_format = "%Y-%m-%dT%H:%M:%S+0000"
+    tm = time.mktime(
+        time.strptime(
+            post['fields']["created_time"][0],
+            date_format
+        )
+    )
+    return HistogramChart(
+        current_user.client,
+        [
+            {"type":"post.{}.likes".format(post.get("_id")), "display":"Likes"},
+            {"type":"post.{}.comments".format(post.get("_id")), "display":"Comments"},
+            {"type":"post.{}.shares".format(post.get("_id")), "display":"Shares"},
+        ],
+        prefix="insights",
+        where="WHERE time > {}s".format(tm),
+        buckets="1d",
+        date_format="%m/%d"
+    )
+
+
+class PostsChart(MethodView):
+    charts = {
+        "engagement":engagement
+    }
+
+    def get(self, chart_id):
+        post_id = request.args.get("post_id")
+        post = get_post(post_id)
+        res = self.charts[chart_id](post)
+        return jsonify(**dict(data=res.data, date_format=res.date_format))
+
 
 posts.add_url_rule("/posts", view_func=PostsIndex.as_view('index'))
 posts.add_url_rule("/posts/<int:page>", view_func=PostsIndex.as_view("page"))
 posts.add_url_rule("/posts/view/<id>", view_func=PostsView.as_view("view"))
+posts.add_url_rule("/posts/chart/<chart_id>", view_func=PostsChart.as_view("chart"))
