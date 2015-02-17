@@ -36,6 +36,24 @@ img.brand{
     z-index: 2;
 }
 
+text.word-bubble{
+    font: 12px "Helvetica Neue", Helvetica, Arial, sans-serif;
+    text-anchor: middle;
+    pointer-events: none;
+}
+
+.circle {
+    fill: #ccc;
+}
+
+.node:hover circle {
+    fill: orange;
+}
+
+.words{
+    height: 400px;
+}
+
 .geo{
     height: 400px;
 }

@@ -9,7 +9,8 @@ from capuchin.insights.charts import \
     FBInsightsPieChart,\
     FBInsightsMultiBarChart,\
     HistogramChart,\
-    FreeHistogramChart
+    FreeHistogramChart,\
+    WordBubble
 import logging
 import json
 
@@ -23,6 +24,8 @@ class DashboardDefault(MethodView):
 
     def get(self):
         city_population = CityPopulation(client=current_user.client)
+
+        top_words = WordBubble(client=current_user.client)
 
         referrers = FreeHistogramChart(
             current_user.client,
@@ -144,6 +147,7 @@ class DashboardDefault(MethodView):
             like_gains = like_gains,
             city_population = city_population,
             referrers=referrers,
+            top_words=top_words,
         )
 
 db.add_url_rule("/", view_func=DashboardDefault.as_view('index'))

@@ -164,3 +164,45 @@ class FreeHistogramChart(HistogramChart):
                 logging.exception(e)
 
         return ar;
+
+
+class WordBubble(object):
+
+    def __init__(self, client):
+        and_ = [{
+            "term": {
+                "clients.id": str(client._id)
+            }
+        }]
+        query = {
+            "query":{
+                "filtered":{"filter":{"and":and_}},
+            },
+            "aggregations":{
+                "words":{
+                    "terms":{
+                        "field":"top_words.facet",
+                        "size":100,
+                    }
+                }
+            }
+        }
+        ES = db.init_elasticsearch()
+        res = ES.search(
+            config.ES_INDEX,
+            config.USER_RECORD_TYPE,
+            size=0,
+            _source=False,
+            body=query
+        )
+        logging.info(res)
+        self.data = {"name":"Words", "children":[]}
+        for i in res['aggregations']['words']['buckets']:
+            logging.info(i)
+            self.data['children'].append({
+                "name":i['key'],
+                "size":i['doc_count']
+            })
+
+    def dump(self):
+        return json.dumps(self.data)
