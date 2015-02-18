@@ -4,24 +4,53 @@
 
 {% block head %}
 <script src="/static/vendor/topojson.v1.min.js"></script>
+<script src="/static/js/charts/chart.js"></script>
+
+<script>
+$(document).ready(function(){
+    $("#charts").usa({
+        name:"Users by City",
+        data_url:"{{url_for('.chart', chart_id='city_population')}}"
+    }).render(8);
+    $("#charts").vertical_circle({
+        name:"Top Referrers",
+        data_url:"{{url_for('.chart', chart_id='referrers')}}"
+    }).render(4);
+    $("#charts").horizontal_multibar({
+        name:"Top Likes",
+        data_url:"{{url_for('.chart', chart_id='top_likes')}}"
+    }).render(6);
+    $("#charts").multibar({
+        name:"Page Engagement",
+        data_url:"{{url_for('.chart', chart_id='engaged_users')}}"
+    }).render(6);
+    $("#charts").word_bubble({
+        name:"Top Words",
+        data_url:"{{url_for('.chart', chart_id='top_words')}}"
+    }).render(6);
+    $("#charts").stackedline({
+        name:"Likes",
+        data_url:"{{url_for('.chart', chart_id='likes')}}"
+    }).render(6);
+    $("#charts").lineplusbar({
+        name:"Likes",
+        data_url:"{{url_for('.chart', chart_id='like_gains')}}"
+    }).render(6);
+    $("#charts").pie({
+        name:"Engagement by Story Type",
+        data_url:"{{url_for('.chart', chart_id='page_by_type')}}"
+    }).render(6);
+    $("#charts").pie({
+        name:"Engagement by Country",
+        data_url:"{{url_for('.chart', chart_id='country')}}"
+    }).render(6);
+
+});
+</script>
 {% endblock %}
 
 {% block content %}
-    {% import "widgets/charts/chart.html" as chart %}
-    <div class="row">
-        {{chart.usa("city_population", 8, "Users by City")}}
-        {{chart.vertical_circle("referrers", 4, "Top referrers")}}
-    </div>
-    <div class="row">
-        {{chart.horizontal_multibar("top_likes", 6, "Top Likes")}}
-        {{chart.multibar("engaged_users", 6, "Page Engagement")}}
-        {{chart.word_bubble("top_words", 6, "Top Words")}}
-        {{chart.stackedline("likes", 6, "Likes")}}
-        {{chart.lineplusbar("like_gains", 6, "Likes")}}
-        {#{{chart.pie("online", 6, "Fans Online by Hour")}}#}
-        {{chart.pie("page_by_type", 6, "Engagment by Story Type")}}
-        {{chart.pie("country", 6, "Engagment by Country")}}
-    </div>
+    <div class="row" id="charts"></div>
     <div class="row">
         {% if first %}
             <h1>Welcome to Capuchin, let's show you around!</h1>

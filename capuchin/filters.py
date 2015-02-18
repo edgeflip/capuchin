@@ -23,6 +23,12 @@ FILTERS = [
         }
     },
     {
+        "display":"Affiliations",
+        "field":"affiliations.name",
+        "type":"term",
+        "aggregation_args":{}
+    },
+    {
         "display":"State",
         "field":"location.state",
         "type":"term",

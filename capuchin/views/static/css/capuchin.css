@@ -36,6 +36,11 @@ img.brand{
     z-index: 2;
 }
 
+.progress{
+    width: 50%;
+    margin: auto;
+}
+
 text.word-bubble{
     font: 12px "Helvetica Neue", Helvetica, Arial, sans-serif;
     text-anchor: middle;
