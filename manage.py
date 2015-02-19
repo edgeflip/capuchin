@@ -12,9 +12,14 @@ from capuchin.workers.client.insights import Insights
 from capuchin.workers.client.posts import ClientPosts
 from capuchin import user_mapping
 from capuchin import db
+from gevent import monkey
+import gevent
+import math
 import csv
 import datetime
 import logging
+
+monkey.patch_all()
 
 app = Capuchin()
 manager = Manager(app)
@@ -44,45 +49,59 @@ class PageFeed(Command):
 
 class SyncUsers(Command):
     "syncs users from RedShift to ElasticSearch"
-    def __init__(self):
-        try:
-            self.con = psycopg2.connect(
-                database=config.REDSHIFT_DATABASE,
-                port=config.REDSHIFT_PORT,
-                user=config.REDSHIFT_USER,
-                host=config.REDSHIFT_HOST,
-                password=config.REDSHIFT_PASSWORD);
 
-            self.cur = self.con.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        except: pass
+    def get_cursor(self):
+        con = psycopg2.connect(
+            database=config.REDSHIFT_DATABASE,
+            port=config.REDSHIFT_PORT,
+            user=config.REDSHIFT_USER,
+            host=config.REDSHIFT_HOST,
+            password=config.REDSHIFT_PASSWORD);
 
+        cur = con.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        return cur
 
-    def get_rows(self, offset=0, limit=1000):
+    def get_total(self):
+        cur = self.get_cursor()
+        cur.execute("SELECT COUNT(*) FROM v2_users")
+        count = cur.fetchmany()
+        return count[0]['count']
+
+    def worker(self, offset, total):
+        limit = 1000
+        rows_loaded = 0
+        cur = self.get_cursor()
+        ES = db.init_elasticsearch()
+
         def execute():
-            self.cur.execute("SELECT * FROM v2_users u LIMIT %s OFFSET %s", (limit, offset))
-            rows = self.cur.fetchmany(size=100)
+            cur.execute("SELECT * FROM v2_users u LIMIT %s OFFSET %s", (limit, offset))
+            rows = cur.fetchmany(size=100)
             while rows:
-                for i in rows:
-                    yield i
-                rows = self.cur.fetchmany(size=100)
+                for row in rows:
+                    logging.info(row)
+                    u = User(row)
+                    logging.info(u)
+                    ES.index(index=config.ES_INDEX, doc_type=config.USER_RECORD_TYPE, body=u, id=u['efid'])
+                rows = cur.fetchmany(size=100)
 
-        while offset < TOTAL:
-            yield execute()
+        while rows_loaded < total:
+            logging.info("ROWS LOADED: {}".format(rows_loaded))
+            execute()
             offset+=limit
+            rows_loaded+=limit
+
+        cur.close()
 
     def run(self):
         ES = db.init_elasticsearch()
         offset = ES.count(config.ES_INDEX, config.USER_RECORD_TYPE)['count']
-        logging.info(offset)
-        for i in self.get_rows(offset=offset):
-            for row in i:
-                logging.info(row)
-                u = User(row)
-                logging.info(u)
-                ES.index(index=config.ES_INDEX, doc_type=config.USER_RECORD_TYPE, body=u, id=u['efid'])
+        diff = self.get_total() - offset
+        worker_total = math.ceil(diff/10)
+        gs = []
+        for i in range(10):
+            gs.append(gevent.spawn(self.worker, offset=offset, total=worker_total))
 
-        self.cur.close()
-        self.con.close()
+        gevent.joinall(gs)
 
 class UpdateMapping(Command):
 

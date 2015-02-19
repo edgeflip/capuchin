@@ -33,7 +33,7 @@ class CityPopulation(object):
             _source=False,
             body=query
         )
-        logging.debug(res)
+        logging.info(res)
         self.data = []
         for i in res['aggregations']['cities']['buckets']:
             logging.debug(i)

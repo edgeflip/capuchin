@@ -2,12 +2,23 @@
 
 {% block title %}Post View{% endblock %}
 
+{% block head %}
+<script src="/static/js/charts/chart.js"></script>
+<script>
+$(document).ready(function(){
+    $("#charts").multibar({
+        name:"Engagement",
+        data_url:"{{url_for('.chart', chart_id='engagement', post_id=post['_id'])}}"
+    }).render(9);
+});
+</script>
+{% endblock %}
+
 {% block content %}
 <div class="row">
     <div class="col-md-3">
         {{post['fields']['message'][0]}}
     </div>
-    {% import "widgets/charts/chart.html" as chart %}
-    {{chart.multibar("engagement", 9, "Engagement", post_id=post['_id'])}}
+    <div id="charts"></div>
 </div>
 {% endblock %}

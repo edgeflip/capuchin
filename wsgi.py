@@ -9,7 +9,6 @@ import logging
 def create_app():
     logging.info("Initializing")
     _app = Capuchin()
-    _app.configure_dbs()
     def app(env, start_response):
         if peek_path_info(env) == "healthcheck":
             _app.config['SERVER_NAME'] = None

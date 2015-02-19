@@ -57,3 +57,6 @@ target/
 terraform/terraform.tfvars
 terraform/devops.pem
 terraform/.ssh
+
+#node modules
+node_modules

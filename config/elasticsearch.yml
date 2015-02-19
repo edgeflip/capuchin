@@ -1,3 +1,6 @@
 path:
   logs: /log
   data: /es/data
+
+
+script.disable_dynamic: false
