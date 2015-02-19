@@ -3,6 +3,19 @@ mongodb:
     expose:
         - "27017"
 
+esdata:
+    image: ubuntu
+    command: true
+    volumes:
+        - /es/data
+        - /log
+
+influxdata:
+    image: ubuntu
+    command: true
+    volumes:
+        - /data
+
 elasticsearch:
     image: dockerfile/elasticsearch
     command: /elasticsearch/bin/elasticsearch -Des.config=/config/elasticsearch.yml
@@ -10,15 +23,19 @@ elasticsearch:
         - "9200"
         - "9300"
     volumes:
-        - /var/lib/elasticsearch:/es/data
-        - /var/log/elasticsearch:/log
         - ./config:/config
+
+    volumes_from:
+        - esdata
 
 influxdb:
     image: tutum/influxdb
     expose:
-        - "8086"
         - "8083"
+        - "8086"
+
+    volumes_from:
+        - influxdata
 
 web:
     build: .

@@ -4,7 +4,7 @@ from capuchin.app import Capuchin
 from gevent import monkey
 import logging
 
-#monkey.patch_all()
+monkey.patch_all()
 
 def create_app():
     logging.info("Initializing")
