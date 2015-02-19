@@ -1,12 +1,15 @@
 import humongolus as orm
 import humongolus.field as field
 from capuchin.models.segment import Segment
+from capuchin.models.post import Post
 from capuchin.models.client import Client
 from capuchin.models.event import Event
 from capuchin import config
 from flask_oauth import OAuth
 import requests
 import logging
+import math
+import random
 
 class Notification(orm.Document):
     _db = "capuchin"
@@ -15,11 +18,20 @@ class Notification(orm.Document):
     message = field.Char()
     segment = field.ModelChoice(type=Segment)
     client = field.DocumentId(type=Client)
+    post_id = field.Char()
+    smart = field.Boolean(default=False)
+
+    def get_post(self):
+        return Post(id=self.post_id)
 
     def send(self):
         for i in self.segment.records()['hits']:
             self.logger.info(i)
             self.post(i)
+
+    @property
+    def clicks(self):
+        return random.randint(1000, 9999999)
 
     def post(self, user):
         asid = "10153577819234377"#ASID for Chris Cote for CapuchinDev app, should be None

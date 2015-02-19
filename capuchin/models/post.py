@@ -1,7 +1,23 @@
 from capuchin import config
 from capuchin import db
+import logging
 
 class Post(object):
+
+    def __init__(self, id=None, data=None):
+        if id:
+            ES = db.init_elasticsearch()
+            data = ES.get(
+                config.ES_INDEX,
+                id,
+                config.POST_RECORD_TYPE,
+            )
+        self.populate(data)
+
+    def populate(self, data):
+        if data:
+            for k,v in data['_source'].iteritems():
+                setattr(self, k, v)
 
     @classmethod
     def get_records(cls, q, from_=0):
