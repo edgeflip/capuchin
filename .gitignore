@@ -60,3 +60,5 @@ terraform/.ssh
 
 #node modules
 node_modules
+
+celerybeat-schedule
