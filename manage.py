@@ -4,8 +4,8 @@ from flask.ext.script import Command
 import psycopg2
 import psycopg2.extras
 import capuchin.config as config
-from capuchin.app import Capuchin
 from capuchin.models.user import User
+from capuchin.app import Capuchin
 from capuchin.models.client import Client
 from capuchin.models.city import City
 from capuchin.workers.client.insights import Insights
@@ -128,11 +128,20 @@ class LoadCities(Command):
                     logging.exception(e)
 
 
+class InitApp(Command):
+
+    def  run(self):
+        es = db.init_elasticsearch()
+        db.create_index(es)
+        influx = db.init_influxdb()
+        db.create_shards(influx)
+
 manager.add_command('sync', SyncUsers())
 manager.add_command('update', UpdateMapping())
 manager.add_command('insights', PageInsights())
 manager.add_command('feeds', PageFeed())
 manager.add_command('load_cities', LoadCities())
+manager.add_command('init', InitApp())
 
 if __name__ == "__main__":
     manager.run()

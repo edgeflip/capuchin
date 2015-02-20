@@ -20,7 +20,6 @@ class Capuchin(Flask):
         super(Capuchin, self).__init__("capuchin")
         self.config.from_object('capuchin.config')
         logging.info("SERVER_NAME: {}".format(self.config['SERVER_NAME']))
-        self.before_first_request(self.configure_dbs)
         self.before_request(self.init_dbs)
         humongolus.settings(logging, db.init_mongodb())
         try:
@@ -65,11 +64,7 @@ class Capuchin(Flask):
     def init_pjax(self):
         PJAX(self)
 
-    def configure_dbs(self):
-        es = db.init_elasticsearch()
-        db.create_index(es)
-        influx = db.init_influxdb()
-        db.create_shards(influx)
+    def configure_dbs(self):pass
 
     def init_dbs(self):
         g.ES = db.init_elasticsearch()

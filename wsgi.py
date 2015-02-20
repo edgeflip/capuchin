@@ -1,5 +1,6 @@
 from werkzeug.wsgi import peek_path_info
 from capuchin import config
+from capuchin import db
 from capuchin.app import Capuchin
 from gevent import monkey
 import logging
