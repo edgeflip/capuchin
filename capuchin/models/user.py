@@ -1,5 +1,3 @@
-import json
-import ast
 import logging
 from capuchin import config
 from capuchin.models.client import Client
@@ -33,31 +31,41 @@ def parse_location(val):
         "state":state
     }
 
-def affiliations(rows):
+
+def basic_parser(rows):
     return [r for r in rows]
-
-def likes(rows):
-    return [r for r in rows]
-
-def top_words(rows):
-    return [r.get("word") for r in rows]
-
 
 TABLES = [
     {
-        "table":"v2_activities",
+        "table":"v2_user_activities",
         "key":"affiliations",
-        "parser":affiliations
+        "parser":basic_parser
     },
     {
-        "table":"v2_page_likes",
+        "table":"v2_user_likes",
         "key":"likes",
-        "parser":likes
+        "parser":basic_parser
     },
     {
-        "table":"v2_top_words",
-        "key":"top_words",
-        "parser":top_words
+        "table":"v2_user_languages",
+        "key":"languages",
+        "parser":basic_parser
+    },
+    {
+        "table":"v2_user_locales",
+        "key":"locales",
+        "parser":basic_parser,
+        "id_column":"tagged_efid",
+    },
+    {
+        "table":"v2_user_permissions",
+        "key":"permissions",
+        "parser":basic_parser
+    },
+    {
+        "table":"v2_users",
+        "key":"self",
+        "parser":None
     },
     {
         "table":"v2_user_aggregates",
@@ -73,23 +81,23 @@ class User(dict):
         "location":parse_location,
     }
 
-    def __init__(self, obj):
+    def __init__(self, efid):
         super(User, self).__init__()
-        self.parse(obj)
         try:
             self.con = psycopg2.connect(
-                database=config.REDSHIFT_DATABASE,
-                port=config.REDSHIFT_PORT,
-                user=config.REDSHIFT_USER,
-                host=config.REDSHIFT_HOST,
-                password=config.REDSHIFT_PASSWORD
+                database=config.SOURCE_DATABASE,
+                port=config.SOURCE_PORT,
+                user=config.SOURCE_USER,
+                host=config.SOURCE_HOST,
+                password=config.SOURCE_PASSWORD
             );
             self.cur = self.con.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         except Exception as e:
             logging.error(e)
         for t in TABLES:
-            q = "SELECT * FROM {} WHERE efid=%s".format(t['table'])
-            self.cur.execute(q, (obj.get("efid"),))
+            id_column = t.get("id_column", "efid")
+            q = "SELECT * FROM {} WHERE {}=%s".format(t['table'], id_column)
+            self.cur.execute(q, (efid,))
             rows = self.cur.fetchmany(size=100)
             if t['key'] == 'self':
                 for r in rows: self.parse(r)

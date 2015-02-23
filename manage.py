@@ -52,11 +52,11 @@ class SyncUsers(Command):
 
     def get_cursor(self):
         con = psycopg2.connect(
-            database=config.REDSHIFT_DATABASE,
-            port=config.REDSHIFT_PORT,
-            user=config.REDSHIFT_USER,
-            host=config.REDSHIFT_HOST,
-            password=config.REDSHIFT_PASSWORD);
+            database=config.SOURCE_DATABASE,
+            port=config.SOURCE_PORT,
+            user=config.SOURCE_USER,
+            host=config.SOURCE_HOST,
+            password=config.SOURCE_PASSWORD);
 
         cur = con.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         return cur

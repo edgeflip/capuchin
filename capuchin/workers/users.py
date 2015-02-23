@@ -17,8 +17,10 @@ class BatchEFID(bootsteps.ConsumerStep):
 
     def handle_message(self, data, message):
         logging.info(data)
-        for id in data:
-            logging.info("Processing EFID: {}".format(id))
+        for efid in data:
+            logging.info("Processing EFID: {}".format(efid))
+            new_user = User(efid)
+            logging.info("Successfully processed User: {}".format(new_user))
         message.ack()
 
 app.steps['consumer'].add(BatchEFID)
@@ -27,13 +29,6 @@ app.steps['consumer'].add(BatchEFID)
 def test_publish():
     batch = [
         10102136605223030,
-        10102136605223031,
-        10102136605223032,
-        10102136605223033,
-        10102136605223034,
-        10102136605223035,
-        10102136605223036,
-        10102136605223037,
     ]
     with app.producer_or_acquire(None) as producer:
         producer.publish(
