@@ -4,66 +4,70 @@
 
 {% block content %}
 <div class="row">
-    <div class="col-md-12">
-        <h3>Lists <a href="{{ url_for('.create') }}" class="btn btn-success">Create</a></h3>
-        <table class='table table-striped'>
-            <thead>
-                <th>Name</th>
-                <th>Users</th>
-                <th>URL</th>
-                <th></th>
-            </thead>
-            <tbody>
-                {% for l in lists %}
-                <tr>
-                    <td>{{l.name}}</td>
-                    <td>{{"{:,}".format(l.users)}}</td>
-                    <td>{{l.url}}</td>
-                    <td>
-                        <a class='btn btn-primary' href="{{ url_for('segments.create')}}" role="button">View</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Lists <a href="{{ url_for('.create') }}" class="btn btn-success">Create</a></h3>
+            <table class='table table-striped'>
+                <thead>
+                    <th>Name</th>
+                    <th>Users</th>
+                    <th>URL</th>
+                    <th></th>
+                </thead>
+                <tbody>
+                    {% for l in lists %}
+                    <tr>
+                        <td>{{l.name}}</td>
+                        <td>{{"{:,}".format(l.users)}}</td>
+                        <td>{{l.url}}</td>
+                        <td>
+                            <a class='btn btn-primary' href="{{ url_for('segments.create')}}" role="button">View</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div id="chart1" class="col-md-12">
+            <h3>List Signup</h3>
+            <svg></svg>
+            <script>
+
+                //Donut chart example
+                nv.addGraph(function() {
+                    var chart = nv.models.pieChart()
+                    .x(function(d) { return d.label })
+                    .y(function(d) { return d.value })
+                    .showLabels(true)     //Display pie labels
+                    .labelThreshold(.05)  //Configure the minimum slice size for labels to show up
+                    .labelType("percent") //Configure what type of data to show in the label. Can be "key", "value" or "percent"
+                    .donut(true)          //Turn on Donut mode. Makes pie chart look tasty!
+                    .donutRatio(0.35)     //Configure how big you want the donut hole size to be.
+                    ;
+
+                    d3.select("#chart1 svg")
+                    .datum(exampleData())
+                    .transition().duration(350)
+                    .call(chart);
+
+                    return chart;
+                });
+
+                //Pie chart example data. Note how there is only a single array of key-value pairs.
+                function exampleData() {
+                    return  [
+                    {% for l in lists %}
+                        {
+                            "label": "{{l.name}}",
+                            "value" : {{l.users}}
+                        } ,
+                    {% endfor %}
+                    ];
+                }
+            </script>
+        </div>
     </div>
 </div>
-<div class="row">
-    <div id="chart1" class="col-md-12">
-        <h3>List Signup</h3>
-        <svg></svg>
-        <script>
-
-            //Donut chart example
-            nv.addGraph(function() {
-                var chart = nv.models.pieChart()
-                .x(function(d) { return d.label })
-                .y(function(d) { return d.value })
-                .showLabels(true)     //Display pie labels
-                .labelThreshold(.05)  //Configure the minimum slice size for labels to show up
-                .labelType("percent") //Configure what type of data to show in the label. Can be "key", "value" or "percent"
-                .donut(true)          //Turn on Donut mode. Makes pie chart look tasty!
-                .donutRatio(0.35)     //Configure how big you want the donut hole size to be.
-                ;
-
-                d3.select("#chart1 svg")
-                .datum(exampleData())
-                .transition().duration(350)
-                .call(chart);
-
-                return chart;
-            });
-
-            //Pie chart example data. Note how there is only a single array of key-value pairs.
-            function exampleData() {
-                return  [
-                {% for l in lists %}
-                    {
-                        "label": "{{l.name}}",
-                        "value" : {{l.users}}
-                    } ,
-                {% endfor %}
-                ];
-            }
-        </script>
-        {% endblock %}
+{% endblock %}

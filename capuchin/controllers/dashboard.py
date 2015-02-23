@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, g, jsonify
 from flask.views import MethodView
 from flask.ext.login import current_user
 from capuchin import config
+from capuchin import db as dbs
 from capuchin.models.list import List
 from capuchin.models.segment import Segment
 from capuchin.insights.geo import CityPopulation
@@ -142,14 +143,46 @@ def country():
         typ="page_impressions_by_country_unique.day",
     )
 
+def like_weekly_change():
+    INFLUX = dbs.init_influxdb()
+    res = INFLUX.query(
+        "SELECT DIFFERENCE(value) FROM insights.{}.page_fans.lifetime WHERE time>now()-1w".format(current_user.client._id)
+    )
+    res2 = INFLUX.query(
+        "SELECT value FROM insights.{}.page_fans.lifetime LIMIT 1".format(current_user.client._id)
+    )
+    change = res[0]['points'][0][1]*-1
+    total = res2[0]['points'][0][2]
+    perc = (float(change)/float(total))*100
+    return {'change':perc, 'total':total}
+
+def engagement_weekly_change():
+    INFLUX = dbs.init_influxdb()
+    last_week = INFLUX.query(
+        "SELECT SUM(value) FROM insights.{}.page_engaged_users.day WHERE time<now()-1w AND time > now()-2w".format(current_user.client._id)
+    )
+    this_week = INFLUX.query(
+        "SELECT SUM(value) FROM insights.{}.page_engaged_users.day WHERE time>now()-1w".format(current_user.client._id)
+    )
+    logging.info(last_week)
+    logging.info(this_week)
+    lw = float(last_week[0]['points'][0][1])
+    tw = float(this_week[0]['points'][0][1])
+    diff = ((tw-lw)/lw)*100
+    return {'change':diff, 'total':tw}
+
 class DashboardDefault(MethodView):
 
     def get(self):
         first = request.args.get("first")
         lists = current_user.client.lists()
         segments = current_user.client.segments(query={"name":{"$ne":None}})
+        like_change = like_weekly_change()
+        engagement_change = engagement_weekly_change()
         return render_template(
             "dashboard/index.html",
+            like_change=like_change,
+            engagement_change=engagement_change,
             lists=lists,
             segments=segments,
             first=first,

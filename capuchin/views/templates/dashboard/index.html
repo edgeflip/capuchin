@@ -8,6 +8,7 @@
 
 <script>
 $(document).ready(function(){
+    /*
     $("#charts").usa({
         name:"Users by City",
         data_url:"{{url_for('.chart', chart_id='city_population')}}"
@@ -32,10 +33,12 @@ $(document).ready(function(){
         name:"Likes",
         data_url:"{{url_for('.chart', chart_id='likes')}}"
     }).render(6);
+    */
     $("#charts").lineplusbar({
         name:"Likes",
         data_url:"{{url_for('.chart', chart_id='like_gains')}}"
     }).render(6);
+    /*
     $("#charts").pie({
         name:"Engagement by Story Type",
         data_url:"{{url_for('.chart', chart_id='page_by_type')}}"
@@ -44,12 +47,52 @@ $(document).ready(function(){
         name:"Engagement by Country",
         data_url:"{{url_for('.chart', chart_id='country')}}"
     }).render(6);
+    */
 
 });
 </script>
 {% endblock %}
 
 {% block content %}
+    <div class="row top-level">
+        <div class="col-md-3">
+            <div class="thumbnail">
+                <div class="caption">
+                    <h3>Audience</h3>
+                    <h3 class="supporters">
+                        {{like_change['total']}}
+                    </h3>
+                    <h3>Supporters</h3>
+                    <p>{{"{:.1}".format(like_change['change'])}}% change since last week</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="thumbnail">
+                <div class="caption">
+                    <h3>Engagement</h3>
+                    <p>{{engagement_change['total']}}</p>
+                    <p>{{engagement_change['change']}}% change since last week</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="thumbnail">
+                <div class="caption">
+                    <h3>Conversions</h3>
+                    <p>...</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="thumbnail">
+                <div class="caption">
+                    <h3>Buzz</h3>
+                    <p>...</p>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="row" id="charts"></div>
     <div class="row">
         {% if first %}
