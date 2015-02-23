@@ -23,7 +23,8 @@ class BatchEFID(bootsteps.ConsumerStep):
         logging.info(data)
         for id in data:
             logging.info("Processing EFID: {}".format(id))
-
+            new_user = User(id)
+            logging.info("Successfully processed User: {}".format(new_user))
         message.ack()
 
 
@@ -47,3 +48,17 @@ def members_lifetime():
 
 
 members_lifetime()
+
+
+def test_publish():
+    batch = [
+        10102136605223030,
+    ]
+    with app.producer_or_acquire(None) as producer:
+        producer.publish(
+            batch,
+            exchange=efid_q.exchange,
+            routing_key=efid_q.routing_key,
+            declare=[efid_q],
+            serializer='json',
+        )

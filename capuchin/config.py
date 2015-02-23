@@ -5,11 +5,11 @@ import datetime
 LOG_LEVEL = logging.INFO
 DEBUG = True
 
-REDSHIFT_DATABASE = 'edgeflip'
-REDSHIFT_HOST = 'analytics.cd5t1q8wfrkk.us-east-1.redshift.amazonaws.com'
-REDSHIFT_PORT = 5439
-REDSHIFT_USER = 'edgeflip'
-REDSHIFT_PASSWORD = 'XzriGDp2FfVy9K'
+SOURCE_DATABASE = 'capuchin'
+SOURCE_HOST = 'edgeflip-reporting-cache.cwvoczji8mgi.us-east-1.rds.amazonaws.com'
+SOURCE_PORT = 5432
+SOURCE_USER = 'capuchin'
+SOURCE_PASSWORD = 'Yiiphae9'
 
 HASH_ROUNDS = 3998
 HASH_ALGO = "pbkdf2-sha512"
