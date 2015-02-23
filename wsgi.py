@@ -9,8 +9,8 @@ monkey.patch_all()
 
 def create_app():
     logging.info("Initializing")
-    _app = Capuchin()
     def app(env, start_response):
+        _app = Capuchin()
         if peek_path_info(env) == "healthcheck":
             _app.config['SERVER_NAME'] = None
         else:

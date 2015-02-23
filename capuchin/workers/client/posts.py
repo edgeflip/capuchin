@@ -28,14 +28,14 @@ class ClientPosts():
             request_token_url=None,
             access_token_url='/oauth/access_token',
             authorize_url='https://www.facebook.com/dialog/oauth',
-            consumer_key=config.FACEBOOK_APP_ID,
-            consumer_secret=config.FACEBOOK_APP_SECRET,
+            consumer_key=client.social.facebook.app_id,
+            consumer_secret=client.social.facebook.secret,
         )
         self.fb_app.tokengetter(self.get_token)
         self.get_feed()
 
     def get_token(self):
-        return (self.client.facebook_page.token, config.FACEBOOK_APP_SECRET)
+        return (self.client.social.facebook.token, self.client.social.facebook.secret)
 
     def get_count(self, url):
         name = "insights.{}.post.{}".format(self.client._id, url)
@@ -78,7 +78,7 @@ class ClientPosts():
             self.write_influx(points, url)
 
     def get_feed(self):
-        id = self.client.facebook_page.id
+        id = self.client.social.facebook.id
         data = {"limit":250}
         if self.since:
             data['since'] = time.mktime(self.since.timetuple())

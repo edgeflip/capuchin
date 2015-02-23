@@ -1,7 +1,7 @@
 <h2>Select the page you want to manage</h2>
 <div class="list-group">
 {% for p in current_user.facebook_pages %}
-    <a href="#" class="list-group-item page {% if p.id == current_user.client.facebook_page.id %}active{% endif %}" data-id="{{p.id}}">
+    <a href="#" class="list-group-item page {% if p.id == current_user.client.social.facebook.id %}active{% endif %}" data-id="{{p.id}}">
         {{p.name}}
     </a>
 {% endfor %}

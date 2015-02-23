@@ -59,7 +59,7 @@ influxdb:
 
 web:
     build: .
-    command: gunicorn -c /config/gunicorn.conf wsgi:app
+    command: supervisord -c /config/supervisor.conf -n
     volumes:
         - .:/app
         - ./config:/config

@@ -21,20 +21,21 @@ class Insights():
         self.client = client
         self.since = since
         self.INFLUX = db.init_influxdb()
+        logging.info(client.social.facebook._json())
         self.fb_app = self.oauth.remote_app(
             'facebook',
             base_url='https://graph.facebook.com/',
             request_token_url=None,
             access_token_url='/oauth/access_token',
             authorize_url='https://www.facebook.com/dialog/oauth',
-            consumer_key=config.FACEBOOK_APP_ID,
-            consumer_secret=config.FACEBOOK_APP_SECRET,
+            consumer_key=client.social.facebook.app_id,
+            consumer_secret=client.social.facebook.secret,
         )
         self.fb_app.tokengetter(self.get_token)
         self.get_insights()
 
     def get_token(self):
-        return (self.client.facebook_page.token, config.FACEBOOK_APP_SECRET)
+        return (self.client.social.facebook.token, self.client.social.facebook.secret)
 
     def write_data(self, data):
         for insight in data.get("data", []):
