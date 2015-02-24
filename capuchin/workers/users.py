@@ -1,6 +1,5 @@
-from celery import Celery
 from celery import bootsteps
-from kombu import Consumer, Exchange, Queue
+from kombu import Consumer
 from capuchin import config
 from capuchin import db
 from capuchin.models.user import User
@@ -21,10 +20,13 @@ class BatchEFID(bootsteps.ConsumerStep):
 
     def handle_message(self, data, message):
         logging.info(data)
+        ES = db.init_elasticsearch()
         for id in data:
             logging.info("Processing EFID: {}".format(id))
             new_user = User(id)
             logging.info("Successfully processed User: {}".format(new_user))
+            ES.index(index=config.ES_INDEX, doc_type=config.USER_RECORD_TYPE, body=new_user, id=id)
+            logging.info("Successfully indexed")
         message.ack()
 
 

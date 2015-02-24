@@ -47,6 +47,7 @@ USER = {
             "id":{"type":"string", "index":"not_analyzed"},
         }
     },
+    # from v2_users
     "first_name": {"type": "string",},
     "last_name": {"type": "string",},
     "location":{
@@ -111,40 +112,49 @@ USER = {
             }
         }
     },
-    "last_activity": {"type": "date",},
-    "first_activity": {"type": "date",},
     "birthday": {"type": "date",},
     "gender": {"type": "string", "index": "not_analyzed",},
+    "timezone": {"type": "integer",},
+    "locale": {"type": "string",},
+    # v2_user_aggregates
     "age":{"type": "integer",},
-    "num_friends":{"type": "integer",},
+    "last_activity": {"type": "date",},
+    "first_activity": {"type": "date",},
+    "num_taggable_friends":{"type": "integer",},
+    "num_person_edges":{"type": "integer",},
     "num_posts":{"type": "integer",},
-    "num_mine_liked":{"type": "integer",},
-    "num_mine_commented":{"type": "integer",},
-    "num_i_shared":{"type": "integer",},
-    "num_stat_upd":{"type": "integer",},
-    "num_people_interacted_with_my_posts":{"type": "integer"},
-    "avg_time_between_activity":{"type": "integer"},
-    "avg_people_interacted_with_my_posts":{"type": "integer"},
-    "top_words":{
-        "type": "multi_field",
-        "fields": {
-            "search": {
-                "type": "string"
-            },
-            "facet": {
-                "type": "string",
-                "index": "not_analyzed",
-            },
-            "suggest": {
-                "type": "string",
-                "analyzer": "autocomplete"
-            }
-        }
-    },
+    "num_posts_with_edges":{"type": "integer",},
+    "num_posts_liked":{"type": "integer",},
+    "num_posts_commented_on":{"type": "integer",},
+    "num_posts_shared":{"type": "integer",},
+    "num_stat_updates":{"type": "integer",},
+    "num_post_interactors":{"type": "integer",},
+    "avg_days_between_activity":{"type": "float"},
+    "avg_post_interactors":{"type": "float"},
     "affiliations": {
         "properties":{
             "category": {"type": "string", "index": "not_analyzed"},
             "name": {
+                "type": "multi_field",
+                "fields": {
+                    "search": {
+                        "type": "string"
+                    },
+                    "facet": {
+                        "type": "string",
+                        "index": "not_analyzed",
+                    },
+                    "suggest": {
+                        "type": "string",
+                        "analyzer": "autocomplete"
+                    }
+                }
+            }
+        }
+    },
+    "languages": {
+        "properties":{
+            "language": {
                 "type": "multi_field",
                 "fields": {
                     "search": {
@@ -181,6 +191,12 @@ USER = {
                     }
                 }
             }
+        }
+    },
+    "permissions": {
+        "properties":{
+            "permission": {"type": "string", "index": "not_analyzed"},
+            "status": {"type": "string", "index": "not_analyzed"},
         }
     },
     "email": {
