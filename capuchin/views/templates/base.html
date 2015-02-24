@@ -6,18 +6,24 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <script src="/static/js/vendor/jquery-2.1.3.min.js"></script>
-        <link rel="stylesheet" href="/static/vendor/bootstrap-3.3.2-dist/css/bootstrap.min.css">
-        <link rel="stylesheet" href="/static/vendor/bootstrap-3.3.2-dist/css/bootstrap-theme.min.css">
-        <script src="/static/vendor/bootstrap-3.3.2-dist/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="/static/vendor/bootstrap/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/static/vendor/bootstrap/css/bootstrap-theme.min.css">
+        <script src="/static/vendor/bootstrap/js/bootstrap.min.js"></script>
         <script src="/static/vendor/d3.v3.js"></script>
         <script src="/static/vendor/novus-nvd3-7ebd54c/nv.d3.min.js"></script>
         <script src="/static/js/vendor/jquery.pjax.js"></script>
         <script src="/static/vendor/jquery-ui-1.11.2.custom/jquery-ui.min.js"></script>
         <link rel="stylesheet" href="/static/vendor/jquery-ui-1.11.2.custom/jquery-ui.min.css">
         <link rel="stylesheet" href="/static/vendor/novus-nvd3-7ebd54c/nv.d3.min.css">
-
         <link rel="stylesheet" href="/static/css/capuchin.css">
+        {% if config.DEBUG %}
+            <script type="text/javascript" src="/static/js/vendor/auto_update_css.js"></script>
+            <script>
+                //$.autoUpdateStylesheets();
+            </script>
+        {% endif %}
         <script href="/static/js/capuchin.js"></script>
+        <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
         {% block head %}{% endblock %}
     </head>
     <body>

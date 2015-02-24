@@ -2,13 +2,16 @@
 {% block title %}Posts{% endblock %}
 
 {% block head %}
-<script>
-    $(document).pjax(".pager", "#records", {push:false});
+<script type="text/javascript">
+    $(document).pjax(".pager", "#records", {push:false, type:"POST"});
 </script>
 {% endblock %}
 
 {% block content %}
-<div id="records" class="row">
-    {% include "posts/records.html" %}
+<div class="row">
+    <h3>Posts</h3>
+    <div id="records" class="row">
+        {% include "posts/records.html" %}
+    </div>
 </div>
 {% endblock %}

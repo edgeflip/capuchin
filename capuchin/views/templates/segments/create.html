@@ -36,13 +36,14 @@
             });
         });
     });
-    $(document).pjax(".pager", "#records", {push:false});
+    $(document).pjax(".pager", "#records", {push:false, type:"POST"});
 
 </script>
 {% endblock %}
 
 {% block content %}
 <div class="row">
+    <h3>New Segment</h3>
     <div class="col-md-11">
         <input class='form-control' type="text" placeholder="Enter Segment Name" id="segment-name" value="{% if name %}{{name}}{% endif %}" />
     </div>

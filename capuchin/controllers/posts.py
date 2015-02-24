@@ -33,7 +33,6 @@ class PostsIndex(MethodView):
         q = request.args.get("q", "*")
         q = "*" if not q else q
         records = Post.records(client=current_user.client, q=q, from_=page*config.RECORDS_PER_PAGE)
-        logging.info(records)
         tmpl = template if template else "posts/index.html"
         return render_template(
             tmpl,
