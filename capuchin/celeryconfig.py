@@ -20,17 +20,7 @@ default_q = Queue('default', Exchange('default'), routing_key='default')
 
 CELERY_QUEUES = (
     default_q,
-    efid_q,
 )
-
-CELERY_ROUTES = ({
-    'capuchin.workers.users.batch_efid': {
-        'exhange':'capuchin',
-        'exhange_type':'direct',
-        'queue': 'capuchin_efid_batch',
-        'routing_key': 'capuchin.efid_batch'
-    }
-},)
 
 CELERY_DEFAULT_QUEUE = 'default'
 CELERY_DEFAULT_EXCHANGE_TYPE = 'direct'
@@ -47,6 +37,6 @@ CELERYBEAT_SCHEDULE = {
     },
     'test_publish': {
         'task': 'capuchin.workers.users.test_publish',
-        'schedule': datetime.timedelta(seconds=25),
+        'schedule': datetime.timedelta(seconds=10),
     },
 }

@@ -109,9 +109,15 @@
         {% endblock %}
         <footer class="footer">
             {% block footer %}
-            SociallyMinded © 2015. All rights reserved.
-            An Edgeflip product. Built in Chicago, IL.
-
+            <div class="row">
+                <div class="col-md-10">
+                    SociallyMinded © 2015. All rights reserved.
+                    An Edgeflip product.
+                </div>
+                <div class="col-md-2">
+                    <img class="pull-right" src="/static/img/made_in_chicago.png" />
+                </div>
+            </div>
             {% endblock %}
         </footer>
     </body>

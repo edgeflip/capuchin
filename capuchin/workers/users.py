@@ -19,7 +19,9 @@ class BatchEFID(bootsteps.ConsumerStep):
         logging.info(data)
         for id in data:
             logging.info("Processing EFID: {}".format(id))
+
         message.ack()
+
 
 app.steps['consumer'].add(BatchEFID)
 

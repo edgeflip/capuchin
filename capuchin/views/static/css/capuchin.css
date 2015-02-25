@@ -24,6 +24,10 @@ img.brand{
     padding: 20px;
 }
 
+.footer img{
+    max-height: 45px
+}
+
 .top-level{
     background-color: #eeeeee;
     padding:20px;
