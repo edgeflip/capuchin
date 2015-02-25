@@ -14,6 +14,11 @@ import random
 class Notification(orm.Document):
     _db = "capuchin"
     _collection = "notifications"
+    _indexes = [
+        orm.Index('segment', key=('segment', 1)),
+        orm.Index('clients', key=('client', 1)),
+        orm.Index('post_id', key=('post_id', 1)),
+    ]
 
     message = field.Char()
     segment = field.ModelChoice(type=Segment)
@@ -52,3 +57,5 @@ class Notification(orm.Document):
             logging.info("Notification:{}".format(j))
             event_type = "notification_sent" if j.get("success") else "notification_failure"
             Event(self.client, event_type, value=1, user=asid, notification=str(self._id))
+
+Segment.notifications = orm.Lazy(type=Notification, key='segment')

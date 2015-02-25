@@ -1,0 +1,20 @@
+{% macro bucket(title, subheader, total, change, button_link, button_title) %}
+
+<div class="caption">
+    <h4>{{title}}</h4>
+    <p class="info">
+        {{"{:,}".format(total)}}
+        <p class="sub-header">{{subheader}}</p>
+    </p>
+    <p class="details">
+        {% if change < 0 %}
+            <span class="icon-arrow-down" aria-hidden="true"></span>
+            {% set change = change*-1 %}
+        {% else %}
+            <span class="icon-arrow-up" aria-hidden="true"></span>
+        {% endif %}
+        {{"{0:.2f}".format(change)}}% since last week</p>
+    <a href="{{button_link}}" class="btn btn-default">{{button_title}}</a>
+</div>
+
+{% endmacro %}

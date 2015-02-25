@@ -1,5 +1,5 @@
 body {
-    padding-top: 70px;
+    padding-top: 100px;
     margin-bottom: 60px;
 }
 
@@ -10,6 +10,74 @@ html {
 
 img.brand{
     height: 100%;
+}
+
+td.actions{
+    width:150px;
+}
+
+/* Bootstrap overrides */
+.navbar-default .nav .dropdown .dropdown-menu {
+    -webkit-border-radius: 5px 5px 5px 5px ;
+    -moz-border-radius: 5px 5px 5px 5px ;
+    border-radius: 5px 5px 5px 5px ;
+}
+
+.navbar-nav>li>a {
+    margin-top: 20px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    margin-right: 7px;
+}
+
+.alert:first-child {
+    margin-top: 20px;
+}
+
+.navbar-nav>li>.dropdown-menu{
+    margin-top:20px;
+}
+
+.dropdown-menu:before {
+    position: absolute;
+    top: -15px;
+    right: 20px;
+    display: inline-block;
+    border-right: 15px solid transparent;
+    border-bottom: 15px solid #ccc;
+    border-left: 15px solid transparent;
+    border-bottom-color: rgba(0, 0, 0, 0.2);
+    content: '';
+}
+
+.dropdown-menu:after {
+    position: absolute;
+    top: -15px;
+    right: 19px;
+    display: inline-block;
+    border-right: 15px solid transparent;
+    border-bottom: 15px solid #eec03c;
+    border-left: 15px solid transparent;
+    content: '';
+}
+
+.btn-group-xs>.btn {
+    border-radius: 10px;
+}
+
+/* --------------- */
+
+div.caption p{
+    color: #A0CAE2;
+    margin-bottom: 0px;
+    line-height: 1;
+}
+
+div.caption p.details{
+    color: #363738;
+    margin-top: 10px;
+    line-height: 1.7;
+    margin-bottom: 10px;
 }
 
 .footer{

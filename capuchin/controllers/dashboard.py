@@ -1,9 +1,10 @@
-from flask import Blueprint, render_template, request, g, jsonify
+from flask import Blueprint, render_template, request, g, jsonify, Response
 from flask.views import MethodView
 from flask.ext.login import current_user
 from capuchin import config
 from capuchin import db as dbs
 from capuchin.models.list import List
+from capuchin.models.post import Post
 from capuchin.models.segment import Segment
 from capuchin.insights.geo import CityPopulation
 from capuchin.insights.charts import \
@@ -171,6 +172,13 @@ def engagement_weekly_change():
     diff = ((tw-lw)/lw)*100
     return {'change':diff, 'total':tw}
 
+
+class RecentActivity(MethodView):
+
+    def get(self):
+        posts = Post.records(current_user.client, size=5, ret_obj=True)
+        return Response(json.dumps([p.json() for p in posts]))
+
 class DashboardDefault(MethodView):
 
     def get(self):
@@ -181,6 +189,7 @@ class DashboardDefault(MethodView):
         engagement_change = engagement_weekly_change()
         return render_template(
             "dashboard/index.html",
+            #posts=posts,
             like_change=like_change,
             engagement_change=engagement_change,
             lists=lists,
@@ -214,3 +223,4 @@ class DashboardChart(MethodView):
 
 db.add_url_rule("/", view_func=DashboardDefault.as_view('index'))
 db.add_url_rule("/chart/<chart_id>", view_func=DashboardChart.as_view('chart'))
+db.add_url_rule("/recent_activity", view_func=RecentActivity.as_view('recent_activity'))

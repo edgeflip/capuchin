@@ -15,7 +15,7 @@
                 {% for p in records %}
                 <tr>
                     <td>{{p.message|truncate(100)}}</td>
-                    <td><a href="{{url_for('segments.id', id=p.segment._id|string)}}">{{p.segment.name}} ({{"{:,}".format(p.segment.count)}})</a></td>
+                    <td><a href="{{url_for('audience.id', id=p.segment._id|string)}}">{{p.segment.name}} ({{"{:,}".format(p.segment.count)}})</a></td>
                     <td>{{p.get_post().message|truncate(100)}}
                     <td>{{"{:,}".format(p.clicks)}}</td>
                     <td>{{p.created}}</td>

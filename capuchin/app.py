@@ -75,7 +75,7 @@ class Capuchin(Flask):
         from controllers.dashboard import db
         from controllers.notifications import notif
         from controllers.lists import lists
-        from controllers.segments import segments
+        from controllers.audience import audience
         from controllers.campaigns import campaigns
         from controllers.redirect import redirect
         from controllers.auth import auth
@@ -85,14 +85,14 @@ class Capuchin(Flask):
         db.before_request(self.user_logged_in)
         notif.before_request(self.user_logged_in)
         lists.before_request(self.user_logged_in)
-        segments.before_request(self.user_logged_in)
+        audience.before_request(self.user_logged_in)
         campaigns.before_request(self.user_logged_in)
         posts.before_request(self.user_logged_in)
         self.register_blueprint(hc)
         self.register_blueprint(db)
         self.register_blueprint(notif)
         self.register_blueprint(lists)
-        self.register_blueprint(segments)
+        self.register_blueprint(audience)
         self.register_blueprint(campaigns)
         self.register_blueprint(redirect)
         self.register_blueprint(auth)

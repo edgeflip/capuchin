@@ -108,4 +108,12 @@ class Segment(orm.Document):
         )
         return res['count']
 
+    @property
+    def last_notification(self):
+        alert = self.notifications().sort('__created__', -1).limit(1)
+        if alert.count():
+            self.logger.info(alert[0])
+            return alert[0]
+        return None
+
 Client.segments = orm.Lazy(type=Segment, key='client')

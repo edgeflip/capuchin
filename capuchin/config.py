@@ -53,7 +53,7 @@ RECORDS_PER_PAGE = 10
 USER_RECORD_TYPE = "user"
 POST_RECORD_TYPE = "post"
 
-USER_RECORD_FIELDS = ["first_name", "last_name", "age", "efid", "location.location",]
+USER_RECORD_FIELDS = ["first_name", "last_name", "age", "efid", "location.location", "gender"]
 POST_RECORD_FIELDS = ["id", "message", "picture", "link", "created_time", "from.name", "shares.count", "comments.id", "likes.id"]
 
 FACEBOOK_APP_ID = "919803718054428"

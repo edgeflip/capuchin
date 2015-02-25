@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Segments{% endblock %}
+
+{% block head %}
+<script type="text/javascript">
+    $(document).ready(function(){
+        $(document).pjax(".pager", "#records", {push:false, type:"POST"});
+    });
+</script>
+{% endblock %}
+
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h3>Segments <a href="{{ url_for('.create') }}" class="btn btn-success">Create</a></h3>
+        <table class='table table-striped'>
+            <thead>
+                <th>Name</th>
+                <th>Created</th>
+                <th>Members</th>
+                <th>Engagement</th>
+                <th>Last Alert</th>
+                <th></th>
+            </thead>
+            <tbody>
+                {% for seg in segments %}
+                <tr>
+                    <td>{{seg.name}}</td>
+                    <td>{{seg.created}}</td>
+                    <td>{{"{:,}".format(seg.count)}}</td>
+                    <td>...</td>
+                    {% set notif = seg.last_notification %}
+                    <td>{{notif.created if notif else "NA"}}</td>
+                    <td>
+                        <a class='btn btn-primary' href="{{ url_for('.id', id=seg._id|string) }}" role="button">View</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div id="records">
+            {% include "audience/records.html" %}
+        </div>
+    </div>
+    <div class="col-md-4">
+        {% from "widgets/bucket.html" import bucket %}
+        <div class="thumbnail">
+            {{ bucket("Smart Segment", "members", 123123, 2, "#", "Create") }}
+        </div>
+        <div class="thumbnail">
+            {{ bucket("Smart Segment #2", "members", 4996, 4.78, "#", "Create") }}
+        </div>
+    </div>
+</div>
+{% endblock %}

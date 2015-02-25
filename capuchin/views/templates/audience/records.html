@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-md-12">
-        <h4>Segment Length: {{"{:,}".format(total)}}</h4>
+        <h4>Members: {{"{:,}".format(total)}}</h4>
     </div>
 </div>
 <div class="row">
@@ -9,6 +9,7 @@
             <thead>
                 <th>First Name</th>
                 <th>Last Name</th>
+                <th>Gender</th>
                 <th>Age</th>
                 <th>Location</th>
                 <th></th>
@@ -18,6 +19,7 @@
                 <tr>
                     <td>{{p['fields']['first_name'][0]}}</td>
                     <td>{{p['fields']['last_name'][0]}}</td>
+                    <td>{{p['fields']['gender'][0]}}</td>
                     <td>{{p['fields'].get('age', [''])[0]}}</td>
                     <td>{{p['fields'].get('location.location', [""])[0]}}</td>
                     <td>
@@ -31,6 +33,6 @@
 </div>
 <div class="row">
     <div class="col-md-12">
-        {% include "segments/pagination.html" %}
+        {% include "audience/pagination.html" %}
     </div>
 </div>

@@ -9,10 +9,11 @@ import slugify
 import math
 import json
 
-segments = Blueprint(
-    'segments',
+audience = Blueprint(
+    'audience',
     __name__,
     template_folder=config.TEMPLATES,
+    url_prefix="/audience",
 )
 
 def create_pagination(total_records, current_page=0):
@@ -27,7 +28,10 @@ def create_pagination(total_records, current_page=0):
 
 def get_segment(id):
     if id:
-        s = Segment(id=id)
+        if id == 'all':
+            s = Segment(data={'client':current_user.client})
+        else:
+            s = Segment(id=id)
     else:
         s = Segment()
         s.client = current_user.client
@@ -70,21 +74,28 @@ def update_segment(id, filters):
     s.save()
     return s
 
-class SegmentsDefault(MethodView):
+class Default(MethodView):
 
     def get(self):
         segments = current_user.client.segments(query={"name":{"$ne":None}})
-        return render_template("segments/index.html", segments=segments)
+        records = Segment(data={'client':current_user.client}).records()
+        return render_template(
+            "audience/index.html",
+            segments=segments,
+            records=records['hits'],
+            total=records['total'],
+            id='all',
+            pagination=create_pagination(records['total'], 0),
+        )
 
-class SegmentsCreate(MethodView):
+class Create(MethodView):
 
     def get(self, id=None, page=0, template=None):
         segment, _id = get_segment(id)
         if not id: return redirect(url_for(".id", id=_id))
         records = segment.records(from_=page*config.RECORDS_PER_PAGE)
-        tmpl = template if template else "segments/create.html"
+        tmpl = template if template else "audience/create.html"
         lists = segment.get_lists()
-        logging.info(lists)
         return render_template(
             tmpl,
             filters=filters.FILTERS,
@@ -101,12 +112,11 @@ class SegmentsCreate(MethodView):
         )
 
     def post(self, id, page=0):
-        filters = json.loads(request.form['filters'])
-        logging.info(filters)
-        q = update_segment(id, filters)
-        return self.get(id=id, page=page, template="segments/records.html")
+        filters = json.loads(request.form.get('filters', '{}'))
+        if id!='all': q = update_segment(id, filters)
+        return self.get(id=id, page=page, template="audience/records.html")
 
-class SegmentsAutocomplete(MethodView):
+class Autocomplete(MethodView):
 
     def get(self, field):
         term = request.args.get("term")
@@ -114,7 +124,7 @@ class SegmentsAutocomplete(MethodView):
         ar = [{"label":u"{}".format(a['key']), "value":a['key']} for a in res[field]['buckets']]
         return Response(json.dumps(ar), mimetype='application/json')
 
-class SegmentsSave(MethodView):
+class Save(MethodView):
 
     def post(self, id, page=0):
         s = Segment(id=id)
@@ -122,10 +132,10 @@ class SegmentsSave(MethodView):
         s.save()
         return render_template("widgets/notification.html", message=('success','Segment Saved'))
 
-segments.add_url_rule("/segments", view_func=SegmentsDefault.as_view('index'))
-segments.add_url_rule("/segments/create", view_func=SegmentsCreate.as_view('create'))
-segments.add_url_rule("/segments/<id>", view_func=SegmentsCreate.as_view('id'))
-segments.add_url_rule("/segments/<id>/<int:page>", view_func=SegmentsCreate.as_view("page"))
-segments.add_url_rule("/segments/<id>/<int:page>/filters", view_func=SegmentsCreate.as_view("filter_update"))
-segments.add_url_rule("/segments/autocomplete/<field>", view_func=SegmentsAutocomplete.as_view("autocomplete"))
-segments.add_url_rule("/segments/<id>/save", view_func=SegmentsSave.as_view("save"))
+audience.add_url_rule("/", view_func=Default.as_view('index'))
+audience.add_url_rule("/segment/create", view_func=Create.as_view('create'))
+audience.add_url_rule("/segment/<id>", view_func=Create.as_view('id'))
+audience.add_url_rule("/segment/<id>/<int:page>", view_func=Create.as_view("page"))
+audience.add_url_rule("/segment/<id>/<int:page>/filters", view_func=Create.as_view("filter_update"))
+audience.add_url_rule("/segment/autocomplete/<field>", view_func=Autocomplete.as_view("autocomplete"))
+audience.add_url_rule("/segment/<id>/save", view_func=Save.as_view("save"))

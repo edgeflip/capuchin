@@ -1,0 +1,14 @@
+{% macro datatable(fields, url) %}
+
+<table data-toggle="table" data-url="{{url}}">
+    <thead>
+        <tr>
+            {% for field in fields %}
+                {% set title=field.pop('title') %}
+                <th {% for k,v in field.iteritems() %} data-{{k}}="{{v}}" {% endfor %}>{{title}}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+</table>
+
+{% endmacro %}
