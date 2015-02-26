@@ -27,7 +27,7 @@ class NotificationsCreate(MethodView):
             "Seriously, {OrgName} will do anything",
             "Checkout this post, you're going to LOVE it!",
         ]
-        return render_template("notifications/create.html", Segment=Segment, posts=posts, messages=messages)
+        return render_template("notifications/create.html", segments=Segment.find({'name':{'$ne':None}}), posts=posts, messages=messages)
 
     def post(self):
         n = Notification()

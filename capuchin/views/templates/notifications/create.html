@@ -30,15 +30,15 @@ $(document).ready(function(){
         <div class="form-group">
             <label for="posts">Select a Post <a href="#">Create New</a></label>
             <select class="form-control" id="posts" name="posts">
-                {% for s in posts['hits'] %}
-                    <option value="{{s['_id']}}">{{s['fields']['message'][0]|truncate(20)}}</option>
+                {% for s in posts.hits %}
+                    <option value="{{s.id}}">{{s.message|truncate(33)}}</option>
                 {% endfor %}
             </select>
         </div>
         <div class="form-group">
             <label for="segments">Select an Audience <a href="{{url_for('audience.create')}}">Create New</a></label>
             <select class="form-control" id="segments" name="segments">
-                {% for s in Segment.find() %}
+                {% for s in segments %}
                     <option value="{{s._id|string}}">{{s.name}} ({{s.count}})</option>
                 {% endfor %}
             </select>

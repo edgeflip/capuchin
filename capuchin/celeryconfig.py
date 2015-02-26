@@ -35,8 +35,8 @@ CELERYBEAT_SCHEDULE = {
         'task': 'capuchin.workers.get_feeds',
         'schedule': datetime.timedelta(minutes=10),
     },
-    'test_publish': {
-        'task': 'capuchin.workers.users.test_publish',
-        'schedule': datetime.timedelta(seconds=10),
-    },
+    #'test_publish': {
+    #    'task': 'capuchin.workers.users.test_publish',
+    #    'schedule': datetime.timedelta(seconds=10),
+    #},
 }

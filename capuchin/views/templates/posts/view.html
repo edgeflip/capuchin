@@ -8,7 +8,7 @@
 $(document).ready(function(){
     $("#charts").multibar({
         name:"Engagement",
-        data_url:"{{url_for('.chart', chart_id='engagement', post_id=post['_id'])}}"
+        data_url:"{{url_for('.chart', chart_id='engagement', post_id=post.id)}}"
     }).render(9);
 });
 </script>
@@ -17,7 +17,16 @@ $(document).ready(function(){
 {% block content %}
 <div class="row">
     <div class="col-md-3">
-        {{post['fields']['message'][0]}}
+        <div class="thumbnail">
+            <img src="{{post.picture}}" />
+        </div>
+        {{post.message}}
+        <h4>Comments</h4>
+        {% for c in post.comments %}
+            <div class="thumbnail">
+                {{c.message}}
+            </div>
+        {% endfor %}
     </div>
     <div id="charts"></div>
 </div>

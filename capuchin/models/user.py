@@ -3,8 +3,13 @@ import ast
 import logging
 from capuchin import config
 from capuchin.models.client import Client
+from capuchin.models import ESObject
 import psycopg2
 import psycopg2.extras
+
+class User(ESObject):
+    TYPE = config.USER_RECORD_TYPE
+
 
 def parse_email(val):
     try:
@@ -66,7 +71,7 @@ TABLES = [
     }
 ]
 
-class User(dict):
+class UserImport(dict):
 
     key_parsers = {
         "email":parse_email,
@@ -74,7 +79,7 @@ class User(dict):
     }
 
     def __init__(self, obj):
-        super(User, self).__init__()
+        super(UserImport, self).__init__()
         self.parse(obj)
         try:
             self.con = psycopg2.connect(

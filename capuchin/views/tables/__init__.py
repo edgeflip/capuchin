@@ -1,10 +1,17 @@
 from capuchin import config
 from capuchin import db
 from slugify import slugify
-from bunch import Bunch
 import logging
 
-class ESObject(Bunch):
+class ESResult(object):
+
+    def __init__(self, cls, result):
+        for k,v in result.iteritems():
+            setattr(self, k, v)
+
+        self.hits = [cls(data=d) for d in self.hits]
+
+class ESObject(object):
 
     TYPE = None
 
@@ -16,9 +23,15 @@ class ESObject(Bunch):
                 id,
                 self.TYPE,
             )
-            data = data['_source']
+        self.populate(data)
 
-        super(ESObject, self).__init__(**data)
+    def populate(self, data):
+        if data:
+            for k,v in data['_source'].iteritems():
+                setattr(self, k, v)
+
+    def json(self):
+        return self.__dict__
 
     @classmethod
     def get_records(cls, q, from_=0, size=10):
@@ -30,9 +43,7 @@ class ESObject(Bunch):
             from_=from_,
             body=q
         )
-        b = Bunch.fromDict(res['hits'])
-        b.hits = [cls.fromDict(d['_source']) for d in b.hits]
-        return b
+        return ESResult(cls, res)
 
     @classmethod
     def filter(cls, client, q, sort):

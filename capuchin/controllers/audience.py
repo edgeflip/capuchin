@@ -82,10 +82,10 @@ class Default(MethodView):
         return render_template(
             "audience/index.html",
             segments=segments,
-            records=records['hits'],
-            total=records['total'],
+            records=records.hits,
+            total=records.total,
             id='all',
-            pagination=create_pagination(records['total'], 0),
+            pagination=create_pagination(records.total, 0),
         )
 
 class Create(MethodView):
@@ -103,10 +103,10 @@ class Create(MethodView):
             values=segment.filters,
             ranges=segment.get_ranges(),
             lists=lists,
-            records=records['hits'],
+            records=records.hits,
             id=id,
-            total=records['total'],
-            pagination=create_pagination(records['total'], page),
+            total=records.total,
+            pagination=create_pagination(records.total, page),
             name=segment.name,
             page=page
         )

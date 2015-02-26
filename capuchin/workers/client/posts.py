@@ -1,7 +1,7 @@
 from capuchin.app import Capuchin
 from capuchin import config
 from capuchin import db
-from capuchin.insights import POST_INSIGHTS
+from capuchin.views.insights import POST_INSIGHTS
 from capuchin.workers.client.insights import Insights
 from flask_oauth import OAuth
 import urlparse

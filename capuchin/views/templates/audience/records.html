@@ -17,13 +17,13 @@
             <tbody>
                 {% for p in records %}
                 <tr>
-                    <td>{{p['fields']['first_name'][0]}}</td>
-                    <td>{{p['fields']['last_name'][0]}}</td>
-                    <td>{{p['fields']['gender'][0]}}</td>
-                    <td>{{p['fields'].get('age', [''])[0]}}</td>
-                    <td>{{p['fields'].get('location.location', [""])[0]}}</td>
+                    <td>{{p.first_name}}</td>
+                    <td>{{p.last_name}}</td>
+                    <td>{{p.gender}}</td>
+                    <td>{{p.get('age', '')}}</td>
+                    <td>{{p.location.location}}</td>
                     <td>
-                        <a target="_blank" class='btn btn-primary' href="http://facebook.com/{{p['fields']['efid'][0]}}" role="button">View</a>
+                        <a target="_blank" class='btn btn-primary' href="http://facebook.com/{{p.efid}}" role="button">View</a>
                     </td>
                 </tr>
                 {% endfor %}

@@ -24,14 +24,13 @@ class AuthLogin(MethodView):
         em = form['email']
         pw = form['password']
         a = Admin.find_one({'email':em})
-        v = a.verify_pwd(pw)
-        if a and v:
+        if a and a.verify_pwd(pw):
             rem = False
             if form.get("remember-me"): rem = True
             success = login_user(a, remember=rem)
             return redirect(url_for("dashboard.index"))
         else:
-            flash("Please try again", "danger")
+            flash("Invalid Credentials", "danger")
 
         return render_template("auth/login.html", form=form)
 

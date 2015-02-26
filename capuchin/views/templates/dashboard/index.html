@@ -8,6 +8,7 @@
 
 <script>
 $(document).ready(function(){
+    /*
     $("#charts").usa({
         name:"Users by City",
         data_url:"{{url_for('.chart', chart_id='city_population')}}"
@@ -20,14 +21,17 @@ $(document).ready(function(){
         name:"Top Likes",
         data_url:"{{url_for('.chart', chart_id='top_likes')}}"
     }).render(12);
+    */
     $("#charts").multibar({
         name:"Page Engagement",
         data_url:"{{url_for('.chart', chart_id='engaged_users')}}"
     }).render(12);
+    /*
     $("#charts").word_bubble({
         name:"Top Words",
         data_url:"{{url_for('.chart', chart_id='top_words')}}"
     }).render(12);
+    */
     $("#charts").stackedline({
         name:"Likes",
         data_url:"{{url_for('.chart', chart_id='likes')}}"
@@ -40,10 +44,11 @@ $(document).ready(function(){
         name:"Engagement by Story Type",
         data_url:"{{url_for('.chart', chart_id='page_by_type')}}"
     }).render(12);
+    /*
     $("#charts").pie({
         name:"Engagement by Country",
         data_url:"{{url_for('.chart', chart_id='country')}}"
-    }).render(12);
+    }).render(12);*/
 });
 </script>
 {% endblock %}
@@ -55,38 +60,6 @@ $(document).ready(function(){
             <div class="row">
                 <div class="col-md-12">
                     <h2>Recent Activity</h2>
-                    {% from "widgets/datatable.html" import datatable %}
-                    {{ datatable([
-                        {
-                            "title":"Published",
-                            "field":"created_time",
-                        },
-                        {
-                            "title":"Post",
-                            "field":"message",
-                        },
-                        {
-                            "title":"Type",
-                            "field":"type",
-                        },
-                        {
-                            "title":"Targeting",
-                            "field":"targeting",
-                        },
-                        {
-                            "title":"Reach",
-                            "field":"reach",
-                        },
-                        {
-                            "title":"Engagement",
-                            "field":"engagement"
-                        },
-                        {
-                            "title":"",
-                            "field":"actions",
-                        }
-
-                    ], url=url_for('.recent_activity'))}}
                     <table class="table">
                         <thead>
                             <th>Published</th>
@@ -98,7 +71,7 @@ $(document).ready(function(){
                             <th></th>
                         </thead>
                         <tbody>
-                            {% for p in posts %}
+                            {% for p in posts.hits %}
                             <tr>
                                 <td>{{p.created_time}}</td>
                                 <td>{{p.message|truncate(50)}}</td>
@@ -106,8 +79,8 @@ $(document).ready(function(){
                                 <td><span class="icon-globe"></span></td>
                                 <td>1,101</td>
                                 <td>
-                                    <p>{{p.commentsid|length}}</p>
-                                    <p>{{p.likesid|length}}</p>
+                                    <p>{{p.comments|length}}</p>
+                                    <p>{{p.likes|length}}</p>
                                 </td>
                                 <td class="actions">
                                     <div class="btn-group btn-group-xs" role="group" aria-label="...">

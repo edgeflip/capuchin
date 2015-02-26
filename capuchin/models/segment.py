@@ -4,6 +4,8 @@ from capuchin import config
 from capuchin import filters
 from capuchin import db
 from capuchin.models.client import Client
+from capuchin.models.user import User
+from bunch import Bunch
 
 class Segment(orm.Document):
     _db = "capuchin"
@@ -38,17 +40,7 @@ class Segment(orm.Document):
     def get_records(self, filters, from_=0):
         q = {}
         if len(filters['filtered']['filter']['and']): q["query"] = filters
-        ES = db.init_elasticsearch()
-        res = ES.search(
-            config.ES_INDEX,
-            config.USER_RECORD_TYPE,
-            fields=config.USER_RECORD_FIELDS,
-            size=config.RECORDS_PER_PAGE,
-            from_=from_,
-            _source=False,
-            body=q
-        )
-        return res['hits']
+        return User.get_records(q, from_)
 
     def get_ranges(self):
         q = {"aggregations":{}}

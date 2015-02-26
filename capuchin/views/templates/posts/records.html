@@ -4,7 +4,7 @@
             <div class="input-group">
                 <input name="q" type="text" class="form-control" placeholder="Search for..." value="{{q}}">
                 <span class="input-group-btn">
-                    <button class="btn btn-default " type="button">Go!</button>
+                    <button class="btn btn-default " type="submit">Go!</button>
                 </span>
             </div>
         </form>
@@ -28,14 +28,14 @@
             <tbody>
                 {% for p in records %}
                 <tr>
-                    <td>{{p['fields']['message'][0]|truncate(100)}}</td>
-                    <td>{{p['fields']['from.name'][0]}}</td>
-                    <td>{{p['fields'].get('shares.count', [0])[0]}}</td>
-                    <td>{{p['fields'].get('likes.id', [])|length}}</td>
-                    <td>{{p['fields'].get('comments.id', [])|length}}</td>
-                    <td>{{p['fields'].get('created_time', [0])[0]}}</td>
+                    <td>{{p.message|truncate(100)}}</td>
+                    <td>{{p.from.name}}</td>
+                    <td>{{p.get('shares', {}).get('count', 0)}}</td>
+                    <td>{{p.likes|length}}</td>
+                    <td>{{p.comments|length}}</td>
+                    <td>{{p.created_time}}</td>
                     <td>
-                        <a class='btn btn-primary' href="{{ url_for('posts.view', id=p['fields']['id'][0])}}" role="button">View</a>
+                        <a class='btn btn-primary' href="{{ url_for('posts.view', id=p.id)}}" role="button">View</a>
                     </td>
                 </tr>
                 {% endfor %}

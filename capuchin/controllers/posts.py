@@ -4,7 +4,7 @@ from flask.ext.login import current_user
 from capuchin import config
 from capuchin import filters
 from capuchin.models.post import Post
-from capuchin.insights.charts import HistogramChart
+from capuchin.views.insights.charts import HistogramChart
 import logging
 import slugify
 import math
@@ -36,8 +36,8 @@ class PostsIndex(MethodView):
         tmpl = template if template else "posts/index.html"
         return render_template(
             tmpl,
-            records=records['hits'],
-            total=records['total'],
+            records=records.hits,
+            total=records.total,
             pagination=create_pagination(records['total'], page),
             page=page,
             q = q if q != "*" else ""
@@ -46,19 +46,11 @@ class PostsIndex(MethodView):
     def post(self, page=0):
         return self.get(page=page, template="posts/records.html")
 
-def get_post(id):
-    return g.ES.get(
-        config.ES_INDEX,
-        id,
-        config.POST_RECORD_TYPE,
-        fields=['message', 'created_time'],
-        _source=False,
-    )
-
 class PostsView(MethodView):
 
     def get(self, id):
-        post = get_post(id)
+        post = Post(id=id)
+        logging.info(post)
         return render_template(
             "posts/view.html",
             post=post,
@@ -68,16 +60,16 @@ def engagement(post):
     date_format = "%Y-%m-%dT%H:%M:%S+0000"
     tm = time.mktime(
         time.strptime(
-            post['fields']["created_time"][0],
+            post.created_time,
             date_format
         )
     )
     return HistogramChart(
         current_user.client,
         [
-            {"type":"post.{}.likes".format(post.get("_id")), "display":"Likes"},
-            {"type":"post.{}.comments".format(post.get("_id")), "display":"Comments"},
-            {"type":"post.{}.shares".format(post.get("_id")), "display":"Shares"},
+            {"type":"post.{}.likes".format(post.id), "display":"Likes"},
+            {"type":"post.{}.comments".format(post.id), "display":"Comments"},
+            {"type":"post.{}.shares".format(post.id), "display":"Shares"},
         ],
         prefix="insights",
         where="WHERE time > {}s".format(tm),
@@ -93,7 +85,7 @@ class PostsChart(MethodView):
 
     def get(self, chart_id):
         post_id = request.args.get("post_id")
-        post = get_post(post_id)
+        post = Post(id=post_id)
         res = self.charts[chart_id](post)
         return jsonify(**dict(data=res.data, date_format=res.date_format))
 

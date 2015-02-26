@@ -6,8 +6,8 @@ from capuchin import db as dbs
 from capuchin.models.list import List
 from capuchin.models.post import Post
 from capuchin.models.segment import Segment
-from capuchin.insights.geo import CityPopulation
-from capuchin.insights.charts import \
+from capuchin.views.insights.geo import CityPopulation
+from capuchin.views.insights.charts import \
     FBInsightsPieChart,\
     FBInsightsMultiBarChart,\
     HistogramChart,\
@@ -169,15 +169,12 @@ def engagement_weekly_change():
     logging.info(this_week)
     lw = float(last_week[0]['points'][0][1])
     tw = float(this_week[0]['points'][0][1])
-    diff = ((tw-lw)/lw)*100
+    if lw:
+        diff = ((tw-lw)/lw)*100
+    else:
+        diff = 100
     return {'change':diff, 'total':tw}
 
-
-class RecentActivity(MethodView):
-
-    def get(self):
-        posts = Post.records(current_user.client, size=5, ret_obj=True)
-        return Response(json.dumps([p.json() for p in posts]))
 
 class DashboardDefault(MethodView):
 
@@ -187,9 +184,11 @@ class DashboardDefault(MethodView):
         segments = current_user.client.segments(query={"name":{"$ne":None}})
         like_change = like_weekly_change()
         engagement_change = engagement_weekly_change()
+        posts = Post.records(current_user.client, size=5)
+        logging.info("POSTS:{}".format(posts))
         return render_template(
             "dashboard/index.html",
-            #posts=posts,
+            posts=posts,
             like_change=like_change,
             engagement_change=engagement_change,
             lists=lists,
@@ -223,4 +222,3 @@ class DashboardChart(MethodView):
 
 db.add_url_rule("/", view_func=DashboardDefault.as_view('index'))
 db.add_url_rule("/chart/<chart_id>", view_func=DashboardChart.as_view('chart'))
-db.add_url_rule("/recent_activity", view_func=RecentActivity.as_view('recent_activity'))

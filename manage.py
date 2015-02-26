@@ -4,7 +4,7 @@ from flask.ext.script import Command
 import psycopg2
 import psycopg2.extras
 import capuchin.config as config
-from capuchin.models.user import User
+from capuchin.models.user import UserImport
 from capuchin.app import Capuchin
 from capuchin.models.client import Client
 from capuchin.models.city import City
@@ -79,7 +79,7 @@ class SyncUsers(Command):
             while rows:
                 for row in rows:
                     logging.info(row)
-                    u = User(row)
+                    u = UserImport(row)
                     logging.info(u)
                     ES.index(index=config.ES_INDEX, doc_type=config.USER_RECORD_TYPE, body=u, id=u['efid'])
                 rows = cur.fetchmany(size=100)
