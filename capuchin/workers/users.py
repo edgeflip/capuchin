@@ -2,9 +2,13 @@ from celery import Celery
 from celery import bootsteps
 from kombu import Consumer, Exchange, Queue
 from capuchin import config
+from capuchin import db
 from capuchin.models.user import User
+from capuchin.models.client import Client
 from capuchin.workers import app
 from capuchin.celeryconfig import efid_q
+import time
+import datetime
 import logging
 
 class BatchEFID(bootsteps.ConsumerStep):
@@ -26,22 +30,20 @@ class BatchEFID(bootsteps.ConsumerStep):
 app.steps['consumer'].add(BatchEFID)
 
 @app.task
-def test_publish():
-    batch = [
-        10102136605223030,
-        10102136605223031,
-        10102136605223032,
-        10102136605223033,
-        10102136605223034,
-        10102136605223035,
-        10102136605223036,
-        10102136605223037,
-    ]
-    with app.producer_or_acquire(None) as producer:
-        producer.publish(
-            batch,
-            exchange=efid_q.exchange,
-            routing_key=efid_q.routing_key,
-            declare=[efid_q],
-            serializer='json',
-        )
+def members_lifetime():
+    INFLUX = db.init_influxdb()
+    for c in Client.find():
+        try:
+            count = User.count(client=c)
+            points = [[
+                time.mktime(datetime.datetime.utcnow().timetuple()),
+                count,
+                "members.lifetime",
+            ]]
+            logging.info("Members Lifetime: {} = {}".format(c.name, count))
+            db.write_influx(INFLUX, c, points, "members.lifetime", prefix="insights")
+        except Exception as e:
+            logging.error(e)
+
+
+members_lifetime()

@@ -45,20 +45,24 @@ class ESObject(Bunch):
             },
             "filter":{
                 "term":{
-                    "client":str(client._id)
+                    "clients.id":str(client._id)
                 }
             },
             "sort":sort
         }
         return q
 
+
+
     @classmethod
-    def sort(cls, sort):
-        return {
-            sort[0]:{
-                "order":sort[1]
+    def sort(cls, sort=None):
+        if sort:
+            return {
+                sort[0]:{
+                    "order":sort[1]
+                }
             }
-        }
+        return {}
 
     @classmethod
     def records(cls, client, q="*", from_=0, size=config.RECORDS_PER_PAGE, sort=('created_time', 'desc')):
@@ -69,7 +73,13 @@ class ESObject(Bunch):
     @classmethod
     def count(cls, client):
         ES = db.init_elasticsearch()
-        q = cls.filter(client, "*")
+        q = {
+            "query":{
+                "term":{
+                    "clients.id":str(client._id),
+                }
+            }
+        }
         res = ES.count(
             config.ES_INDEX,
             cls.TYPE,

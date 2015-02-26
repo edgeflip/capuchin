@@ -10,6 +10,24 @@ import psycopg2.extras
 class User(ESObject):
     TYPE = config.USER_RECORD_TYPE
 
+    @classmethod
+    def filter(cls, client, q, sort):
+        q = {
+            "query":{
+                "query_string":{
+                    "default_field":"last_name.search",
+                    "query":q
+                }
+            },
+            "filter":{
+                "term":{
+                    "client":str(client._id)
+                }
+            },
+            "sort":sort
+        }
+        return q
+
 
 def parse_email(val):
     try:

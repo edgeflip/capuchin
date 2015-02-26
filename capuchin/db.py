@@ -96,3 +96,19 @@ def create_shards(INFLUX):
         )
     except Exception as e:
         logging.error(e)
+
+
+def write_influx(INFLUX, client, points, typ, prefix="insights"):
+    data = [
+        dict(
+            name = "{}.{}.{}".format(prefix, client._id, typ),
+            columns = ["time", "value", "type"],
+            points = points
+        )
+    ]
+    logging.info("Writing: {}".format(data))
+    try:
+        res = INFLUX.write_points(data)
+        logging.info(res)
+    except Exception as e:
+        logging.warning(e)
