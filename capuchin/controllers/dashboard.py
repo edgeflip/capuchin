@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, g, jsonify, Response
+from flask import Blueprint, render_template, request, g, jsonify, Response, current_app
 from flask.views import MethodView
 from flask.ext.login import current_user
 from capuchin import config
@@ -6,6 +6,7 @@ from capuchin import db as dbs
 from capuchin.models.list import List
 from capuchin.models.post import Post
 from capuchin.models.segment import Segment
+from capuchin.views.tables.dashboard import Posts
 from capuchin.views.insights.geo import CityPopulation
 from capuchin.views.insights.charts import \
     FBInsightsPieChart,\
@@ -177,6 +178,7 @@ def engagement_weekly_change():
     return {'change':diff, 'total':tw}
 
 
+
 class DashboardDefault(MethodView):
 
     def get(self):
@@ -186,15 +188,13 @@ class DashboardDefault(MethodView):
         try:
             like_change = like_weekly_change()
             engagement_change = engagement_weekly_change()
-            posts = Post.records(current_user.client, size=5)
         except:
             like_change = {'change':0, 'total':0}
             engagement_change = {'change':0, 'total':0}
-            posts = Bunch(**dict(hits=[], total=0))
-        logging.info("POSTS:{}".format(posts))
+
         return render_template(
             "dashboard/index.html",
-            posts=posts,
+            posts=Posts(current_user.client),
             like_change=like_change,
             engagement_change=engagement_change,
             lists=lists,

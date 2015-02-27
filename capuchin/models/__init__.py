@@ -65,7 +65,7 @@ class ESObject(Bunch):
         return {}
 
     @classmethod
-    def records(cls, client, q="*", from_=0, size=config.RECORDS_PER_PAGE, sort=('created_time', 'desc')):
+    def records(cls, client, q="*", from_=0, size=config.RECORDS_PER_PAGE, sort=None):
         sort = cls.sort(sort)
         q = cls.filter(client, q, sort)
         return cls.get_records(q, from_, size=size)

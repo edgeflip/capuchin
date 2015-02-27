@@ -1,89 +1,63 @@
-from capuchin import config
-from capuchin import db
-from slugify import slugify
-import logging
+from flask import url_for
+import random
 
-class ESResult(object):
+class Column(object):
 
-    def __init__(self, cls, result):
-        for k,v in result.iteritems():
-            setattr(self, k, v)
+    def __init__(self, field, title, cls="", sortable=False, formatter=None):
+        self.field = field
+        self.title = title
+        self.sortable = sortable
+        self.formatter = formatter if formatter else lambda v, r: v
+        self.cls = cls
 
-        self.hits = [cls(data=d) for d in self.hits]
-
-class ESObject(object):
-
-    TYPE = None
-
-    def __init__(self, id=None, data=None):
-        if id:
-            ES = db.init_elasticsearch()
-            data = ES.get(
-                config.ES_INDEX,
-                id,
-                self.TYPE,
+    def th(self, cls, id, sort, **kwargs):
+        v = self.title
+        if self.sortable:
+            if sort:
+                s_dir = 'desc' if sort[1] == 'asc' else 'asc'
+            else:
+                s_dir = 'asc'
+            link = url_for(
+                'tables.sort',
+                cls=cls,
+                field=self.field,
+                dir=s_dir,
+                **kwargs
             )
-        self.populate(data)
+            v = "<a class=\"table_sort\" data-id=\"{}\" href=\"{}\">{}</a>".format(id, link, v)
+        return "<th>{}</th>".format(v)
 
-    def populate(self, data):
-        if data:
-            for k,v in data['_source'].iteritems():
-                setattr(self, k, v)
+    def td(self, value, record):
+        c = "class=\"{}\"".format(self.cls) if self.cls else ""
+        return "<td {}>{}</td>".format(c, self.formatter(value, record))
 
-    def json(self):
-        return self.__dict__
+class Table(object):
+    cls = None
+    columns = []
 
-    @classmethod
-    def get_records(cls, q, from_=0, size=10):
-        ES = db.init_elasticsearch()
-        res = ES.search(
-            config.ES_INDEX,
-            cls.TYPE,
-            size=size,
-            from_=from_,
-            body=q
+    def __init__(self, client):
+        self.client = client
+
+    def render(self, q="*", from_=0, size=10, sort=None):
+        records = self.cls.records(self.client, q, from_, size, sort)
+        me = "{}.{}".format(
+            self.__module__,
+            self.__class__.__name__
         )
-        return ESResult(cls, res)
-
-    @classmethod
-    def filter(cls, client, q, sort):
-        q = {
-            "query":{
-                "query_string":{
-                    "default_field":"message",
-                    "query":q
-                }
-            },
-            "filter":{
-                "term":{
-                    "client":str(client._id)
-                }
-            },
-            "sort":sort
-        }
-        return q
-
-    @classmethod
-    def sort(cls, sort):
-        return {
-            sort[0]:{
-                "order":sort[1]
-            }
-        }
-
-    @classmethod
-    def records(cls, client, q="*", from_=0, size=config.RECORDS_PER_PAGE, sort=('created_time', 'desc')):
-        sort = cls.sort(sort)
-        q = cls.filter(client, q, sort)
-        return cls.get_records(q, from_, size=size)
-
-    @classmethod
-    def count(cls, client):
-        ES = db.init_elasticsearch()
-        q = cls.filter(client, "*")
-        res = ES.count(
-            config.ES_INDEX,
-            cls.TYPE,
-            body=q
+        id = "{}{}".format("table", random.randint(9999, 99999999))
+        th = [c.th(me, id, sort, q=q, from_=from_, size=size) for c in self.columns]
+        tr = []
+        for r in records.hits:
+            td = ["<tr>"]
+            for c in self.columns:
+                levels = c.field.split(".")
+                val = r
+                for i in levels: val = val.get(i, {})
+                td.append(c.td(val, r))
+            td.append("</tr>")
+            tr.append("".join(td))
+        return "<table id=\"{}\" class=\"table\"><thead><tr>{}</tr></thead><tbody>{}</tbody></table>".format(
+            id,
+            "".join(th),
+            "".join(tr)
         )
-        return res['count']
