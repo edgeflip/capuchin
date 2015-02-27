@@ -31,7 +31,6 @@ class Capuchin(Flask):
         except Exception as e:
             logging.exception(e)
 
-
     def load_user(self, id):
         try:
             logging.info("Loading User: {}".format(id))

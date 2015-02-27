@@ -2,6 +2,8 @@ from flask import Blueprint, render_template, request, redirect, url_for, Respon
 from flask.views import MethodView
 from flask.ext.login import login_required, current_user
 from capuchin import config
+from capuchin.signals import facebook_connected
+from capuchin.workers import client_insights, client_feed
 from capuchin.models.client import Client, SocialAccount, FacebookPage, PageCategory
 from flask_oauth import OAuth
 import logging
@@ -17,6 +19,13 @@ facebook = Blueprint(
     subdomain=config.AUTH_SUBDOMAIN,
     url_prefix="/auth/facebook",
 )
+
+def get_new_client_data(sender, client):
+    logging.info("FACCEBOOK CONNECTED {}: {}".format(sender, client))
+    client_insights.delay(str(client._id))
+    client_feed.delay(str(client._id))
+
+facebook_connected.connect(get_new_client_data)
 
 fb_app = oauth.remote_app(
     'facebook',
@@ -181,6 +190,7 @@ class SavePage(MethodView):
                 fb.permissions = p.permissions
                 fb.categories = p.categories
                 client.save()
+                facebook_connected.send(self, client=client)
                 break
 
         return Response(json.dumps({'id':id}), mimetype='application/json')

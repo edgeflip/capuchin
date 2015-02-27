@@ -16,6 +16,7 @@ from capuchin.views.insights.charts import \
     HorizontalBarChart
 import logging
 import json
+from bunch import Bunch
 
 db = Blueprint(
     'dashboard',
@@ -182,9 +183,14 @@ class DashboardDefault(MethodView):
         first = request.args.get("first")
         lists = current_user.client.lists()
         segments = current_user.client.segments(query={"name":{"$ne":None}})
-        like_change = like_weekly_change()
-        engagement_change = engagement_weekly_change()
-        posts = Post.records(current_user.client, size=5)
+        try:
+            like_change = like_weekly_change()
+            engagement_change = engagement_weekly_change()
+            posts = Post.records(current_user.client, size=5)
+        except:
+            like_change = {'change':0, 'total':0}
+            engagement_change = {'change':0, 'total':0}
+            posts = Bunch(**dict(hits=[], total=0))
         logging.info("POSTS:{}".format(posts))
         return render_template(
             "dashboard/index.html",
