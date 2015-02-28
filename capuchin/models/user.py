@@ -75,12 +75,6 @@ TABLES = [
         "parser":basic_parser
     },
     {
-        "table":"v2_user_locales",
-        "key":"locales",
-        "parser":basic_parser,
-        "id_column":"tagged_efid",
-    },
-    {
         "table":"v2_user_permissions",
         "key":"permissions",
         "parser":basic_parser

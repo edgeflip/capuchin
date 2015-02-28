@@ -2,7 +2,7 @@ from celery import bootsteps
 from kombu import Consumer
 from capuchin import config
 from capuchin import db
-from capuchin.models.user import User
+from capuchin.models.user import UserImport
 from capuchin.models.client import Client
 from capuchin.workers import app
 from capuchin.celeryconfig import efid_q
@@ -23,7 +23,8 @@ class BatchEFID(bootsteps.ConsumerStep):
         ES = db.init_elasticsearch()
         for id in data:
             logging.info("Processing EFID: {}".format(id))
-            new_user = User(id)
+            #ES.delete(index=config.ES_INDEX, doc_type=config.USER_RECORD_TYPE, id=id)
+            new_user = UserImport(id)
             logging.info("Successfully processed User: {}".format(new_user))
             ES.index(index=config.ES_INDEX, doc_type=config.USER_RECORD_TYPE, body=new_user, id=id)
             logging.info("Successfully indexed")
@@ -52,9 +53,10 @@ def members_lifetime():
 members_lifetime()
 
 
+@app.task
 def test_publish():
     batch = [
-        10102136605223030,
+        1,
     ]
     with app.producer_or_acquire(None) as producer:
         producer.publish(
