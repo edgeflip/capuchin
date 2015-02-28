@@ -3,6 +3,8 @@ from flask_login import current_user
 from capuchin.models.post import Post
 from capuchin.views.tables import Column, Table
 
+#TODO move all the html into templates and/or macros
+
 def post_type(val, record):
     return """<span class="icon-picture"></span>"""
 
