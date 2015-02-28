@@ -1,0 +1,438 @@
+{
+  "affiliations": [
+    {
+      "category": "University",
+      "efid": 1,
+      "name": "Illinois State University",
+      "page_id": 108461679177952
+    }
+  ],
+  "age": 29,
+  "age_range": null,
+  "avg_days_between_activity": 9.0,
+  "avg_post_interactors": 0.3163,
+  "birthday": "1986-06-04",
+  "clients": [
+    {
+      "asid": 10102136605223030,
+      "id": 1
+    }
+  ],
+  "efid": 1,
+  "email": {
+    "domain": null,
+    "email": null,
+    "handle": null
+  },
+  "first_activity": "2006-12-15",
+  "first_name": "Tristan",
+  "gender": "male",
+  "languages": [
+    {
+      "efid": 1,
+      "language": "Canadian English"
+    }
+  ],
+  "last_activity": "2015-02-14",
+  "last_name": "Crockett",
+  "likes": [
+    {
+      "category": "Website",
+      "efid": 1,
+      "name": "Facebook Hacker Cup",
+      "page_id": 133954286636768
+    },
+    {
+      "category": "Artist",
+      "efid": 1,
+      "name": "JennyO Concepts & Creations",
+      "page_id": 127137603999239
+    },
+    {
+      "category": "Non-profit organization",
+      "efid": 1,
+      "name": "Growing Home  Inc.",
+      "page_id": 39120073547
+    },
+    {
+      "category": "Food/beverages",
+      "efid": 1,
+      "name": "RyteBytes",
+      "page_id": 172065889584513
+    },
+    {
+      "category": "Local business",
+      "efid": 1,
+      "name": "Lombardo\u0027s",
+      "page_id": 55096699946
+    },
+    {
+      "category": "Musician/band",
+      "efid": 1,
+      "name": "\"\"\"The bad plus\"\"\"",
+      "page_id": 40267559771
+    },
+    {
+      "category": "App page",
+      "efid": 1,
+      "name": "The Beer List Challenge",
+      "page_id": 135294646590193
+    },
+    {
+      "category": "Musician/band",
+      "efid": 1,
+      "name": "Lowdown Brass Band",
+      "page_id": 83309477721
+    },
+    {
+      "category": "Restaurant/cafe",
+      "efid": 1,
+      "name": "Aguacate Verde",
+      "page_id": 577446978934503
+    },
+    {
+      "category": "Non-profit organization",
+      "efid": 1,
+      "name": "Boston GLOW",
+      "page_id": 143909818974164
+    },
+    {
+      "category": "Musician/band",
+      "efid": 1,
+      "name": "James Blake",
+      "page_id": 243267652125
+    },
+    {
+      "category": "Community",
+      "efid": 1,
+      "name": "Suikoden Revival Movement",
+      "page_id": 298053143624210
+    },
+    {
+      "category": "Musician/band",
+      "efid": 1,
+      "name": "Feist",
+      "page_id": 6519137812
+    },
+    {
+      "category": "Musician/band",
+      "efid": 1,
+      "name": "My Lazy Elephant",
+      "page_id": 246684371496
+    },
+    {
+      "category": "Community",
+      "efid": 1,
+      "name": "Photography by Beth Murphy",
+      "page_id": 266018630221032
+    },
+    {
+      "category": "Non-profit organization",
+      "efid": 1,
+      "name": "The CivicLab",
+      "page_id": 315043305249923
+    },
+    {
+      "category": "Computers/technology",
+      "efid": 1,
+      "name": "Public Good",
+      "page_id": 628911550461439
+    },
+    {
+      "category": "Games/toys",
+      "efid": 1,
+      "name": "DYAD",
+      "page_id": 187690767934371
+    },
+    {
+      "category": "Community organization",
+      "efid": 1,
+      "name": "BostonSOS",
+      "page_id": 245921913267
+    },
+    {
+      "category": "Musician/band",
+      "efid": 1,
+      "name": "Mark Gormley (fan page)",
+      "page_id": 46414188204
+    },
+    {
+      "category": "Non-profit organization",
+      "efid": 1,
+      "name": "Active Transportation Alliance",
+      "page_id": 57362894871
+    },
+    {
+      "category": "Website",
+      "efid": 1,
+      "name": "Streetsblog Chicago",
+      "page_id": 527200473970911
+    },
+    {
+      "category": "Company",
+      "efid": 1,
+      "name": "Hubway",
+      "page_id": 205689472787809
+    },
+    {
+      "category": "News/media website",
+      "efid": 1,
+      "name": "EveryBlock",
+      "page_id": 111026668922813
+    },
+    {
+      "category": "Restaurant/cafe",
+      "efid": 1,
+      "name": "Tenchi Sushi",
+      "page_id": 152977451416701
+    },
+    {
+      "category": "Music",
+      "efid": 1,
+      "name": "Anything With an Accordion",
+      "page_id": 114933655184005
+    },
+    {
+      "category": "Non-profit organization",
+      "efid": 1,
+      "name": "Points of Light",
+      "page_id": 80791482166
+    },
+    {
+      "category": "Computers",
+      "efid": 1,
+      "name": "System76",
+      "page_id": 38123997728
+    },
+    {
+      "category": "Musician/band",
+      "efid": 1,
+      "name": "The Bad Plus",
+      "page_id": 114629645251900
+    },
+    {
+      "category": "Non-profit organization",
+      "efid": 1,
+      "name": "Boston Indies",
+      "page_id": 293396506143
+    },
+    {
+      "category": "Non-profit organization",
+      "efid": 1,
+      "name": "PAWS Chicago",
+      "page_id": 39056691271
+    },
+    {
+      "category": "Cars",
+      "efid": 1,
+      "name": "RelayRides",
+      "page_id": 171461802576
+    },
+    {
+      "category": "Non-profit organization",
+      "efid": 1,
+      "name": "Center for Neighborhood Technology (CNT)",
+      "page_id": 75773297783
+    },
+    {
+      "category": "Musician/band",
+      "efid": 1,
+      "name": "Jose Gonzalez",
+      "page_id": 116663321693198
+    },
+    {
+      "category": "Food/beverages",
+      "efid": 1,
+      "name": "JusTea",
+      "page_id": 562946740406013
+    },
+    {
+      "category": "Athlete",
+      "efid": 1,
+      "name": "Boston Triathlon",
+      "page_id": 284721648236373
+    },
+    {
+      "category": "University",
+      "efid": 1,
+      "name": "Illinois State University",
+      "page_id": 108461679177952
+    },
+    {
+      "category": "Musician/band",
+      "efid": 1,
+      "name": "Julia Holter",
+      "page_id": 153196178042232
+    },
+    {
+      "category": "Product/service",
+      "efid": 1,
+      "name": "Facebook Developers",
+      "page_id": 19292868552
+    },
+    {
+      "category": "Musician/band",
+      "efid": 1,
+      "name": "Tula",
+      "page_id": 105217284383
+    },
+    {
+      "category": "Games/toys",
+      "efid": 1,
+      "name": "Raven Industries",
+      "page_id": 164688853060
+    },
+    {
+      "category": "Computers/technology",
+      "efid": 1,
+      "name": "Edgeflip",
+      "page_id": 487540787971045
+    },
+    {
+      "category": "Musician/band",
+      "efid": 1,
+      "name": "Avishai Cohen",
+      "page_id": 132129375516
+    },
+    {
+      "category": "Bar",
+      "efid": 1,
+      "name": "Martini Room",
+      "page_id": 62141911198
+    },
+    {
+      "category": "Record label",
+      "efid": 1,
+      "name": "Naked Ally Records",
+      "page_id": 414485825279779
+    },
+    {
+      "category": "Musician/band",
+      "efid": 1,
+      "name": "The O\u0027My\u0027s",
+      "page_id": 72373880872
+    },
+    {
+      "category": "Musician/band",
+      "efid": 1,
+      "name": "St. Vincent",
+      "page_id": 64294390660
+    },
+    {
+      "category": "Games/toys",
+      "efid": 1,
+      "name": "Dudebro MSIFUSIHTS/SY2",
+      "page_id": 196995673070
+    },
+    {
+      "category": "Transportation",
+      "efid": 1,
+      "name": "Divvy Bikes",
+      "page_id": 433468746723138
+    },
+    {
+      "category": "Event planning/event services",
+      "efid": 1,
+      "name": "Events by Ginger.Pineapple",
+      "page_id": 312426585523660
+    },
+    {
+      "category": "Arts/entertainment/nightlife",
+      "efid": 1,
+      "name": "Constellation Chicago",
+      "page_id": 526780014038956
+    },
+    {
+      "category": "Local business",
+      "efid": 1,
+      "name": "Colin Lyons Wedding Photography",
+      "page_id": 22218574907
+    }
+  ],
+  "locale": "en_US",
+  "location_id": 108659242498155,
+  "location_name": "Chicago  Illinois",
+  "num_person_edges": 107,
+  "num_post_interactors": 99,
+  "num_posts": 313,
+  "num_posts_commented_on": 70,
+  "num_posts_liked": 125,
+  "num_posts_shared": 9,
+  "num_posts_with_edges": 160,
+  "num_stat_updates": 80,
+  "num_taggable_friends": null,
+  "permissions": [
+    {
+      "efid": 1,
+      "permission": "user_likes",
+      "status": "granted"
+    },
+    {
+      "efid": 1,
+      "permission": "user_relationships",
+      "status": "granted"
+    },
+    {
+      "efid": 1,
+      "permission": "public_profile",
+      "status": "granted"
+    },
+    {
+      "efid": 1,
+      "permission": "user_friends",
+      "status": "granted"
+    },
+    {
+      "efid": 1,
+      "permission": "user_status",
+      "status": "granted"
+    },
+    {
+      "efid": 1,
+      "permission": "user_actions.music",
+      "status": "granted"
+    },
+    {
+      "efid": 1,
+      "permission": "user_about_me",
+      "status": "granted"
+    },
+    {
+      "efid": 1,
+      "permission": "user_location",
+      "status": "granted"
+    },
+    {
+      "efid": 1,
+      "permission": "user_photos",
+      "status": "granted"
+    },
+    {
+      "efid": 1,
+      "permission": "user_videos",
+      "status": "granted"
+    },
+    {
+      "efid": 1,
+      "permission": "user_birthday",
+      "status": "granted"
+    },
+    {
+      "efid": 1,
+      "permission": "user_relationship_details",
+      "status": "granted"
+    },
+    {
+      "efid": 1,
+      "permission": "user_activities",
+      "status": "granted"
+    },
+    {
+      "efid": 1,
+      "permission": "user_interests",
+      "status": "granted"
+    }
+  ],
+  "profile_update_time": "2015-01-13T20:08:45",
+  "timezone": -6
+}
