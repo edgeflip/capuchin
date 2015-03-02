@@ -4,6 +4,7 @@ from flask.ext.login import current_user
 from capuchin import config
 from capuchin import filters
 from capuchin.models.segment import Segment
+from capuchin.views.tables.audience import Users, Segments
 import logging
 import slugify
 import math
@@ -77,15 +78,10 @@ def update_segment(id, filters):
 class Default(MethodView):
 
     def get(self):
-        segments = current_user.client.segments(query={"name":{"$ne":None}})
-        records = Segment(data={'client':current_user.client}).records()
         return render_template(
             "audience/index.html",
-            segments=segments,
-            records=records.hits,
-            total=records.total,
-            id='all',
-            pagination=create_pagination(records.total, 0),
+            segments=Segments(current_user.client),
+            users=Users(current_user.client),
         )
 
 class Create(MethodView):
@@ -94,6 +90,7 @@ class Create(MethodView):
         segment, _id = get_segment(id)
         if not id: return redirect(url_for(".id", id=_id))
         records = segment.records(from_=page*config.RECORDS_PER_PAGE)
+        users = Users(current_user.client, records=records)
         tmpl = template if template else "audience/create.html"
         lists = segment.get_lists()
         return render_template(
@@ -103,9 +100,8 @@ class Create(MethodView):
             values=segment.filters,
             ranges=segment.get_ranges(),
             lists=lists,
-            records=records.hits,
+            users=users,
             id=id,
-            total=records.total,
             pagination=create_pagination(records.total, page),
             name=segment.name,
             page=page

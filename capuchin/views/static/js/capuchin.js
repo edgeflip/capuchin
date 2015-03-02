@@ -1,7 +1,16 @@
 $(document).ready(function(){
     register_table_sorting();
+    init_create_button();
 });
 
+
+function init_create_button(){
+    $("ul.nav li a.create").click(function(e){
+        $("#modal-title").html(document.title);
+        $("#modal-body").html("This is the modal content for:<strong>"+ document.title +"</strong>");
+        $("#modal").modal({});
+    });
+}
 
 function register_table_sorting(){
     $(".table_sort").click(function(e){

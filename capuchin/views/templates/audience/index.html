@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Segments{% endblock %}
+{% block title %}Audience{% endblock %}
 
 {% block head %}
 <script type="text/javascript">
@@ -12,35 +12,35 @@
 
 
 {% block content %}
+{% from "widgets/bucket.html" import bucket %}
+<div class="row buckets">
+    <div class="col-md-3">
+        <div class="thumbnail">
+            {{ bucket("Audience", "Supporters", 234234, 234, "#", "Grow") }}
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="thumbnail">
+            {{ bucket("Engagement", "Engaged Supporters", 23423, 232, "#", "Boost") }}
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="thumbnail">
+            {{ bucket("Impact", "Actions this week", 19898, 5, "#", "Discover") }}
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="thumbnail buzz">
+            {{ bucket("Buzz", "Actions this week", 19898, 5, "#", "Discover") }}
+        </div>
+    </div>
+</div>
 <div class="row">
     <div class="col-md-8">
         <h3>Segments <a href="{{ url_for('.create') }}" class="btn btn-success">Create</a></h3>
-        <table class='table table-striped'>
-            <thead>
-                <th>Name</th>
-                <th>Created</th>
-                <th>Members</th>
-                <th>Engagement</th>
-                <th>Last Alert</th>
-                <th></th>
-            </thead>
-            <tbody>
-                {% for seg in segments %}
-                <tr>
-                    <td>{{seg.name}}</td>
-                    <td>{{seg.created}}</td>
-                    <td>{{"{:,}".format(seg.count)}}</td>
-                    <td>...</td>
-                    {% set notif = seg.last_notification %}
-                    <td>{{notif.created if notif else "NA"}}</td>
-                    <td>
-                        <a class='btn btn-primary' href="{{ url_for('.id', id=seg._id|string) }}" role="button">View</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        {{segments.render(q={"name":{"$ne":None}})|safe}}
         <div id="records">
+            <h3>Your Audience</h3>
             {% include "audience/records.html" %}
         </div>
     </div>

@@ -4,6 +4,7 @@ from flask.ext.login import current_user
 from capuchin import config
 from capuchin import filters
 from capuchin.models.segment import Segment
+import urllib
 import logging
 import slugify
 import math
@@ -25,10 +26,16 @@ class Sort(MethodView):
                 mod = __import__(".".join(parts[:-1]), globals(), locals(), fromlist=[parts[-1]])
                 table = getattr(mod, parts[-1])
                 t = table(current_user.client)
-                logging.info(request.args['q'])
+                try:
+                    q = json.loads(request.args['q'])
+                except Exception as e:
+                    logging.exception(e)
+                    q = request.args['q']
+
+                logging.info(q)
                 ret = t.render(
                     sort=(field, dir),
-                    q=request.args['q'],
+                    q=q,
                     size=request.args['size'],
                     from_=request.args['from_']
                 )

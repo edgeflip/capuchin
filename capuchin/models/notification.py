@@ -1,6 +1,7 @@
 import humongolus as orm
 import humongolus.field as field
 from capuchin.models.segment import Segment
+from capuchin.models.user import User
 from capuchin.models.post import Post
 from capuchin.models.client import Client
 from capuchin.models.event import Event
@@ -10,6 +11,7 @@ import requests
 import logging
 import math
 import random
+import datetime
 
 class Notification(orm.Document):
     _db = "capuchin"
@@ -30,9 +32,16 @@ class Notification(orm.Document):
         return Post(id=self.post_id)
 
     def send(self):
-        for i in self.segment.records()['hits']:
-            self.logger.info(i)
-            self.post(i)
+        for i in self.segment.records().hits:
+            try:
+                self.logger.info(i)
+                self.post(i)
+            except Exception as e:
+                self.logger.exception(e)
+
+        seg = Segment(id=self._get('segment')._value)
+        seg.last_notification = datetime.datetime.utcnow()
+        seg.save()
 
     @property
     def clicks(self):
@@ -40,11 +49,11 @@ class Notification(orm.Document):
 
     def post(self, user):
         asid = "10153577819234377"#ASID for Chris Cote for CapuchinDev app, should be None
-        for i in user.get('clients', []):
-            if str(i.get('id')) == str(self.client._id):
-                asid = i.get('asid')
+        #for i in user.get('clients', []):
+        #    if str(i.get('id')) == str(self.client._id):
+        #        asid = i.get('asid')
         if asid:
-            res = requests.post(
+            """res = requests.post(
                 "https://graph.facebook.com/{}/notifications".format(asid),
                 data={
                     "access_token":"{}|{}".format(config.FACEBOOK_APP_ID, config.FACEBOOK_APP_SECRET),
@@ -54,8 +63,12 @@ class Notification(orm.Document):
                 }
             )
             j = res.json()
+            """
+            j = {'success':True}
             logging.info("Notification:{}".format(j))
             event_type = "notification_sent" if j.get("success") else "notification_failure"
+            user.last_notification = datetime.datetime.utcnow()
+            User.save(data=user)
             Event(self.client, event_type, value=1, user=asid, notification=str(self._id))
 
 Segment.notifications = orm.Lazy(type=Notification, key='segment')

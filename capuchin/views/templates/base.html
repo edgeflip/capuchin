@@ -30,6 +30,22 @@
         {% block head %}{% endblock %}
     </head>
     <body>
+        <!-- Modal -->
+        <div class="modal fade bs-example-modal-lg" id="modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="modal-title">{% block modal_title %}MODAL!!!{% endblock %}</h4>
+                    </div>
+                    <div class="modal-body" id="modal-body">{% block modal_body %}You know you want to click this!{% endblock %}</div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         {% block container %}
         <div class='container'>
             {% block menu %}
@@ -52,10 +68,9 @@
                     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                         <ul class="nav navbar-nav">
                             <li><a class="btn btn-default" href="{{ url_for('audience.index') }}">Audience</a></li>
-                            <li><a class="btn btn-default" href="{{ url_for('lists.index') }}">Engage</a></li>
-                            <li><a class="btn btn-default" href="{{ url_for('audience.index') }}">Measure</a></li>
-                            <li><a class="btn btn-default" href="{{ url_for('notifications.index') }}">Create</a></li>
-                            <li><a class="btn btn-default" href="{{ url_for('posts.index') }}">Posts</a></li>
+                            <li><a class="btn btn-default" href="{{ url_for('engagement.index') }}">Engagement</a></li>
+                            <li><a class="btn btn-default" href="{{ url_for('reports.index') }}">Reports</a></li>
+                            <li><a class="btn btn-default create" href="#">Create</a></li>
                         </ul>
                         <form class="navbar-form navbar-left" role="search">
                             <div class="input-group">

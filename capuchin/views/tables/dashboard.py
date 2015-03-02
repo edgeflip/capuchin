@@ -6,7 +6,10 @@ from capuchin.views.tables import Column, Table
 #TODO move all the html into templates and/or macros
 
 def post_type(val, record):
-    return """<span class="icon-picture"></span>"""
+    try:
+        return "<img src=\"{}\" />".format(record.icon)
+    except:
+        return ""
 
 def post_targeting(val, record):
     return """<span class="icon-globe"></span>"""
@@ -21,7 +24,12 @@ def post_actions(val, record):
         </div>"""
 
 def post_message(val, record):
-    return current_app.jinja_env.filters['truncate'](val, 30)
+    try:
+        img = "<div class=\"col-md-6\"><img class=\"table-image\" src=\"{}\" /></div>".format(record.picture)
+    except:
+        img = ""
+    mes = "<div class=\"col-md-6\">{}</div>".format(current_app.jinja_env.filters['truncate'](val, 30))
+    return "{}{}".format(img, mes)
 
 post_columns = [
     Column('created_time', "Published", sortable=True),

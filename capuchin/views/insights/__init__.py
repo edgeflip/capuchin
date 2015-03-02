@@ -5,6 +5,8 @@ POST_INSIGHTS = [
 ]
 
 from capuchin.views.insights.charts import *
+from capuchin.views.insights.geo import *
+
 from flask_login import current_user
 
 def top_likes():

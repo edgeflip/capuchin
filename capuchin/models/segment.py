@@ -16,6 +16,7 @@ class Segment(orm.Document):
     name = field.Char()
     filters = orm.Field(default={})
     client = field.DocumentId(type=Client)
+    last_notification = field.Date()
 
     def add_filter(self, key, value):
         key = key.replace(".", "___")#can't store fieldnames with dot notation
@@ -99,13 +100,5 @@ class Segment(orm.Document):
             body=q
         )
         return res['count']
-
-    @property
-    def last_notification(self):
-        alert = self.notifications().sort('__created__', -1).limit(1)
-        if alert.count():
-            self.logger.info(alert[0])
-            return alert[0]
-        return None
 
 Client.segments = orm.Lazy(type=Segment, key='client')

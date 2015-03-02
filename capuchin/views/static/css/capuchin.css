@@ -1,5 +1,5 @@
 body {
-    padding-top: 100px;
+    padding-top: 70px;
     margin-bottom: 60px;
 }
 
@@ -96,9 +96,37 @@ div.caption p.details{
     max-height: 45px
 }
 
-.top-level{
+.buckets{
     background-color: #eeeeee;
     padding:20px;
+    margin-bottom: 20px;
+}
+
+div.buzz{
+    background-color: #EEC03C;
+    color: #FFFFFF;
+}
+
+div.buzz div.caption p{
+    color: #FFFFFF;
+}
+
+div.buzz div.caption p{
+    color: #FFFFFF;
+}
+
+div.buzz .btn-default{
+    background-color: #CC3A17;
+    background-image: none;
+}
+
+ul.nav li a.create{
+    background-color: #CC3A17;
+    background-image: none;
+}
+
+table td img.table-image{
+    width: 60px;
 }
 
 .dash-chart svg {

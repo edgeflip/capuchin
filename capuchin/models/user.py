@@ -13,15 +13,9 @@ class User(ESObject):
     @classmethod
     def filter(cls, client, q, sort):
         q = {
-            "query":{
-                "query_string":{
-                    "default_field":"last_name.search",
-                    "query":q
-                }
-            },
             "filter":{
                 "term":{
-                    "client":str(client._id)
+                    "clients.id":str(client._id)
                 }
             },
             "sort":sort

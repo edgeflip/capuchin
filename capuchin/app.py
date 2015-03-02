@@ -80,15 +80,17 @@ class Capuchin(Flask):
         from controllers.auth import auth
         from controllers.auth.facebook import facebook
         from controllers.healthcheck import hc
-        from controllers.posts import posts
+        from controllers.engagement import engagement
         from controllers.tables import tables
+        from controllers.reports import reports
         db.before_request(self.user_logged_in)
         notif.before_request(self.user_logged_in)
         lists.before_request(self.user_logged_in)
         audience.before_request(self.user_logged_in)
         campaigns.before_request(self.user_logged_in)
-        posts.before_request(self.user_logged_in)
+        engagement.before_request(self.user_logged_in)
         tables.before_request(self.user_logged_in)
+        reports.before_request(self.user_logged_in)
         self.register_blueprint(hc)
         self.register_blueprint(db)
         self.register_blueprint(notif)
@@ -98,5 +100,6 @@ class Capuchin(Flask):
         self.register_blueprint(redirect)
         self.register_blueprint(auth)
         self.register_blueprint(facebook)
-        self.register_blueprint(posts)
+        self.register_blueprint(engagement)
         self.register_blueprint(tables)
+        self.register_blueprint(reports)
