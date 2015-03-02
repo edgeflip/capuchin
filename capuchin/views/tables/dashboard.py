@@ -1,6 +1,7 @@
 from flask import current_app
 from flask_login import current_user
 from capuchin.models.post import Post
+from capuchin.util import date_format
 from capuchin.views.tables import Column, Table
 
 #TODO move all the html into templates and/or macros
@@ -31,8 +32,11 @@ def post_message(val, record):
     mes = "<div class=\"col-md-6\">{}</div>".format(current_app.jinja_env.filters['truncate'](val, 30))
     return "{}{}".format(img, mes)
 
+def date_formatter(v, r):
+    return date_format(r.created_time)
+
 post_columns = [
-    Column('created_time', "Published", sortable=True),
+    Column('created_time', "Published", formatter=date_formatter, sortable=True),
     Column('message', "Post", formatter=post_message, sortable=True),
     Column('', "Type", formatter=post_type),
     Column('', "Targeting", formatter=post_targeting),

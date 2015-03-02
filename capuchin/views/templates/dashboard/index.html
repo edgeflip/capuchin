@@ -78,14 +78,14 @@ $(document).ready(function(){
         </div>
     </div>
     <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-9">
             <div class="row">
                 <h2>Recent Activity</h2>
                 {{ posts.render(size=5)|safe }}
             </div>
             <div class="row" id="charts"></div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <div class="thumbnail">
                 {{ bucket("Audience", "Supporters", like_change['total'], like_change['change'], "#", "Grow") }}
             </div>

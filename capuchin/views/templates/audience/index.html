@@ -36,7 +36,7 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-md-8">
+    <div class="col-md-9">
         <h3>Segments <a href="{{ url_for('.create') }}" class="btn btn-success">Create</a></h3>
         {{segments.render(q={"name":{"$ne":None}})|safe}}
         <div id="records">
@@ -44,7 +44,7 @@
             {% include "audience/records.html" %}
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
         {% from "widgets/bucket.html" import bucket %}
         <div class="thumbnail">
             {{ bucket("Smart Segment", "members", 123123, 2, "#", "Create") }}

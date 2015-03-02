@@ -30,6 +30,10 @@ td.actions{
     margin-right: 7px;
 }
 
+.navbar-nav>li>a:hover{
+    background-image: none;
+}
+
 .alert:first-child {
     margin-top: 20px;
 }
