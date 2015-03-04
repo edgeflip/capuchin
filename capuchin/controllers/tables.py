@@ -17,31 +17,58 @@ tables = Blueprint(
     url_prefix="/tables",
 )
 
+def get_table(cls):
+    parts = cls.split(".")
+    if "tables" in parts:
+        mod = __import__(".".join(parts[:-1]), globals(), locals(), fromlist=[parts[-1]])
+        table = getattr(mod, parts[-1])
+        t = table(current_user.client)
+        return t
+
 class Sort(MethodView):
 
     def get(self, cls, field, dir):
         try:
-            parts = cls.split(".")
-            if "tables" in parts:
-                mod = __import__(".".join(parts[:-1]), globals(), locals(), fromlist=[parts[-1]])
-                table = getattr(mod, parts[-1])
-                t = table(current_user.client)
-                try:
-                    q = json.loads(request.args['q'])
-                except Exception as e:
-                    logging.exception(e)
-                    q = request.args['q']
+            t = get_table(cls)
+            try:
+                q = json.loads(request.args['q'])
+            except Exception as e:
+                logging.exception(e)
+                q = request.args['q']
 
-                logging.info(q)
-                ret = t.render(
-                    sort=(field, dir),
-                    q=q,
-                    size=request.args['size'],
-                    from_=request.args['from_']
-                )
-                logging.info(t)
-                return Response(ret)
+            ret = t.render(
+                sort=(field, dir),
+                q=q,
+                size=request.args['size'],
+                from_=request.args['from_']
+            )
+            logging.info(t)
+            return Response(ret)
+        except ImportError as e:
+            logging.exception(e)
+
+class Page(MethodView):
+
+    def get(self, cls, field, dir, page):
+        size = int(request.args.get('size'))
+        from_ = size*(int(page)-1)
+        try:
+            t = get_table(cls)
+            try:
+                q = json.loads(request.args['q'])
+            except Exception as e:
+                logging.exception(e)
+                q = request.args['q']
+
+            ret = t.render(
+                sort=(field, dir),
+                q=q,
+                size=size,
+                from_=from_
+            )
+            return Response(ret)
         except ImportError as e:
             logging.exception(e)
 
 tables.add_url_rule("/sort/<cls>/<field>/<dir>", view_func=Sort.as_view('sort'))
+tables.add_url_rule("/page/<cls>/<field>/<dir>/<page>", view_func=Page.as_view('page'))
