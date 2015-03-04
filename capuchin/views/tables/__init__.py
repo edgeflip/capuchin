@@ -39,13 +39,13 @@ class Table(object):
     cls = None
     columns = []
 
-    def __init__(self, client, records=None, pagination=True):
+    def __init__(self, client, records=None):
         self.client = client
         self.records = records
-        self.pagination = pagination
 
     def build_pagination(self, cls, id, sort, from_, size, total, **kwargs):
         if not self.pagination: return ""
+        if total <= size: return ""
         try:
             current_page=int(math.ceil(from_/size))+1
         except:
@@ -99,7 +99,8 @@ class Table(object):
     def build_rows(self, records):
         tr = []
         for r in records.hits:
-            td = [u"<tr>"]
+            logging.info(type(r))
+            td = [u"<tr data-url=\"{}\">".format(r.url())]
             for c in self.columns:
                 levels = c.field.split(".")
                 val = r
@@ -110,7 +111,8 @@ class Table(object):
 
         return tr
 
-    def render(self, q="*", from_=0, size=10, sort=None):
+    def render(self, q="*", from_=0, size=10, sort=None, pagination=True):
+        self.pagination = pagination
         logging.info("SORT: {}".format(sort))
         records, total = self.get_records(q, from_, size, sort)
         me = "{}.{}".format(
@@ -120,7 +122,7 @@ class Table(object):
         id = u"{}{}".format("table", random.randint(9999, 99999999))
         th = [c.th(me, id, sort, q=json.dumps(q), from_=from_, size=size) for c in self.columns]
         tr = self.build_rows(records)
-        table =  u" <table class=\"table table-striped\"><thead><tr>{}</tr></thead><tbody>{}</tbody></table>".format(
+        table =  u" <table class=\"table table-striped table-hover\"><thead><tr>{}</tr></thead><tbody>{}</tbody></table>".format(
             u"".join(th),
             u"".join(tr)
         )
@@ -143,7 +145,7 @@ class MongoTable(Table):
     def build_rows(self, records):
         tr = []
         for r in records:
-            td = [u"<tr>"]
+            td = [u"<tr data-url=\"{}\">".format(r.url)]
             for c in self.columns:
                 levels = c.field.split(".")
                 val = r

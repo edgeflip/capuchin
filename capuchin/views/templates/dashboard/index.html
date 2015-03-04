@@ -80,8 +80,8 @@ $(document).ready(function(){
     <div class="row">
         <div class="col-md-9">
             <div class="row">
-                <h2>Recent Activity</h2>
-                {{ posts.render(size=5)|safe }}
+                <h2>Recent Activity <a class="btn btn-primary" href="{{ url_for('engagement.index') }}">See more</a></h2>
+                {{ posts.render(size=5, pagination=False)|safe }}
             </div>
             <div class="row" id="charts"></div>
         </div>

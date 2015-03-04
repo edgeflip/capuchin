@@ -25,21 +25,29 @@ $(document).ready(function(){
 
 {% block content %}
 <div class="row">
-    <h3>Boost Post</h3>
+    {% if engage %}
+        <h3>Engage</h3>
+    {% else %}
+        <h3>Grow</h3>
+    {% endif %}
     <form action="{{ url_for('.save') }}" method="POST">
+        {% if engage %}
         <div class="form-group">
-            <label for="posts">Select a Post <a href="#">Create New</a></label>
+            <label for="posts">Post <a href="#">Create New</a></label>
             <select class="form-control" id="posts" name="posts">
                 {% for s in posts.hits %}
-                    <option value="{{s.id}}">{{s.message|truncate(33)}}</option>
+                    <option value="{{s.id}}" {% if post_id == s.id %} selected{% endif %}>{{s.message|truncate(33)}}</option>
                 {% endfor %}
             </select>
+            <p>or</p>
+            <input class="form-control" type="text" name="url" id="url" placeholder="URL..." />
         </div>
+        {% endif %}
         <div class="form-group">
-            <label for="segments">Select an Audience <a href="{{url_for('audience.create')}}">Create New</a></label>
+            <label for="segments">Audience <a href="{{url_for('audience.create')}}">Create New</a></label>
             <select class="form-control" id="segments" name="segments">
                 {% for s in segments %}
-                    <option value="{{s._id|string}}">{{s.name}} ({{s.count}})</option>
+                    <option value="{{s._id|string}}" {% if segment_id == s._id|string %} selected{% endif %}>{{s.name}} ({{s.count}})</option>
                 {% endfor %}
             </select>
         </div>
@@ -60,7 +68,7 @@ $(document).ready(function(){
             </div>
         </div>
         <div class="btn-group" role="group" aria-label="...">
-            <button type="submit" class="btn btn-default">SmartSchedule</button>
+            <button type="submit" class="btn btn-danger">SmartSchedule</button>
             <button type="submit" class="btn btn-default calendar">
                 Manual Schedule
                 <div id="dateinput"></div>

@@ -68,8 +68,9 @@ def get_suggestions(field, text):
     )
     return res['aggregations']
 
-def update_segment(id, filters):
+def update_segment(id, filters, name):
     s = Segment(id=id)
+    s.name = name
     for k,v in filters.iteritems():
         s.add_filter(k,v)
     s.save()
@@ -93,10 +94,14 @@ class Create(MethodView):
         users = Users(current_user.client, records=records)
         tmpl = template if template else "audience/create.html"
         lists = segment.get_lists()
+        fs = {}
+        for k,v in segment.filters.iteritems():
+            k = k.replace("___", ".")
+            fs[k] = v
         return render_template(
             tmpl,
             filters=filters.FILTERS,
-            filters_json=json.dumps(segment.filters),
+            filters_json=json.dumps(fs),
             values=segment.filters,
             ranges=segment.get_ranges(),
             lists=lists,
@@ -109,7 +114,8 @@ class Create(MethodView):
 
     def post(self, id, page=0):
         filters = json.loads(request.form.get('filters', '{}'))
-        if id!='all': q = update_segment(id, filters)
+        name = request.form.get('name')
+        if id!='all': q = update_segment(id, filters, name)
         return self.get(id=id, page=page, template="audience/records.html")
 
 class Autocomplete(MethodView):

@@ -36,7 +36,7 @@ class ESObject(Bunch):
             body=q
         )
         b = Bunch.fromDict(res['hits'])
-        b.hits = [cls.fromDict(d['_source']) for d in b.hits]
+        b.hits = [cls(data=d['_source']) for d in b.hits]
         return b
 
     @classmethod

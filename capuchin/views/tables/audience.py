@@ -35,7 +35,13 @@ def segment_count(v, r):
     return "{:,}".format(r.count)
 
 def segment_actions(v, r):
-    return "<a class='btn btn-primary' href=\"{}\" role=\"button\">View</a>".format(url_for('audience.id', id=str(r._id)))
+    return "<div class=\"btn-group\">\
+        <a class='btn btn-primary' href=\"{}\" role=\"button\">Grow</a>\
+        <a class=\"btn btn-primary\" href=\"{}\" role=\"button\">Engage</a>\
+    </div>".format(
+        url_for('notifications.create', segment=str(r._id)),
+        url_for('notifications.create', segment=str(r._id), engage=1)
+    )
 
 def date_formatter(v, r):
     return date_format(v)

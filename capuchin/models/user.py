@@ -6,6 +6,7 @@ from capuchin.models.client import Client
 from capuchin.models import ESObject
 import psycopg2
 import psycopg2.extras
+from flask import url_for
 
 class User(ESObject):
     TYPE = config.USER_RECORD_TYPE
@@ -21,6 +22,9 @@ class User(ESObject):
             "sort":sort
         }
         return q
+
+    def url(self):
+        return url_for('dashboard.index', id=self.efid)
 
 
 def parse_email(val):
