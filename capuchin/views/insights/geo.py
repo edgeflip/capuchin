@@ -19,7 +19,7 @@ class CityPopulation(object):
             "aggregations":{
                 "cities":{
                     "terms":{
-                        "script":"doc['location.city.facet'].value+','+doc['location.state.facet'].value",
+                        "script":"doc['location_name.city.facet'].value+','+doc['location_name.state.facet'].value",
                         "size":200,
                     }
                 }

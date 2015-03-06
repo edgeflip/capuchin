@@ -14,13 +14,13 @@ def user_notification(val, record):
     return date_format(record.get("last_notification", "NA"))
 
 def user_location(v, r):
-    return r.location.location
+    return r.location_name.location
 
 user_columns = [
     Column('first_name', "Name", formatter=user_name, sortable=True),
     Column('age', "Age", sortable=True),
     Column('gender', "Gender", sortable=True),
-    Column('location.city', "Location", formatter=user_location),
+    Column('location_name.city', "Location", formatter=user_location),
     Column('', "Source", formatter=lambda v, r: "Facebook Ad"),
     Column('last_notification', "Last Notification", formatter=user_notification),
     Column('', 'Link', formatter=lambda v,r: "Action", cls="actions"),

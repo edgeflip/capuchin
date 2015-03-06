@@ -49,6 +49,7 @@ class AuthRegister(MethodView):
         try:
             cl = Client()
             cl.name = form['org']
+            cl.slug = cl.name
             cl.save()
         except DuplicateKeyError as e:
             logging.exception(e)

@@ -40,14 +40,14 @@ def parse_email(val):
 
 def parse_location(val):
     try:
-        city = val.split(", ")[0]
-        state = val.split(", ")[-1]
+        city = val.split(" ")[0]
+        state = val.split(" ")[-1]
     except:
         city = None
         state = None
 
     return {
-        "location":val,
+        "location":"{}, {}".format(city, state),
         "city":city,
         "state":state
     }
@@ -93,11 +93,12 @@ class UserImport(dict):
 
     key_parsers = {
         "email":parse_email,
-        "location":parse_location,
+        "location_name":parse_location,
     }
 
-    def __init__(self, efid):
+    def __init__(self, obj):
         super(UserImport, self).__init__()
+        self.parse(obj)
         try:
             self.con = psycopg2.connect(
                 database=config.SOURCE_DATABASE,
@@ -109,7 +110,10 @@ class UserImport(dict):
             self.cur = self.con.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         except Exception as e:
             logging.error(e)
+
+        efid = self.get('efid')
         for t in TABLES:
+            logging.info(efid)
             id_column = t.get("id_column", "efid")
             q = "SELECT * FROM {} WHERE {}=%s".format(t['table'], id_column)
             self.cur.execute(q, (efid,))
@@ -122,19 +126,26 @@ class UserImport(dict):
         self.cur.execute("set schema 'magnus'")
         query = """
             select
-                client_id,
+                codename,
                 fbid
             from
                 fb_app_users
                 join client_app_users using (app_user_id)
+                join clients using (client_id)
             where efid = %s
         """
         self.cur.execute(query, (efid,))
         rows = self.cur.fetchall()
+        #TODO lookup capuchin client based on codename aka slug
         self['clients'] = [
-            {'asid': r['fbid'], 'id': r['client_id']}
-            for r in rows
+            {'asid':1234564563434, 'id':str(c._id)}
+            for c in Client.find()
         ]
+
+        #self['clients'] = [
+        #    {'asid': r['fbid'], 'id': r['client_id']}
+        #    for r in rows
+        #]
 
     def parse(self, obj):
         for k,v in obj.iteritems():

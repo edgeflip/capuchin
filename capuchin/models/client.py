@@ -1,6 +1,12 @@
 import humongolus as orm
 import humongolus.field as field
 from capuchin.util import password
+from slugify import slugify
+
+class Slug(orm.Field):
+
+    def clean(self, val, doc=None):
+        return slugify(val)
 
 class PageCategory(orm.EmbeddedDocument):
     id = field.Char()
@@ -54,6 +60,7 @@ class Client(orm.Document):
     ]
 
     name = field.Char()
+    slug = Slug()
     description = field.Char()
     social = SocialAccounts(type=SocialAccount)
     last_post = field.Date()
