@@ -181,7 +181,7 @@ class WordBubble(object):
             "aggregations":{
                 "words":{
                     "terms":{
-                        "field":"top_words.facet",
+                        "field":"likes.name.facet",
                         "size":100,
                     }
                 }

@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Create Segment{% endblock %}
 {% block head %}
+<script src="/static/js/vendor/jquery.autocomplete.multiselect.js"></script>
 <script>
     var id = "{{id}}";
     var filters = eval({{filters_json|safe}});
@@ -15,7 +16,12 @@
     $(document).ready(function(){
         $("#filter-submit").click(function(e){
             $(".term-input").each(function(i, el){
-                filters[$(el).data("field")] = $(el).val();
+                console.log($(el).autocomplete("instance").selectedItems);
+                var vals = [];
+                for(v in $(el).autocomplete("instance").selectedItems){
+                    vals.push(v);
+                }
+                filters[$(el).data("field")] = vals;
             });
             var name=$("#segment-name").val();
             $.pjax({

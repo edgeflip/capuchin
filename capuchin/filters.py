@@ -30,7 +30,7 @@ FILTERS = [
     },
     {
         "display":"Location",
-        "field":"location.location",
+        "field":"location_name.location",
         "type":"term",
         "aggregation_args":{}
     },

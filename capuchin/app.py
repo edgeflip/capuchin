@@ -4,7 +4,7 @@ from flask.ext.login import LoginManager, current_user
 from flask.ext.session import Session
 from capuchin.models.client import Admin
 from capuchin import db
-from capuchin.util import date_format
+from capuchin.util import date_format, to_json
 from elasticsearch import TransportError
 from slugify import slugify
 import humongolus
@@ -44,6 +44,7 @@ class Capuchin(Flask):
     def init_templates(self):
         self.jinja_env.filters['slugify'] = slugify
         self.jinja_env.filters['date_format'] = date_format
+        self.jinja_env.filters['to_json'] = to_json
 
     def init_session(self):
         self.config['SESSION_MONGODB'] = db.init_mongodb()
