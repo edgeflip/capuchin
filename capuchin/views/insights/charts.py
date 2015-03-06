@@ -2,6 +2,8 @@ from capuchin import db
 from capuchin import config
 import logging
 import json
+import random
+import time
 
 class InfluxChart(object):
 
@@ -50,6 +52,7 @@ class FBInsightsPieChart(InfluxChart):
         } for a in data[0]['points']]
         return data
 
+
 class FBInsightsMultiBarChart(InfluxChart):
 
     def query(self):
@@ -79,7 +82,57 @@ class FBInsightsMultiBarChart(InfluxChart):
                 "key":v,
                 "values":vals
             })
-        return ar;
+        return ar
+
+
+
+class DualAxisTimeChart(InfluxChart):
+
+    def __init__(self, client, typ, start, end, **kwargs):
+        self.start = start or int(time.time()) - 86400*30
+        self.end = end or int(time.time())
+        where = "time > {}s and time < {}s".format(self.start, self.end)
+        super(DualAxisTimeChart, self).__init__(client, typ, where, **kwargs)
+
+    def massage(self, data):
+        logging.info(data)
+        ar = []
+        highest_min_x = 0
+        for v in data:
+            min_x = min(a[0] for a in data[v][0]['points'])
+            if min_x > highest_min_x:
+                highest_min_x = min_x
+
+        for v in data:
+            vals = [
+                {"x":a[0], "y":a[1] + random.randint(10, 30) }
+                for a in data[v][0]['points']
+                if a[0] >= highest_min_x
+            ]
+            vals.reverse()
+            ar.append({
+                "key":v,
+                "values":vals,
+                "yAxis": 2 if v == 'Audience' else 1,
+                "type": "line" if v == 'Audience' else "area",
+                "color": "#4785AB" if v == 'Audience' else "#EEC03C",
+            })
+        return ar
+
+    def query(self):
+        res = {}
+        for t in self.typ:
+            series = t['series'].format(self.client._id)
+            query = "select time, max(value) from {} where {} group by time(1d)".format(series, self.where)
+            logging.info(query)
+
+            data = self.INFLUX.request(
+                "db/{0}/series".format(config.INFLUX_DATABASE),
+                params={'q':query}
+            )
+
+            res[t['display']] = data.json()
+        return res
 
 class HistogramChart(InfluxChart):
 
@@ -122,6 +175,7 @@ class HistogramChart(InfluxChart):
             except:pass
 
         return ar;
+
 
 class FreeHistogramChart(HistogramChart):
 
@@ -166,6 +220,73 @@ class FreeHistogramChart(HistogramChart):
         return ar;
 
 
+class SeriesGrowthComparisonChart(FreeHistogramChart):
+
+    def __init__(self, client, typ, start, end, where="", **kwargs):
+        self.start = start or int(time.time()) - 66400
+        self.end = end or int(time.time())
+        super(SeriesGrowthComparisonChart, self).__init__(client, typ, where, **kwargs)
+
+    def massage(self, results):
+        return results
+
+    def query(self):
+        results = {"key": "Percent Growth in last {}".format(self.buckets), "values": []}
+        for definition in self.typ:
+            logging.info(definition)
+            definition['series'] = definition['series'].format(self.client._id)
+            end_query = """
+                select
+                    value
+                from
+                    {}
+                where time < {}s
+                limit 1
+            """.format(definition['series'], self.end)
+            logging.info(end_query)
+            end_data = self.INFLUX.request(
+                "db/{0}/series".format(config.INFLUX_DATABASE),
+                params={'q':end_query}
+            ).json()
+
+            if len(end_data) > 0:
+                end_value = end_data[0]['points'][0][2]
+            else:
+                end_value = 0
+
+            start_query = """
+                select
+                    value
+                from
+                    {}
+                where time < {}s
+                limit 1
+            """.format(definition['series'], self.start)
+            logging.info(start_query)
+            start_data = self.INFLUX.request(
+                "db/{0}/series".format(config.INFLUX_DATABASE),
+                params={'q':start_query}
+            ).json()
+            if len(start_data) > 0:
+                start_value = start_data[0]['points'][0][2]
+            else:
+                start_value = 0
+
+            logging.info("start value={}".format(start_value))
+            logging.info("end value={}".format(end_value))
+            if start_value == 0 or end_value == 0:
+                rate_of_change = 0
+            else:
+                rate_of_change = (end_value - start_value) / float(start_value)
+            results['values'].append({
+                "label": definition["display"],
+                "value": rate_of_change*100
+            })
+
+        logging.info(results)
+        return [results]
+
+
 class WordBubble(object):
 
     def __init__(self, client):
@@ -206,6 +327,28 @@ class WordBubble(object):
 
     def dump(self):
         return json.dumps(self.data)
+
+
+class DummyPieChart(object):
+    def __init__(self, title, data):
+        self.title = title
+        self.data = [{"label": k, "value": v} for k, v in data.iteritems()]
+
+    def dump(self):
+        return json.dumps(self.data)
+
+
+class DummyHorizontalBarChart(object):
+    def __init__(self, title, data):
+        self.title = title
+        self.data = [{
+            "key": self.title,
+            "values": [{"label": k, "value": v} for k, v in data.iteritems()]
+        }]
+
+    def dump(self):
+        return json.dumps(self.data)
+
 
 class HorizontalBarChart(object):
 

@@ -39,4 +39,8 @@ CELERYBEAT_SCHEDULE = {
         'task': 'capuchin.workers.users.members_lifetime',
         'schedule': datetime.timedelta(minutes=1),
     },
+    'espionage': {
+        'task': 'capuchin.workers.spy_on_competitors',
+        'schedule': datetime.timedelta(minutes=10),
+    },
 }

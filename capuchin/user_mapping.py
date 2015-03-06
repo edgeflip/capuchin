@@ -45,6 +45,8 @@ USER = {
         "properties":{
             "asid":{"type":"string", "index":"not_analyzed"},
             "id":{"type":"string", "index":"not_analyzed"},
+            "source":{"type":"string", "index":"not_analyzed"},
+            "authed":{"type":"date"},
         }
     },
     "first_name": {"type": "string",},
@@ -162,9 +164,17 @@ USER = {
             }
         }
     },
+    "actions": {
+
+    },
     "likes": {
         "properties":{
-            "category": {"type": "string", "index": "not_analyzed"},
+            "fb_category": {"type": "string", "index": "not_analyzed"},
+            "ef_categories": {
+                "properties": {
+                    "name": {"type": "string", "index": "not_analyzed"},
+                },
+            },
             "name": {
                 "type": "multi_field",
                 "fields": {

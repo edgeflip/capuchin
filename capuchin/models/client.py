@@ -2,6 +2,10 @@ import humongolus as orm
 import humongolus.field as field
 from capuchin.util import password
 
+class Competitor(orm.EmbeddedDocument):
+    id = field.Char()
+    name = field.Char()
+
 class PageCategory(orm.EmbeddedDocument):
     id = field.Char()
     name = field.Char()
@@ -56,6 +60,7 @@ class Client(orm.Document):
     name = field.Char()
     description = field.Char()
     social = SocialAccounts(type=SocialAccount)
+    competitors = orm.List(type=Competitor)
     last_post = field.Date()
 
 
