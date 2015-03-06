@@ -4,6 +4,7 @@ from flask.ext.login import current_user
 from capuchin import config
 from capuchin import filters
 from capuchin.models.segment import Segment
+from capuchin.views.tables.audience import Users, Segments
 import logging
 import slugify
 import math
@@ -67,8 +68,9 @@ def get_suggestions(field, text):
     )
     return res['aggregations']
 
-def update_segment(id, filters):
+def update_segment(id, filters, name):
     s = Segment(id=id)
+    s.name = name
     for k,v in filters.iteritems():
         s.add_filter(k,v)
     s.save()
@@ -77,15 +79,10 @@ def update_segment(id, filters):
 class Default(MethodView):
 
     def get(self):
-        segments = current_user.client.segments(query={"name":{"$ne":None}})
-        records = Segment(data={'client':current_user.client}).records()
         return render_template(
             "audience/index.html",
-            segments=segments,
-            records=records.hits,
-            total=records.total,
-            id='all',
-            pagination=create_pagination(records.total, 0),
+            segments=Segments(current_user.client),
+            users=Users(current_user.client),
         )
 
 class Create(MethodView):
@@ -94,18 +91,22 @@ class Create(MethodView):
         segment, _id = get_segment(id)
         if not id: return redirect(url_for(".id", id=_id))
         records = segment.records(from_=page*config.RECORDS_PER_PAGE)
+        users = Users(current_user.client, records=records)
         tmpl = template if template else "audience/create.html"
         lists = segment.get_lists()
+        fs = {}
+        for k,v in segment.filters.iteritems():
+            k = k.replace("___", ".")
+            fs[k] = v
         return render_template(
             tmpl,
             filters=filters.FILTERS,
-            filters_json=json.dumps(segment.filters),
+            filters_json=json.dumps(fs),
             values=segment.filters,
             ranges=segment.get_ranges(),
             lists=lists,
-            records=records.hits,
+            users=users,
             id=id,
-            total=records.total,
             pagination=create_pagination(records.total, page),
             name=segment.name,
             page=page
@@ -113,7 +114,8 @@ class Create(MethodView):
 
     def post(self, id, page=0):
         filters = json.loads(request.form.get('filters', '{}'))
-        if id!='all': q = update_segment(id, filters)
+        name = request.form.get('name')
+        if id!='all': q = update_segment(id, filters, name)
         return self.get(id=id, page=page, template="audience/records.html")
 
 class Autocomplete(MethodView):

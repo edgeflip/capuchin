@@ -21,6 +21,11 @@ class ESObject(Bunch):
         super(ESObject, self).__init__(**data)
 
     @classmethod
+    def save(cls, data):
+        ES = db.init_elasticsearch()
+        res = ES.index(index=config.ES_INDEX, doc_type=cls.TYPE, body=data, id=data.efid)
+
+    @classmethod
     def get_records(cls, q, from_=0, size=10):
         ES = db.init_elasticsearch()
         res = ES.search(
@@ -31,7 +36,7 @@ class ESObject(Bunch):
             body=q
         )
         b = Bunch.fromDict(res['hits'])
-        b.hits = [cls.fromDict(d['_source']) for d in b.hits]
+        b.hits = [cls(data=d['_source']) for d in b.hits]
         return b
 
     @classmethod

@@ -5,16 +5,18 @@ from capuchin import config
 from capuchin import filters
 from capuchin.models.post import Post
 from capuchin.views.insights.charts import HistogramChart
+from capuchin.views.tables.dashboard import Posts
 import logging
 import slugify
 import math
 import json
 import time
 
-posts = Blueprint(
-    'posts',
+engagement = Blueprint(
+    'engagement',
     __name__,
     template_folder=config.TEMPLATES,
+    url_prefix="/engagement",
 )
 
 def create_pagination(total_records, current_page=0):
@@ -27,26 +29,24 @@ def create_pagination(total_records, current_page=0):
     }
     return page
 
-class PostsIndex(MethodView):
+class Index(MethodView):
 
     def get(self, page=0, template=None):
         q = request.args.get("q", "*")
         q = "*" if not q else q
-        records = Post.records(client=current_user.client, q=q, from_=page*config.RECORDS_PER_PAGE)
+        posts = Posts(current_user.client)
         tmpl = template if template else "posts/index.html"
         return render_template(
             tmpl,
-            records=records.hits,
-            total=records.total,
-            pagination=create_pagination(records['total'], page),
+            posts=posts,
             page=page,
-            q = q if q != "*" else ""
+            q=q,
         )
 
     def post(self, page=0):
         return self.get(page=page, template="posts/records.html")
 
-class PostsView(MethodView):
+class View(MethodView):
 
     def get(self, id):
         post = Post(id=id)
@@ -56,7 +56,7 @@ class PostsView(MethodView):
             post=post,
         )
 
-def engagement(post):
+def engagement_graph(post):
     date_format = "%Y-%m-%dT%H:%M:%S+0000"
     tm = time.mktime(
         time.strptime(
@@ -78,9 +78,9 @@ def engagement(post):
     )
 
 
-class PostsChart(MethodView):
+class Chart(MethodView):
     charts = {
-        "engagement":engagement
+        "engagement":engagement_graph
     }
 
     def get(self, chart_id):
@@ -90,7 +90,7 @@ class PostsChart(MethodView):
         return jsonify(**dict(data=res.data, date_format=res.date_format))
 
 
-posts.add_url_rule("/posts", view_func=PostsIndex.as_view('index'))
-posts.add_url_rule("/posts/<int:page>", view_func=PostsIndex.as_view("page"))
-posts.add_url_rule("/posts/view/<id>", view_func=PostsView.as_view("view"))
-posts.add_url_rule("/posts/chart/<chart_id>", view_func=PostsChart.as_view("chart"))
+engagement.add_url_rule("/", view_func=Index.as_view('index'))
+engagement.add_url_rule("/<int:page>", view_func=Index.as_view("page"))
+engagement.add_url_rule("/view/<id>", view_func=View.as_view("view"))
+engagement.add_url_rule("/chart/<chart_id>", view_func=Chart.as_view("chart"))

@@ -29,14 +29,8 @@ FILTERS = [
         "aggregation_args":{}
     },
     {
-        "display":"State",
-        "field":"location.state",
-        "type":"term",
-        "aggregation_args":{}
-    },
-    {
-        "display":"City",
-        "field":"location.city",
+        "display":"Location",
+        "field":"location.location",
         "type":"term",
         "aggregation_args":{}
     },

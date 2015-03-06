@@ -55,79 +55,39 @@ $(document).ready(function(){
 
 {% block content %}
     {% from "widgets/bucket.html" import bucket %}
-    <div class="col-md-8">
-        <div class="row">
-            <div class="col-md-12">
-                <h2>Recent Activity</h2>
-                {{ posts.render(size=5)|safe }}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-6">
-                <h3>Lists</h3>
-                <table class='table table-striped'>
-                    <thead>
-                        <th>Name</th>
-                        <th>Users</th>
-                        <th></th>
-                    </thead>
-                    <tbody>
-                        {% for l in lists %}
-                        <tr>
-                            <td>{{l.name}}</td>
-                            <td>{{"{:,}".format(l.users)}}</td>
-                            <td>
-                                <a class='btn btn-primary' href="{{url_for('lists.index')}}" role="button">View</a>
-                                <a class='btn btn-danger' href='' role="button">Share</a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            <div class="col-md-6">
-                <h3>Segments</h3>
-                <table class='table table-striped'>
-                    <thead>
-                        <th>Name</th>
-                        <th>Users</th>
-                        <th></th>
-                    </thead>
-                    <tbody>
-                        {% for s in segments %}
-                        <tr>
-                            <td>{{s.name}}</td>
-                            <td>{{"{:,}".format(s.count)}}</td>
-                            <td>
-                                <a class='btn btn-primary' href="{{url_for('audience.id', id=s._id|string)}}" role="button">View</a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <div class="row" id="charts"></div>
-    </div>
-    <div class="col-md-4">
-        <div class="col-md-12">
+    <div class="row buckets">
+        <div class="col-md-3">
             <div class="thumbnail">
                 {{ bucket("Audience", "Supporters", like_change['total'], like_change['change'], "#", "Grow") }}
             </div>
         </div>
-        <div class="col-md-12">
+        <div class="col-md-3">
             <div class="thumbnail">
                 {{ bucket("Engagement", "Engaged Supporters", engagement_change['total'], engagement_change['change'], "#", "Boost") }}
             </div>
         </div>
-        <div class="col-md-12">
+        <div class="col-md-3">
             <div class="thumbnail">
                 {{ bucket("Impact", "Actions this week", 19898, 5, "#", "Discover") }}
             </div>
         </div>
-        <div class="col-md-12">
-            <div class="thumbnail">
+        <div class="col-md-3">
+            <div class="thumbnail buzz">
                 {{ bucket("Buzz", "Actions this week", 19898, 5, "#", "Discover") }}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            <div class="row">
+                <h2>Recent Activity <a class="btn btn-primary" href="{{ url_for('engagement.index') }}">See more</a></h2>
+                {{ posts.render(size=5, pagination=False)|safe }}
+            </div>
+            <div class="row" id="charts"></div>
+        </div>
+        <div class="col-md-3">
+            <div class="thumbnail">
+                {{ bucket("Audience", "Supporters", like_change['total'], like_change['change'], "#", "Grow") }}
             </div>
         </div>
     </div>

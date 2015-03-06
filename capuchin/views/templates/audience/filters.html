@@ -1,5 +1,8 @@
 <h2>Filters</h2>
 <ul class="list-group">
+    <div class="list-group-item">
+        <input type="text" class="form-control" placeholder="Segment Name" id="segment-name" value="{% if name %}{{name}}{% endif %}" required>
+    </div>
     {% for filter in filters %}
     <li class="list-group-item">
         <h4>{{filter['display']}}</h4>
@@ -13,6 +16,6 @@
     </li>
     {% endfor %}
     <li class="list-group-item">
-        <a href="#" class="btn btn-success center-block" id="filter-submit">Filter</a>
+        <a href="#" class="btn btn-success center-block" id="filter-submit">Save</a>
     </li>
 </ul>

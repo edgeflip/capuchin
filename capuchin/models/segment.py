@@ -1,3 +1,4 @@
+from flask import url_for
 import humongolus as orm
 import humongolus.field as field
 from capuchin import config
@@ -16,6 +17,11 @@ class Segment(orm.Document):
     name = field.Char()
     filters = orm.Field(default={})
     client = field.DocumentId(type=Client)
+    last_notification = field.Date()
+
+    @property
+    def url(self):
+        return url_for('audience.id', id=str(self._id))
 
     def add_filter(self, key, value):
         key = key.replace(".", "___")#can't store fieldnames with dot notation
@@ -31,7 +37,10 @@ class Segment(orm.Document):
         for k,v in self.filters.iteritems():
             k = k.replace("___", ".")#can't store fieldnames with dot notation, restore for query
             filt = filters.get_filter(filters.FILTERS, k)
-            if v: and_.append(filters.FILTER_TYPES[filt['type']](k,v))
+            if v:
+                try:
+                    and_.append(filters.FILTER_TYPES[filt['type']](k,v))
+                except:pass
 
         query = {"filtered":{"filter":{"and":and_}}}
         self.logger.info(query)
@@ -99,13 +108,5 @@ class Segment(orm.Document):
             body=q
         )
         return res['count']
-
-    @property
-    def last_notification(self):
-        alert = self.notifications().sort('__created__', -1).limit(1)
-        if alert.count():
-            self.logger.info(alert[0])
-            return alert[0]
-        return None
 
 Client.segments = orm.Lazy(type=Segment, key='client')

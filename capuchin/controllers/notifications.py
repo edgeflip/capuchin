@@ -27,7 +27,18 @@ class NotificationsCreate(MethodView):
             "Seriously, {OrgName} will do anything",
             "Checkout this post, you're going to LOVE it!",
         ]
-        return render_template("notifications/create.html", segments=Segment.find({'name':{'$ne':None}}), posts=posts, messages=messages)
+        segment_id = request.args.get('segment')
+        post_id = request.args.get('post')
+        engage = request.args.get("engage")
+        return render_template(
+            "notifications/create.html",
+            segments=Segment.find({'name':{'$ne':None}}),
+            posts=posts,
+            messages=messages,
+            segment_id=segment_id,
+            post_id=post_id,
+            engage=engage,
+        )
 
     def post(self):
         n = Notification()
@@ -38,7 +49,7 @@ class NotificationsCreate(MethodView):
         n.post_id = request.form['posts']
         n.smart = True if request.form.get('smart_advertising') else False
         n.save()
-        #n.send()
+        n.send()
         return redirect(url_for(".index"))
 
 notif.add_url_rule("/notifications", view_func=NotificationsDefault.as_view('index'))
