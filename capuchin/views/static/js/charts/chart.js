@@ -158,6 +158,37 @@ function mouseout(p) {
 
 
 (function($){
+    $.fn.horizontal_percent_multibar = function(options){
+        options.build_chart = function(settings, data){
+            nv.addGraph(function() {
+                var chart = nv.models.multiBarHorizontalChart()
+                .x(function(d) { return d.label })
+                .y(function(d) { return d.value })
+                .margin({top: 30, right: 20, bottom: 50, left: 175})
+                .showValues(true)           //Show bar value next to each bar.
+                .tooltips(true)             //Show tooltips on hover.
+                .transitionDuration(350)
+                .showControls(false)        //Allow user to switch between "Grouped" and "Stacked" mode.
+                .showLegend(false);
+
+                chart.showYAxis(false);
+                chart.valueFormat(d3.format('p'));
+
+                d3.select('#chart'+settings.id+' svg')
+                .datum(data.data)
+                .transition().duration(500)
+                .call(chart);
+
+                nv.utils.windowResize(chart.update);
+
+                return chart;
+            });
+        };
+        return $(this).chart(options);
+    };
+})(jQuery);
+
+(function($){
     $.fn.pie = function(options){
         options.build_chart = function(settings, data){
             nv.addGraph(function() {
@@ -181,6 +212,77 @@ function mouseout(p) {
                 return chart;
             });
         };
+        return $(this).chart(options);
+    };
+})(jQuery);
+
+
+(function($){
+    $.fn.lineplusarea = function(options){
+        options.build_chart = function(settings, data){
+            nv.addGraph(function() {
+                var chart = nv.models.multiChart()
+                    .margin({top: 30, right: 60, bottom: 50, left: 70});
+
+                //Format x-axis labels with custom function.
+                chart.xAxis
+                .tickFormat(function(d) {
+                    return d3.time.format(data.date_format)(new Date(d))
+                });
+
+                // Get normalised data for chart
+                var seriesData = data.data;
+
+                // Get max values for each axis
+                var minY1 = 0;
+                var minY2 = 0;
+                var maxY1 = 0;
+                var maxY2 = 0;
+                var highestMinX = 0;
+                var highestMaxX = 0;
+                for(var i = 0; i < seriesData.length; i++) {
+                    var _axis = seriesData[i].yAxis;
+                    var _values = seriesData[i].values;
+                    var extent = d3.extent(_values, function(d) { return d.x });
+                    if(extent[0] > highestMinX) {
+                        highestMinX = extent[0];
+                    }
+                    if(extent[1] > highestMaxX) {
+                        highestMaxX = extent[1];
+                    }
+                    // Walk values and set largest to variables
+                    for(var j = 0; j < _values.length; j++) {
+                        // For maxY1
+                        if(_axis == 1) {
+                            if(_values[j].y > maxY1) {
+                                maxY1 = _values[j].y;
+                            }
+                        }
+                        // For maxY2
+                        if(_axis == 2) {
+                            if(_values[j].y > maxY2) {
+                                maxY2 = _values[j].y;
+                            }
+                        }
+                    }
+                }
+                var diffY1 = maxY1 - minY1;
+                var diffY2 = maxY2 - minY2;
+                // Set min, max values of axis
+                chart.yDomain1([minY1, maxY1+Math.ceil(diffY1/6)]);
+                chart.yDomain2([minY2, maxY2+Math.ceil(diffY2/6)]);
+
+                chart.xAxis.domain([highestMinX, highestMaxX]);
+
+                d3.select('#chart'+settings.id+' svg')
+                .datum(data.data)
+                .call(chart);
+
+                nv.utils.windowResize(chart.update);
+                return chart
+            });
+        };
+
         return $(this).chart(options);
     };
 })(jQuery);

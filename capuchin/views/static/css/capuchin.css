@@ -265,3 +265,7 @@ text.word-bubble{
 .bubble :hover {
     stroke: #000;
 }
+
+.nvd3.multiChart .axis .nv-axis line { stroke: none; fill: none; }
+
+.nv-legend-text { font-family: 'Montserrat', sans-serif; }

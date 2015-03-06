@@ -90,6 +90,77 @@ def likes():
         date_format = "%m/%d/%y"
     )
 
+def growth_vs_competitors(start, end):
+    comparables = \
+        [{ 'series': 'insights.{}.page_fans.lifetime', 'display': 'You'}] +\
+        [{ 'series': 'insights.{}.competitors.' + competitor.id + '.lifetime', 'display': competitor.name} for competitor in current_user.client.competitors]
+
+    return SeriesGrowthComparisonChart(
+        current_user.client,
+        comparables,
+        buckets='1d',
+        start=start,
+        end=end,
+        date_format = "%m/%d/%y"
+    )
+
+def growth_over_time(start, end):
+    # two y axes
+    left_axis = { 'series': 'insights.{}.page_fan_adds.day', 'display': 'Page Likes'}
+    right_axis = { 'series': 'insights.{}.members.lifetime', 'display': 'Audience'}
+
+    return DualAxisTimeChart(
+        current_user.client,
+        [left_axis, right_axis],
+        start=start,
+        end=end,
+    )
+
+def audience_by_source(start, end):
+    return DummyPieChart('Audience by Source', {
+        'Smart Sharing': 12,
+        'Email': 87,
+        'Facebook': 45,
+    })
+
+
+def age_and_gender():
+    return [
+        {'13-17': 56, '18-24': 22},
+        {'13-17': 21, '18-24': 22},
+    ]
+
+def interests():
+    return DummyHorizontalBarChart('Interests', {
+        'Environmental Issues': .23,
+        'Major League Baseball': .46,
+        'Current Events': .35,
+    })
+
+def actions():
+    return DummyHorizontalBarChart('Interests', {
+        'Donated to Charity': .42,
+        'Attended a Concert': .12,
+        'Went on a Vacation': .35,
+    })
+
+
+def hours_active():
+    return FBInsightsPieChart(
+        current_user.client,
+        "page_fans_online.day",
+    )
+    return FreeHistogramChart(
+        current_user.client,
+        [
+            {
+                "display":"Page Fans Online",
+                "q":"SELECT sum(value) FROM insights.{}.page_fans_online.day group by type",
+
+            },
+        ]
+    )
+
 def page_by_type():
     return FBInsightsPieChart(
         current_user.client,

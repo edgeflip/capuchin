@@ -8,6 +8,10 @@ class Slug(orm.Field):
     def clean(self, val, doc=None):
         return slugify(val)
 
+class Competitor(orm.EmbeddedDocument):
+    id = field.Char()
+    name = field.Char()
+
 class PageCategory(orm.EmbeddedDocument):
     id = field.Char()
     name = field.Char()
@@ -63,6 +67,7 @@ class Client(orm.Document):
     slug = Slug()
     description = field.Char()
     social = SocialAccounts(type=SocialAccount)
+    competitors = orm.List(type=Competitor)
     last_post = field.Date()
 
 

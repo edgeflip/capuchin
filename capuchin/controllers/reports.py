@@ -14,6 +14,7 @@ from capuchin.views.insights.charts import \
     FBInsightsMultiBarChart,\
     HistogramChart,\
     FreeHistogramChart,\
+    SeriesGrowthComparisonChart,\
     WordBubble, \
     HorizontalBarChart
 
@@ -39,23 +40,26 @@ class Index(MethodView):
         )
 
 class Chart(MethodView):
-    charts = {
-        "page_by_type":page_by_type,
-        "engaged_users":engaged_users,
-        "country":country,
-        "online":online,
-        "notifications":notifications,
-        "likes":likes,
-        "like_gains":like_gains,
+    time_based_charts = {
+        "growth_vs_competitors": growth_vs_competitors,
+        "total_growth_over_time": growth_over_time,
+        "audience_by_source": audience_by_source,
+    }
+    regular_charts = {
         "city_population": city_population,
-        "referrers":referrers,
-        "top_words":top_words,
-        "top_likes":top_likes,
+        "interests": interests,
+        "actions": actions,
+        "hours_active": hours_active,
     }
 
 
     def get(self, chart_id):
-        res = self.charts[chart_id]()
+        start_ts = request.args.get("start_ts", None)
+        end_ts = request.args.get("end_ts", None)
+        if chart_id in self.time_based_charts:
+            res = self.time_based_charts[chart_id](start=start_ts, end=end_ts)
+        else:
+            res = self.regular_charts[chart_id]()
         obj = {'data':res.data}
         try:
             obj['date_format'] = res.date_format

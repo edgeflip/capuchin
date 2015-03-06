@@ -17,11 +17,11 @@ $(document).ready(function(){
         name:"Top Referrers",
         data_url:"{{url_for('.chart', chart_id='referrers')}}"
     }).render(12);
+    */
     $("#charts").horizontal_multibar({
         name:"Top Likes",
         data_url:"{{url_for('.chart', chart_id='top_likes')}}"
     }).render(12);
-    */
     $("#charts").multibar({
         name:"Page Engagement",
         data_url:"{{url_for('.chart', chart_id='engaged_users')}}"
