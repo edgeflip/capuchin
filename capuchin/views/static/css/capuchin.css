@@ -269,3 +269,8 @@ text.word-bubble{
 .nvd3.multiChart .axis .nv-axis line { stroke: none; fill: none; }
 
 .nv-legend-text { font-family: 'Montserrat', sans-serif; }
+
+circle.nv-point
+{
+    stroke-opacity: 1!important;
+}

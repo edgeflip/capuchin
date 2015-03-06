@@ -4,6 +4,7 @@ import logging
 import json
 import random
 import time
+import datetime
 
 class InfluxChart(object):
 
@@ -53,6 +54,36 @@ class FBInsightsPieChart(InfluxChart):
         return data
 
 
+class FBInsightsDiscreteBarChart(InfluxChart):
+
+    def query(self):
+        q = "SELECT mean(value), type FROM {}.{}.{} {} GROUP BY type;".format(
+            self.prefix,
+            self.client._id,
+            self.typ,
+            self.where
+        )
+        logging.debug(q)
+        data = self.INFLUX.request(
+            "db/{0}/series".format(config.INFLUX_DATABASE),
+            params={"q":q},
+        )
+        return data.json()
+
+    def massage(self, data):
+        values = [{
+            "label":a[2],
+            "value":a[1]
+        } for a in data[0]['points']]
+
+        values = sorted(values, key=lambda x: int(x['label']))
+        data = [{
+            "key": "Stuff",
+            "values": values
+        }]
+        return data
+
+
 class FBInsightsMultiBarChart(InfluxChart):
 
     def query(self):
@@ -85,6 +116,38 @@ class FBInsightsMultiBarChart(InfluxChart):
         return ar
 
 
+class DummyDualAxisTimeChart(InfluxChart):
+
+    def massage(self, data):
+        logging.info(data)
+        ar = []
+
+        for v, d in data.iteritems():
+            vals = [
+                {"x":a['ts'], "y":a['value'], "message": a.get('message', None), "views": a.get('views', None), "engagement": a.get('engagement', None)}
+                for a in d
+            ]
+            vals.reverse()
+            tooltips = {}
+            for val in vals:
+                pretty_date = datetime.datetime.strftime(datetime.datetime.fromtimestamp(val["x"]/1000), self.date_format)
+                if val['message']:
+                    tooltips[pretty_date] = "<br />".join([val['message'], pretty_date, "Views: {}".format(val['views']), "Engagement: {}%".format(val['engagement'])])
+            ar.append({
+                "key":v,
+                "values":vals,
+                "yAxis": self.typ[v]['yAxis'],
+                "type": self.typ[v]['type'],
+                "color": self.typ[v]['color'],
+            })
+        return {"points": ar, "messages": tooltips}
+
+    def query(self):
+        res = {}
+        for display_name, info in self.typ.iteritems():
+            res[display_name] = info['data']
+        return res
+
 
 class DualAxisTimeChart(InfluxChart):
 
@@ -113,16 +176,16 @@ class DualAxisTimeChart(InfluxChart):
             ar.append({
                 "key":v,
                 "values":vals,
-                "yAxis": 2 if v == 'Audience' else 1,
-                "type": "line" if v == 'Audience' else "area",
-                "color": "#4785AB" if v == 'Audience' else "#EEC03C",
+                "yAxis": self.typ[v]['yAxis'],
+                "type": self.typ[v]['type'],
+                "color": self.typ[v]['color'],
             })
         return ar
 
     def query(self):
         res = {}
-        for t in self.typ:
-            series = t['series'].format(self.client._id)
+        for display_name, info in self.typ.iteritems():
+            series = info['series'].format(self.client._id)
             query = "select time, max(value) from {} where {} group by time(1d)".format(series, self.where)
             logging.info(query)
 
@@ -131,7 +194,7 @@ class DualAxisTimeChart(InfluxChart):
                 params={'q':query}
             )
 
-            res[t['display']] = data.json()
+            res[display_name] = data.json()
         return res
 
 class HistogramChart(InfluxChart):
@@ -223,7 +286,7 @@ class FreeHistogramChart(HistogramChart):
 class SeriesGrowthComparisonChart(FreeHistogramChart):
 
     def __init__(self, client, typ, start, end, where="", **kwargs):
-        self.start = start or int(time.time()) - 66400
+        self.start = start or int(time.time()) - 172800
         self.end = end or int(time.time())
         super(SeriesGrowthComparisonChart, self).__init__(client, typ, where, **kwargs)
 
@@ -231,7 +294,8 @@ class SeriesGrowthComparisonChart(FreeHistogramChart):
         return results
 
     def query(self):
-        results = {"key": "Percent Growth in last {}".format(self.buckets), "values": []}
+        pretty_dt = datetime.datetime.fromtimestamp(self.start).strftime(self.date_format)
+        results = {"key": "Percent Growth since {}".format(pretty_dt), "values": []}
         for definition in self.typ:
             logging.info(definition)
             definition['series'] = definition['series'].format(self.client._id)
