@@ -29,7 +29,7 @@ def get_insights():
         try:
             client_insights(client)
         except Exception as e:
-            logging.error(e)
+            logging.exception(e)
 
 @app.task
 def client_feed(client):
@@ -46,7 +46,7 @@ def get_feeds():
         try:
             client_feed(client)
         except Exception as e:
-            logging.error(e)
+            logging.exception(e)
 
 get_insights()
 get_feeds()

@@ -2,7 +2,7 @@ from celery import bootsteps
 from kombu import Consumer
 from capuchin import config
 from capuchin import db
-from capuchin.models.user import UserImport
+from capuchin.models.user import User, UserImport
 from capuchin.models.client import Client
 from capuchin.workers import app
 from capuchin.celeryconfig import efid_q
@@ -47,7 +47,7 @@ def members_lifetime():
             logging.info("Members Lifetime: {} = {}".format(c.name, count))
             db.write_influx(INFLUX, c, points, "members.lifetime", prefix="insights")
         except Exception as e:
-            logging.error(e)
+            logging.exception(e)
 
 
 members_lifetime()

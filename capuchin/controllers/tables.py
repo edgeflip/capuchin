@@ -17,9 +17,11 @@ tables = Blueprint(
     url_prefix="/tables",
 )
 
+table_module = "capuchin.views.tables"
+
 def get_table(cls):
-    parts = cls.split(".")
-    if "tables" in parts:
+        parts = "{}.{}".format(table_module, cls).split(".")
+        logging.info(parts)
         mod = __import__(".".join(parts[:-1]), globals(), locals(), fromlist=[parts[-1]])
         table = getattr(mod, parts[-1])
         t = table(current_user.client)
@@ -39,8 +41,9 @@ class Sort(MethodView):
             ret = t.render(
                 sort=(field, dir),
                 q=q,
-                size=request.args['size'],
-                from_=request.args['from_']
+                size=int(request.args['size']),
+                from_=int(request.args['from_']),
+                pagination=bool(request.args['pagination'])
             )
             logging.info(t)
             return Response(ret)

@@ -113,14 +113,13 @@ class Table(object):
 
     def render(self, q="*", from_=0, size=10, sort=None, pagination=True):
         self.pagination = pagination
-        logging.info("SORT: {}".format(sort))
         records, total = self.get_records(q, from_, size, sort)
-        me = "{}.{}".format(
+        me = ".".join("{}.{}".format(
             self.__module__,
             self.__class__.__name__
-        )
+        ).split(".")[3:])
         id = u"{}{}".format("table", random.randint(9999, 99999999))
-        th = [c.th(me, id, sort, q=json.dumps(q), from_=from_, size=size) for c in self.columns]
+        th = [c.th(me, id, sort, q=json.dumps(q), from_=0, size=size, pagination=pagination) for c in self.columns]
         tr = self.build_rows(records)
         table =  u" <table class=\"table table-striped table-hover\"><thead><tr>{}</tr></thead><tbody>{}</tbody></table>".format(
             u"".join(th),
