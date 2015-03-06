@@ -78,16 +78,6 @@ TABLES = [
         "parser":basic_parser
     },
     {
-        "table":"v2_user_inferred_interests",
-        "key":"interests",
-        "parser":basic_parser
-    },
-    {
-        "table":"v2_user_inferred_actions",
-        "key":"actions",
-        "parser":basic_parser
-    },
-    {
         "table":"v2_users",
         "key":"self",
         "parser":None
