@@ -126,6 +126,33 @@ function mouseout(p) {
     };
 })(jQuery);
 
+
+(function($){
+    $.fn.bar = function(options){
+        options.build_chart = function(settings, data){
+            nv.addGraph(function() {
+                var chart = nv.models.discreteBarChart()
+                    .x(function(d) { return d.label })
+                    .y(function(d) { return d.value })
+                    .color(['#4785AB']);
+
+                chart.yAxis
+                .tickFormat(d3.format(',.1f'));
+                d3.select("#chart"+settings.id+" svg")
+                .datum(data.data)
+                .transition().duration(500)
+                .call(chart);
+
+                nv.utils.windowResize(chart.update);
+
+                return chart;
+            });
+        };
+        return $(this).chart(options);
+    };
+})(jQuery);
+
+
 (function($){
     $.fn.horizontal_multibar = function(options){
         options.build_chart = function(settings, data){
@@ -276,6 +303,40 @@ function mouseout(p) {
 
                 d3.select('#chart'+settings.id+' svg')
                 .datum(data.data)
+                .call(chart);
+
+                nv.utils.windowResize(chart.update);
+                return chart
+            });
+        };
+
+        return $(this).chart(options);
+    };
+})(jQuery);
+
+
+(function($){
+    $.fn.manylines = function(options){
+        options.build_chart = function(settings, data){
+            nv.addGraph(function() {
+                var chart = nv.models.multiChart()
+                    .margin({top: 30, right: 60, bottom: 50, left: 70})
+                    .tooltipContent(function (key, x, val, graph) {
+                        if(key == "Benchmark Engagement %") {
+                            return "Benchmark Engagement";
+                        } else {
+                            return data.data.messages[x];
+                        }
+                    });
+
+                //Format x-axis labels with custom function.
+                chart.xAxis
+                .tickFormat(function(d) {
+                    return d3.time.format(data.date_format)(new Date(d))
+                });
+
+                d3.select('#chart'+settings.id+' svg')
+                .datum(data.data.points)
                 .call(chart);
 
                 nv.utils.windowResize(chart.update);

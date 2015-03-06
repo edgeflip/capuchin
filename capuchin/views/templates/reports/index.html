@@ -20,7 +20,7 @@ $(document).ready(function(){
         name:"Growth vs Competitors",
         data_url:"{{url_for('.chart', chart_id='growth_vs_competitors')}}"
     }).render(6);
-    $("#psycho_charts").pie({
+    $("#psycho_charts").bar({
         name:"Hours Active",
         data_url:"{{url_for('.chart', chart_id='hours_active')}}"
     }).render(12);
@@ -36,7 +36,10 @@ $(document).ready(function(){
         name:"Actions",
         data_url:"{{url_for('.chart', chart_id='actions')}}"
     }).render(6);
-
+    $("#page_charts").manylines({
+        name:"Posts",
+        data_url:"{{url_for('.chart', chart_id='post_performance')}}"
+    }).render(12);
 });
 </script>
 {% endblock %}
@@ -44,12 +47,14 @@ $(document).ready(function(){
 {% block content %}
     <div class="row">
         <h3>Audience Growth</h3>
-        <div class="col-md-8" id="audience_charts", style="font-family: 'Montserrat', sans-serif;">
-        </div>
+        <div class="col-md-8" id="audience_charts"></div>
+    </div>
+    <div class="row">
+        <h3>Page Performance</h3>
+        <div class="col-md-8" id="page_charts"></div>
     </div>
     <div class="row">
         <h3>Psychometrics</h3>
-        <div class="col-md-8" id="psycho_charts">
-        </div>
+        <div class="col-md-8" id="psycho_charts"></div>
     </div>
 {% endblock %}

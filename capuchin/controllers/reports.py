@@ -44,6 +44,7 @@ class Chart(MethodView):
         "growth_vs_competitors": growth_vs_competitors,
         "total_growth_over_time": growth_over_time,
         "audience_by_source": audience_by_source,
+        "post_performance": post_performance,
     }
     regular_charts = {
         "city_population": city_population,

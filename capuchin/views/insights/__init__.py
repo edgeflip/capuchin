@@ -106,15 +106,34 @@ def growth_vs_competitors(start, end):
 
 def growth_over_time(start, end):
     # two y axes
-    left_axis = { 'series': 'insights.{}.page_fan_adds.day', 'display': 'Page Likes'}
-    right_axis = { 'series': 'insights.{}.members.lifetime', 'display': 'Audience'}
+    comparables = {
+        'Page Likes': {
+            'series': 'insights.{}.page_fan_adds.day',
+            'yAxis': 2,
+            'type': 'line',
+            'color': "#4785AB",
+        },
+        'Audience': {
+            'series': 'insights.{}.members.lifetime',
+            'yAxis': 1,
+            'type': 'area',
+            'color': "#EEC03C",
+        },
+    }
 
     return DualAxisTimeChart(
         current_user.client,
-        [left_axis, right_axis],
+        comparables,
         start=start,
         end=end,
     )
+
+def audience_by_source(start, end):
+    return DummyPieChart('Audience by Source', {
+        'Smart Sharing': 12,
+        'Email': 87,
+        'Facebook': 45,
+    })
 
 def audience_by_source(start, end):
     return DummyPieChart('Audience by Source', {
@@ -146,20 +165,134 @@ def actions():
 
 
 def hours_active():
-    return FBInsightsPieChart(
+    return FBInsightsDiscreteBarChart(
         current_user.client,
-        "page_fans_online.day",
+        typ="page_fans_online.day",
     )
+
+
     return FreeHistogramChart(
         current_user.client,
         [
             {
                 "display":"Page Fans Online",
-                "q":"SELECT sum(value) FROM insights.{}.page_fans_online.day group by type",
+                "q":"SELECT sum(value), type FROM insights.{}.page_fans_online.day group by type",
 
             },
         ]
     )
+def post_performance(start, end):
+    #posts = Post.records(current_user.client, "*", 0, 10, None)
+    #for post in posts.hits:
+        #s = ",".join([post.id, str(len(post.comments)), str(len(post.likes)), post.created_time, post.message])
+        #logging.info(s)
+    views_dataset = [
+        {
+            'post_id': '123658315_2346352357',
+            'ts': 1425069150000,
+            'value': 145,
+            'views': 145,
+            'engagement': 32,
+            'message': 'Test post message',
+        },
+        {
+            'post_id': '123658315_2346352359',
+            'ts': 1425241957000,
+            'value': 42,
+            'views': 42,
+            'engagement': 40,
+            'message': 'Another test',
+        },
+        {
+            'post_id': '123658315_2346352358',
+            'ts': 1425501161000,
+            'value': 360,
+            'views': 360,
+            'engagement': 28,
+            'message': 'Test 3',
+        },
+        {
+            'post_id': '123658315_2346352358',
+            'ts': 1425588670000,
+            'value': 98,
+            'views': 98,
+            'engagement': 26,
+            'message': 'Test 4',
+        },
+    ]
+    engagement_dataset = [
+        {
+            'post_id': '123658315_2346352357',
+            'ts': 1425069150000,
+            'value': 32,
+            'views': 145,
+            'engagement': 32,
+            'message': 'Test post message',
+        },
+        {
+            'post_id': '123658315_2346352359',
+            'ts': 1425241957000,
+            'value': 40,
+            'views': 42,
+            'engagement': 40,
+            'message': 'Another test',
+        },
+        {
+            'post_id': '123658315_2346352358',
+            'ts': 1425501161000,
+            'value': 28,
+            'views': 360,
+            'engagement': 28,
+            'message': 'Test 3',
+        },
+        {
+            'post_id': '123658315_2346352358',
+            'ts': 1425588670000,
+            'value': 26,
+            'views': 98,
+            'engagement': 26,
+            'message': 'Test 4',
+        },
+    ]
+    benchmark_dataset = [
+        {
+            'ts': 1425069150000,
+            'value': 32,
+            'engagement': 32,
+        },
+        {
+            'ts': 1425588670000,
+            'value': 32,
+            'engagement': 32,
+        },
+    ]
+
+    comparables = {
+        'Post Views': {
+            'data': views_dataset,
+            'yAxis': 1,
+            'type': 'line',
+            'color': "#4785AB",
+        },
+        'Post Engagement %': {
+            'data': engagement_dataset,
+            'yAxis': 2,
+            'type': 'line',
+            'color': "#CC3A17",
+        },
+        'Benchmark Engagement %': {
+            'data': benchmark_dataset,
+            'yAxis': 2,
+            'type': 'line',
+            'color': "#EEC03C",
+        },
+    }
+
+    return DummyDualAxisTimeChart(
+        current_user.client,
+        comparables,
+    )
+
 
 def page_by_type():
     return FBInsightsPieChart(

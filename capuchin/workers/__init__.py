@@ -48,7 +48,7 @@ def client_feed(client):
     if not isinstance(client, Client): client = Client(id=client)
     last = client.last_post
     logging.info("Last Posts for {}: {}".format(client.name, last))
-    #i = ClientPosts(client=client, since=last)
+    ClientPosts(client=client, since=last)
     client.last_post = datetime.datetime.utcnow()
     client.save()
 
@@ -62,4 +62,4 @@ def get_feeds():
 
 #get_insights()
 #get_feeds()
-spy_on_competitors()
+#spy_on_competitors()
