@@ -13,6 +13,11 @@ import math
 import random
 import datetime
 
+class Redirect(orm.EmbeddedDocument):
+    original_url = field.Char()
+    url = field.Char()
+    path = field.Char()
+
 class Notification(orm.Document):
     _db = "capuchin"
     _collection = "notifications"
@@ -26,22 +31,22 @@ class Notification(orm.Document):
     segment = field.ModelChoice(type=Segment)
     client = field.DocumentId(type=Client)
     post_id = field.Char()
+    url = field.Char()
+    redirect = Redirect()
     smart = field.Boolean(default=False)
 
     def get_post(self):
         return Post(id=self.post_id)
 
     def send(self):
-        for i in self.segment.records().hits:
-            try:
-                self.logger.info(i)
-                self.post(i)
-            except Exception as e:
-                self.logger.exception(e)
+        send_notifications.delay(str(self._id))
 
-        seg = Segment(id=self._get('segment')._value)
-        seg.last_notification = datetime.datetime.utcnow()
-        seg.save()
+    def get_url(self):
+        if self.post_id:
+            p = self.get_post()
+            return "https://facebook.com/{}".format(p.id)
+        else:
+            return self.url
 
     @property
     def clicks(self):

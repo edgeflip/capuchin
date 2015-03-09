@@ -13,6 +13,7 @@ CELERY_STORE_ERRORS_EVEN_IF_IGNORED = True
 CELERY_IMPORTS = (
     'capuchin.workers',
     'capuchin.workers.users',
+    'capuchin.workers.notifications',
 )
 
 efid_q = Queue('capuchin_efid_batch', Exchange('capuchin'), 'capuchin.efid_batch')
