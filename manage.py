@@ -7,6 +7,7 @@ import capuchin.config as config
 from capuchin.models.user import UserImport
 from capuchin.app import Capuchin
 from capuchin.models.client import Client
+from capuchin.models.interest import Interest
 from capuchin.models.city import City
 from capuchin.workers.client.insights import Insights
 from capuchin.workers.client.posts import ClientPosts
@@ -129,6 +130,13 @@ class LoadCities(Command):
                 except Exception as e:
                     logging.exception(e)
 
+class LoadInterests(Command):
+
+    def run(self):
+        with open("./data/interests.txt") as interests:
+            for l in interests:
+                i = Interest(data={'name':l.strip()})
+                i.save()
 
 class InitApp(Command):
 
@@ -143,6 +151,7 @@ manager.add_command('update', UpdateMapping())
 manager.add_command('insights', PageInsights())
 manager.add_command('feeds', PageFeed())
 manager.add_command('load_cities', LoadCities())
+manager.add_command('load_interests', LoadInterests())
 manager.add_command('init', InitApp())
 
 if __name__ == "__main__":

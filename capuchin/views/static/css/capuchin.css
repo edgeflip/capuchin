@@ -24,6 +24,15 @@ td.actions{
     padding-bottom: 0px;
     overflow: hidden;
     cursor: text;
+    width: 100%;
+}
+
+.ui-autocomplete-multiselect.ui-state-default input{
+    border: none;
+}
+
+.ui-autocomplete-multiselect.ui-state-default input:focus{
+    outline:0;
 }
 
 .ui-autocomplete-multiselect .ui-autocomplete-multiselect-item {
@@ -35,6 +44,13 @@ td.actions{
     margin-bottom: 3px;
     color: #333;
     background-color: #f6f6f6;
+}
+
+div.filters{
+    background-color: #eeeeee;
+    margin-bottom: 20px;
+    padding: 20px;
+    padding-top: 0px;
 }
 
 /* Bootstrap overrides */

@@ -1,21 +1,30 @@
-<h2>Filters</h2>
-<ul class="list-group">
-    <div class="list-group-item">
-        <input type="text" class="form-control" placeholder="Segment Name" id="segment-name" value="{% if name %}{{name}}{% endif %}" required>
+<h3>New Segment</h3>
+<div class="col-md-6 form-horizontal">
+{% for filter in filters[:4] %}
+    <div class="form-group">
+        <label for="location" class="col-md-2 control-label">{{filter['display']}}</label>
+        <div class="col-md-10">
+            {% include "widgets/{}_filter.html".format(filter['type']) %}
+        </div>
     </div>
-    {% for filter in filters %}
-    <li class="list-group-item">
-        <h4>{{filter['display']}}</h4>
-        {% if filter['type'] == "range" %}
-            {% include "widgets/range_filter.html" %}
-        {% elif filter['type'] == "term" %}
-            {% include "widgets/term_filter.html" %}
-        {% elif filter['type'] == "term_list" %}
-            {% include "widgets/term_list_filter.html" %}
-        {% endif %}
-    </li>
-    {% endfor %}
-    <li class="list-group-item">
-        <a href="#" class="btn btn-success center-block" id="filter-submit">Save</a>
-    </li>
-</ul>
+{% endfor %}
+</div>
+<div class="col-md-6 form-horizontal">
+{% for filter in filters[4:] %}
+    <div class="form-group">
+        <label for="location" class="col-md-2 control-label">{{filter['display']}}</label>
+        <div class="col-md-10">
+            {% include "widgets/{}_filter.html".format(filter['type']) %}
+        </div>
+    </div>
+{% endfor %}
+</div>
+
+{#
+    Salesforce
+    NationBuilder
+    Mailchimp
+    HighRise
+    WealthEngine
+    Excel/CSV
+#}

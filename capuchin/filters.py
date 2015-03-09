@@ -1,5 +1,11 @@
 FILTERS = [
     {
+        "display":"Location",
+        "field":"location_name.location",
+        "type":"term",
+        "aggregation_args":{}
+    },
+    {
         "display":"Age",
         "field":"age",
         "type":"range",
@@ -8,6 +14,18 @@ FILTERS = [
             "min_doc_count":0,
             "interval":1,
         }
+    },
+    {
+        "display":"Gender",
+        "field":"gender",
+        "type":"gender",
+        "aggregation_args":{}
+    },
+    {
+        "display":"Affiliations",
+        "field":"affiliations.name",
+        "type":"term",
+        "aggregation_args":{}
     },
     {
         "display":"Popularity",
@@ -21,24 +39,6 @@ FILTERS = [
                 "max" : 5000
             }
         }
-    },
-    {
-        "display":"Affiliations",
-        "field":"affiliations.name",
-        "type":"term",
-        "aggregation_args":{}
-    },
-    {
-        "display":"Location",
-        "field":"location_name.location",
-        "type":"term",
-        "aggregation_args":{}
-    },
-    {
-        "display":"Gender",
-        "field":"gender",
-        "type":"term_list",
-        "aggregation_args":{}
     },
 ]
 

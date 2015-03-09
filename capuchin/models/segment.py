@@ -79,6 +79,7 @@ class Segment(orm.Document):
                 q["aggregations"][key] = {
                     "terms":{"field":f["field"]}
                 }
+        if not q["aggregations"].keys(): return {}
         ES = db.init_elasticsearch()
         res = ES.search(
             config.ES_INDEX,

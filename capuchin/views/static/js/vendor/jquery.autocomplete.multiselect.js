@@ -16,7 +16,6 @@ $.widget("ui.autocomplete", $.ui.autocomplete, {
             self.selectedItems = {};
             self.multiselect = $("<div></div>")
                 .addClass("ui-autocomplete-multiselect ui-state-default ui-widget")
-                .css("width", self.element.width())
                 .insertBefore(self.element)
                 .append(self.element)
                 .bind("click.autocomplete", function(){
