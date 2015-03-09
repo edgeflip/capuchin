@@ -1,9 +1,10 @@
 from celery import Celery
 from capuchin import config
-from capuchin.models.client import Client
+from capuchin.models.client import Client, Competitor
 from capuchin import db
 from capuchin.workers.client.insights import Insights
 from capuchin.workers.client.posts import ClientPosts
+from capuchin.workers.client.competitors import Competitors
 import humongolus
 import logging
 import datetime
@@ -19,9 +20,10 @@ def client_insights(client):
     if not last:
         last = datetime.datetime.utcnow() - datetime.timedelta(days=90)
     logging.info("Last Insights for {}: {}".format(client.name, last))
-    i = Insights(client=client, id=client.social.facebook.id, since=last)
+    Insights(client=client, id=client.social.facebook.id, since=last)
     client.social.facebook.last_sync = datetime.datetime.utcnow()
     client.save()
+    logging.info("Saved client")
 
 @app.task
 def get_insights():
@@ -31,12 +33,32 @@ def get_insights():
         except Exception as e:
             logging.exception(e)
 
+
+@app.task
+def spy_on_competitors():
+    for client in Client.find():
+        try:
+            competitors = Competitors(client)
+            competitors.spy_on_competitors()
+        except Exception as e:
+            logging.exception(e)
+
+
+@app.task
+def spy_on_competitors():
+    for client in Client.find():
+        try:
+            competitors = Competitors(client)
+            competitors.spy_on_competitors()
+        except Exception as e:
+            logging.exception(e)
+
 @app.task
 def client_feed(client):
     if not isinstance(client, Client): client = Client(id=client)
     last = client.last_post
     logging.info("Last Posts for {}: {}".format(client.name, last))
-    i = ClientPosts(client=client, since=last)
+    ClientPosts(client=client, since=last)
     client.last_post = datetime.datetime.utcnow()
     client.save()
 
@@ -48,5 +70,6 @@ def get_feeds():
         except Exception as e:
             logging.exception(e)
 
-get_insights()
-get_feeds()
+#get_insights()
+#get_feeds()
+#spy_on_competitors()

@@ -90,6 +90,211 @@ def likes():
         date_format = "%m/%d/%y"
     )
 
+def growth_vs_competitors(start, end):
+    comparables = \
+        [{ 'series': 'insights.{}.page_fans.lifetime', 'display': 'You'}] +\
+        [{ 'series': 'insights.{}.competitors.' + competitor.id + '.lifetime', 'display': competitor.name} for competitor in current_user.client.competitors]
+
+    return SeriesGrowthComparisonChart(
+        current_user.client,
+        comparables,
+        buckets='1d',
+        start=start,
+        end=end,
+        date_format = "%m/%d/%y"
+    )
+
+def growth_over_time(start, end):
+    # two y axes
+    comparables = {
+        'Page Likes': {
+            'series': 'insights.{}.page_fan_adds.day',
+            'yAxis': 2,
+            'type': 'line',
+            'color': "#4785AB",
+        },
+        'Audience': {
+            'series': 'insights.{}.members.lifetime',
+            'yAxis': 1,
+            'type': 'area',
+            'color': "#EEC03C",
+        },
+    }
+
+    return DualAxisTimeChart(
+        current_user.client,
+        comparables,
+        start=start,
+        end=end,
+        date_format = "%m/%d"
+    )
+
+def audience_by_source(start, end):
+    return DummyPieChart('Audience by Source', {
+        'Smart Sharing': 12,
+        'Email': 87,
+        'Facebook': 45,
+    })
+
+def audience_by_source(start, end):
+    return DummyPieChart('Audience by Source', {
+        'Smart Sharing': 12,
+        'Email': 87,
+        'Facebook': 45,
+    })
+
+
+def age_and_gender():
+    return [
+        {'13-17': 56, '18-24': 22},
+        {'13-17': 21, '18-24': 22},
+    ]
+
+def interests():
+    return DummyHorizontalBarChart('Interests', {
+        'Environmental Issues': .23,
+        'Major League Baseball': .46,
+        'Current Events': .35,
+    })
+
+def actions():
+    return DummyHorizontalBarChart('Interests', {
+        'Donated to Charity': .42,
+        'Attended a Concert': .12,
+        'Went on a Vacation': .35,
+    })
+
+
+def hours_active():
+    return FBInsightsDiscreteBarChart(
+        current_user.client,
+        typ="page_fans_online.day",
+    )
+
+
+    return FreeHistogramChart(
+        current_user.client,
+        [
+            {
+                "display":"Page Fans Online",
+                "q":"SELECT sum(value), type FROM insights.{}.page_fans_online.day group by type",
+
+            },
+        ]
+    )
+def post_performance(start, end):
+    #posts = Post.records(current_user.client, "*", 0, 10, None)
+    #for post in posts.hits:
+        #s = ",".join([post.id, str(len(post.comments)), str(len(post.likes)), post.created_time, post.message])
+        #logging.info(s)
+    views_dataset = [
+        {
+            'post_id': '123658315_2346352357',
+            'ts': 1425069150000,
+            'value': 145,
+            'views': 145,
+            'engagement': 32,
+            'message': 'Test post message',
+        },
+        {
+            'post_id': '123658315_2346352359',
+            'ts': 1425241957000,
+            'value': 42,
+            'views': 42,
+            'engagement': 40,
+            'message': 'Another test',
+        },
+        {
+            'post_id': '123658315_2346352358',
+            'ts': 1425501161000,
+            'value': 360,
+            'views': 360,
+            'engagement': 28,
+            'message': 'Test 3',
+        },
+        {
+            'post_id': '123658315_2346352358',
+            'ts': 1425588670000,
+            'value': 98,
+            'views': 98,
+            'engagement': 26,
+            'message': 'Test 4',
+        },
+    ]
+    engagement_dataset = [
+        {
+            'post_id': '123658315_2346352357',
+            'ts': 1425069150000,
+            'value': 32,
+            'views': 145,
+            'engagement': 32,
+            'message': 'Test post message',
+        },
+        {
+            'post_id': '123658315_2346352359',
+            'ts': 1425241957000,
+            'value': 40,
+            'views': 42,
+            'engagement': 40,
+            'message': 'Another test',
+        },
+        {
+            'post_id': '123658315_2346352358',
+            'ts': 1425501161000,
+            'value': 28,
+            'views': 360,
+            'engagement': 28,
+            'message': 'Test 3',
+        },
+        {
+            'post_id': '123658315_2346352358',
+            'ts': 1425588670000,
+            'value': 26,
+            'views': 98,
+            'engagement': 26,
+            'message': 'Test 4',
+        },
+    ]
+    benchmark_dataset = [
+        {
+            'ts': 1425069150000,
+            'value': 32,
+            'engagement': 32,
+        },
+        {
+            'ts': 1425588670000,
+            'value': 32,
+            'engagement': 32,
+        },
+    ]
+
+    comparables = {
+        'Views': {
+            'data': views_dataset,
+            'yAxis': 1,
+            'type': 'line',
+            'color': "#4785AB",
+        },
+        'Engagement %': {
+            'data': engagement_dataset,
+            'yAxis': 2,
+            'type': 'line',
+            'color': "#CC3A17",
+        },
+        'Benchmark %': {
+            'data': benchmark_dataset,
+            'yAxis': 2,
+            'type': 'line',
+            'color': "#EEC03C",
+        },
+    }
+
+    return DummyDualAxisTimeChart(
+        current_user.client,
+        comparables,
+    )
+
+
 def page_by_type():
     return FBInsightsPieChart(
         current_user.client,

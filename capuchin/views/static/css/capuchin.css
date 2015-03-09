@@ -281,3 +281,19 @@ text.word-bubble{
 .bubble :hover {
     stroke: #000;
 }
+
+.nvd3.multiChart .axis .nv-axis line { stroke: none; fill: none; }
+
+.nv-legend-text {
+    font-size: 110%;
+    font-family: 'Montserrat', sans-serif;
+}
+
+circle.nv-point
+{
+    stroke-opacity: 1!important;
+}
+
+.report-chart svg {
+    height: 100%;
+}

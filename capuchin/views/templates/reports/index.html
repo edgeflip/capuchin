@@ -8,48 +8,61 @@
 
 <script>
 $(document).ready(function(){
-    $("#charts").usa({
+    $("#audience_charts").lineplusarea({
+        name:"Total Growth over Time",
+        data_url:"{{url_for('.chart', chart_id='total_growth_over_time')}}",
+        height:250,
+    }).render(12);
+    $("#audience_charts").pie({
+        name:"Audience by Source",
+        data_url:"{{url_for('.chart', chart_id='audience_by_source')}}",
+        height:250,
+    }).render(6);
+    $("#audience_charts").horizontal_multibar({
+        name:"Growth vs Competitors",
+        data_url:"{{url_for('.chart', chart_id='growth_vs_competitors')}}",
+        height:250,
+    }).render(6);
+    $("#psycho_charts").bar({
+        name:"Hours Active",
+        data_url:"{{url_for('.chart', chart_id='hours_active')}}",
+        height:250,
+    }).render(12);
+    $("#psycho_charts").usa({
         name:"Users by City",
         data_url:"{{url_for('.chart', chart_id='city_population')}}"
     }).render(12);
-    $("#charts").horizontal_multibar({
-        name:"Top Likes",
-        data_url:"{{url_for('.chart', chart_id='top_likes')}}"
+    $("#psycho_charts").horizontal_percent_multibar({
+        name:"Interests",
+        data_url:"{{url_for('.chart', chart_id='interests')}}",
+        height:250,
+    }).render(6);
+    $("#psycho_charts").horizontal_percent_multibar({
+        name:"Actions",
+        data_url:"{{url_for('.chart', chart_id='actions')}}",
+        height:250,
+    }).render(6);
+    $("#page_charts").manylines({
+        name:"Posts",
+        data_url:"{{url_for('.chart', chart_id='post_performance')}}",
+        height:250,
     }).render(12);
-    $("#charts").multibar({
-        name:"Page Engagement",
-        data_url:"{{url_for('.chart', chart_id='engaged_users')}}"
-    }).render(12);
-    $("#charts").word_bubble({
-        name:"Top Words",
-        data_url:"{{url_for('.chart', chart_id='top_words')}}"
-    }).render(12);
-    $("#charts").stackedline({
-        name:"Likes",
-        data_url:"{{url_for('.chart', chart_id='likes')}}"
-    }).render(12);
-    $("#charts").lineplusbar({
-        name:"Likes",
-        data_url:"{{url_for('.chart', chart_id='like_gains')}}"
-    }).render(12);
-    $("#charts").pie({
-        name:"Engagement by Story Type",
-        data_url:"{{url_for('.chart', chart_id='page_by_type')}}"
-    }).render(12);
-    $("#charts").pie({
-        name:"Engagement by Country",
-        data_url:"{{url_for('.chart', chart_id='country')}}"
-    }).render(12);
-    $("#charts").vertical_circle({
-        name:"Top Referrers",
-        data_url:"{{url_for('.chart', chart_id='referrers')}}"
-    }).render(12);
+
 });
 </script>
 {% endblock %}
 
 {% block content %}
     <div class="row">
-        <div class="col-md-9" id="charts"></div>
+        <h3>Audience Growth</h3>
+        <div class="col-md-8" id="audience_charts"></div>
+    </div>
+    <div class="row">
+        <h3>Page Performance</h3>
+        <div class="col-md-8" id="page_charts"></div>
+    </div>
+    <div class="row">
+        <h3>Psychometrics</h3>
+        <div class="col-md-8" id="psycho_charts"></div>
     </div>
 {% endblock %}
