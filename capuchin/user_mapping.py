@@ -50,7 +50,7 @@ USER = {
     # from v2_users
     "first_name": {"type": "string",},
     "last_name": {"type": "string",},
-    "location":{
+    "location_name":{
         "properties":{
             "location":{
                 "type": "multi_field",
