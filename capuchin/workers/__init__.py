@@ -43,6 +43,16 @@ def spy_on_competitors():
         except Exception as e:
             logging.exception(e)
 
+
+@app.task
+def spy_on_competitors():
+    for client in Client.find():
+        try:
+            competitors = Competitors(client)
+            competitors.spy_on_competitors()
+        except Exception as e:
+            logging.exception(e)
+
 @app.task
 def client_feed(client):
     if not isinstance(client, Client): client = Client(id=client)

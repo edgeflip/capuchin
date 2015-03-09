@@ -12,6 +12,10 @@ class Competitor(orm.EmbeddedDocument):
     id = field.Char()
     name = field.Char()
 
+class Competitor(orm.EmbeddedDocument):
+    id = field.Char()
+    name = field.Char()
+
 class PageCategory(orm.EmbeddedDocument):
     id = field.Char()
     name = field.Char()
