@@ -3,12 +3,14 @@ FILTERS = [
         "display":"Location",
         "field":"location_name.location",
         "type":"term",
-        "aggregation_args":{}
+        "aggregation_args":{},
+        "icon":"icon-pointer"
     },
     {
         "display":"Age",
         "field":"age",
         "type":"range",
+        "icon":"icon-eyeglasses",
         "aggregation_args":{
             "interval":10,
             "min_doc_count":0,
@@ -19,8 +21,39 @@ FILTERS = [
         "display":"Gender",
         "field":"gender",
         "type":"gender",
+        "icon":"icon-users",
         "aggregation_args":{}
     },
+    {
+        "display":"Interests",
+        "field":"interests",
+        "type":"interests",
+        "icon":"icon-flag",
+        "aggregation_args":{}
+    },
+    {
+        "display":"Engagement",
+        "field":"engagement",
+        "type":"engagement",
+        "icon":"icon-bubbles",
+        "aggregation_args":{},
+    },
+    {
+        "display":"Joined",
+        "field":"joined",
+        "type":"joined",
+        "icon":" icon-like",
+        "aggregation_args":{}
+    },
+    {
+        "display":"Link to List",
+        "field":"lists",
+        "type":"lists",
+        "icon":"icon-list",
+        "aggregation_args":{}
+    },
+]
+"""
     {
         "display":"Affiliations",
         "field":"affiliations.name",
@@ -41,6 +74,7 @@ FILTERS = [
         }
     },
 ]
+"""
 
 def range_filter(field, value):
     return {

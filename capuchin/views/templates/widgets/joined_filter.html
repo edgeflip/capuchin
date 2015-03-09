@@ -1,0 +1,20 @@
+<div class="col-md-4">
+    <select name="joined_filter" class="form-control">
+        <option value="before">Before</option>
+        <option value="after">After</option>
+    </select>
+</div>
+<div class="col-md-8">
+    <div class="input-group">
+         <input type="text" id="joined" class="form-control" placeholder="Joined...">
+         <span class="input-group-btn">
+             <button class="btn btn-default" type="button"><span class="icon-calendar"></span></button>
+         </span>
+    </div>
+</div>
+
+<script>
+$(document).ready(function(){
+    $("#joined").datepicker();
+});
+</script>

@@ -2,8 +2,8 @@
 <div class="col-md-6 form-horizontal">
 {% for filter in filters[:4] %}
     <div class="form-group">
-        <label for="location" class="col-md-2 control-label">{{filter['display']}}</label>
-        <div class="col-md-10">
+        <label for="location" class="col-md-3 control-label"><span class="{{filter['icon']}}"></span> {{filter['display']}}</label>
+        <div class="col-md-9">
             {% include "widgets/{}_filter.html".format(filter['type']) %}
         </div>
     </div>
@@ -12,19 +12,14 @@
 <div class="col-md-6 form-horizontal">
 {% for filter in filters[4:] %}
     <div class="form-group">
-        <label for="location" class="col-md-2 control-label">{{filter['display']}}</label>
-        <div class="col-md-10">
+        <label for="location" class="col-md-3 control-label"><span class="{{filter['icon']}}"></span> {{filter['display']}}</label>
+        <div class="col-md-9">
             {% include "widgets/{}_filter.html".format(filter['type']) %}
         </div>
     </div>
 {% endfor %}
+    <div>
+        <button class="btn btn-lg btn-primary">Refresh</button>
+        <button class="btn btn-lg btn-danger">Save Segment</button>
+    </div>
 </div>
-
-{#
-    Salesforce
-    NationBuilder
-    Mailchimp
-    HighRise
-    WealthEngine
-    Excel/CSV
-#}

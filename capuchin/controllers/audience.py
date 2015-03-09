@@ -4,6 +4,7 @@ from flask.ext.login import current_user
 from capuchin import config
 from capuchin import filters
 from capuchin.models.segment import Segment
+from capuchin.models.interest import Interest
 from capuchin.views.tables.audience import Users, Segments
 import logging
 import slugify
@@ -94,12 +95,14 @@ class Create(MethodView):
         users = Users(current_user.client, records=records)
         tmpl = template if template else "audience/create.html"
         lists = segment.get_lists()
+        interests = Interest.find()
         fs = {}
         for k,v in segment.filters.iteritems():
             k = k.replace("___", ".")
             fs[k] = v
         return render_template(
             tmpl,
+            interests=interests,
             filters=filters.FILTERS,
             filters_json=json.dumps(fs),
             values=segment.filters,

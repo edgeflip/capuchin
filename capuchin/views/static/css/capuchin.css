@@ -22,6 +22,7 @@ td.actions{
     border: 1px solid #ccc;
     padding: 3px 3px;
     padding-bottom: 0px;
+    padding-left: 10px;
     overflow: hidden;
     cursor: text;
     width: 100%;

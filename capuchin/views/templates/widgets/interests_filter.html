@@ -1,0 +1,5 @@
+<select name="interests" class="form-control">
+    {% for i in interests %}
+    <option value="{{i}}">{{i.name}}</option>
+    {% endfor %}
+</select>

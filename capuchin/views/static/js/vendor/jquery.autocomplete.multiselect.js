@@ -15,7 +15,7 @@ $.widget("ui.autocomplete", $.ui.autocomplete, {
 
             self.selectedItems = {};
             self.multiselect = $("<div></div>")
-                .addClass("ui-autocomplete-multiselect ui-state-default ui-widget")
+                .addClass("ui-autocomplete-multiselect ui-state-default ui-widget form-control")
                 .insertBefore(self.element)
                 .append(self.element)
                 .bind("click.autocomplete", function(){
@@ -52,8 +52,7 @@ $.widget("ui.autocomplete", $.ui.autocomplete, {
                         .addClass("ui-autocomplete-multiselect-item")
                         .text(val)
                         .append(
-                            $("<span></span>")
-                                .addClass("ui-icon ui-icon-close")
+                            $(" <span aria-hidden='true'> &times;</span>")
                                 .click(function(){
                                     var item = $(this).parent();
                                     delete self.selectedItems[item.text()];
@@ -72,8 +71,7 @@ $.widget("ui.autocomplete", $.ui.autocomplete, {
                     .addClass("ui-autocomplete-multiselect-item")
                     .text(ui.item.label)
                     .append(
-                        $("<span></span>")
-                            .addClass("ui-icon ui-icon-close")
+                        $(" <span aria-hidden='true'> &times;</span>")
                             .click(function(){
                                 var item = $(this).parent();
                                 delete self.selectedItems[item.text()];
