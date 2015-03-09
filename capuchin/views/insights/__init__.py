@@ -126,6 +126,7 @@ def growth_over_time(start, end):
         comparables,
         start=start,
         end=end,
+        date_format = "%m/%d"
     )
 
 def audience_by_source(start, end):
@@ -268,19 +269,19 @@ def post_performance(start, end):
     ]
 
     comparables = {
-        'Post Views': {
+        'Views': {
             'data': views_dataset,
             'yAxis': 1,
             'type': 'line',
             'color': "#4785AB",
         },
-        'Post Engagement %': {
+        'Engagement %': {
             'data': engagement_dataset,
             'yAxis': 2,
             'type': 'line',
             'color': "#CC3A17",
         },
-        'Benchmark Engagement %': {
+        'Benchmark %': {
             'data': benchmark_dataset,
             'yAxis': 2,
             'type': 'line',

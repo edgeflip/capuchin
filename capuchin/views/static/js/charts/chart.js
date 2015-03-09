@@ -83,6 +83,16 @@ function mouseout(p) {
                 var d = settings.parse_data(data);
                 remove_loader();
                 settings.build_chart(settings, d);
+
+                if(settings['height']) {
+                    var chartSelector = '#chart'+settings.id;
+                    d3.select(d3.select(chartSelector + ' svg').node().parentNode)
+                    .classed('dash-chart', false);
+
+                    d3.select(chartSelector + ' svg')
+                    .classed('dash-chart', false)
+                    .style('height', settings['height'] + 'px');
+                }
             });
         }
 
@@ -249,13 +259,17 @@ function mouseout(p) {
         options.build_chart = function(settings, data){
             nv.addGraph(function() {
                 var chart = nv.models.multiChart()
-                    .margin({top: 30, right: 60, bottom: 50, left: 70});
+                    .margin({top: 30, right: 60, bottom: 50, left: 70})
 
                 //Format x-axis labels with custom function.
                 chart.xAxis
                 .tickFormat(function(d) {
                     return d3.time.format(data.date_format)(new Date(d))
                 });
+
+                if(options['height']) {
+                    chart.height(options['height']);
+                }
 
                 // Get normalised data for chart
                 var seriesData = data.data;
@@ -301,9 +315,27 @@ function mouseout(p) {
 
                 chart.xAxis.domain([highestMinX, highestMaxX]);
 
-                d3.select('#chart'+settings.id+' svg')
+                var chartSelector = '#chart'+settings.id;
+                d3.select(chartSelector + ' svg')
                 .datum(data.data)
                 .call(chart);
+
+                d3.selectAll(chartSelector + ' .nv-series')[0].forEach(function(d,i) {
+                  // select the individual group element
+                  var group = d3.select(d);
+                  // create another selection for the circle within the group
+                  var circle = group.select('circle');
+                  // grab the color used for the circle
+                  var color = circle.style('fill');
+                  // remove the circle
+                  circle.remove();
+                  // replace the circle with a path
+                  group.append('path')
+                    // match the path data to the appropriate symbol
+                    .attr('d', d3.svg.symbol().type('square'))
+                    // make sure the fill color matches the original circle
+                    .style('fill', color);
+                });
 
                 nv.utils.windowResize(chart.update);
                 return chart

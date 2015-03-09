@@ -10,19 +10,23 @@
 $(document).ready(function(){
     $("#audience_charts").lineplusarea({
         name:"Total Growth over Time",
-        data_url:"{{url_for('.chart', chart_id='total_growth_over_time')}}"
+        data_url:"{{url_for('.chart', chart_id='total_growth_over_time')}}",
+        height:250,
     }).render(12);
     $("#audience_charts").pie({
         name:"Audience by Source",
-        data_url:"{{url_for('.chart', chart_id='audience_by_source')}}"
+        data_url:"{{url_for('.chart', chart_id='audience_by_source')}}",
+        height:250,
     }).render(6);
     $("#audience_charts").horizontal_multibar({
         name:"Growth vs Competitors",
-        data_url:"{{url_for('.chart', chart_id='growth_vs_competitors')}}"
+        data_url:"{{url_for('.chart', chart_id='growth_vs_competitors')}}",
+        height:250,
     }).render(6);
     $("#psycho_charts").bar({
         name:"Hours Active",
-        data_url:"{{url_for('.chart', chart_id='hours_active')}}"
+        data_url:"{{url_for('.chart', chart_id='hours_active')}}",
+        height:250,
     }).render(12);
     $("#psycho_charts").usa({
         name:"Users by City",
@@ -31,15 +35,19 @@ $(document).ready(function(){
     $("#psycho_charts").horizontal_percent_multibar({
         name:"Interests",
         data_url:"{{url_for('.chart', chart_id='interests')}}",
+        height:250,
     }).render(6);
     $("#psycho_charts").horizontal_percent_multibar({
         name:"Actions",
-        data_url:"{{url_for('.chart', chart_id='actions')}}"
+        data_url:"{{url_for('.chart', chart_id='actions')}}",
+        height:250,
     }).render(6);
     $("#page_charts").manylines({
         name:"Posts",
-        data_url:"{{url_for('.chart', chart_id='post_performance')}}"
+        data_url:"{{url_for('.chart', chart_id='post_performance')}}",
+        height:250,
     }).render(12);
+
 });
 </script>
 {% endblock %}
