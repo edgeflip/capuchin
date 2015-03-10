@@ -132,7 +132,7 @@ class DummyDualAxisTimeChart(InfluxChart):
             for val in vals:
                 pretty_date = datetime.datetime.strftime(datetime.datetime.fromtimestamp(val["x"]/1000), self.date_format)
                 if val['message']:
-                    tooltips[pretty_date] = "<br />".join([val['message'], pretty_date, "Views: {}".format(val['views']), "Engagement: {}%".format(val['engagement'])])
+                    tooltips[pretty_date] = "<div class='overhead-popover'>" + "<br />".join([val['message'], pretty_date, "Views: {}".format(val['views']), "Engagement: {}%".format(val['engagement'])]) + "</div>";
             ar.append({
                 "key":v,
                 "values":vals,
@@ -166,13 +166,19 @@ class DualAxisTimeChart(InfluxChart):
             if min_x > highest_min_x:
                 highest_min_x = min_x
 
-        for v in data:
+        tooltips = {}
+        for v, d in data.iteritems():
+            key = "{} (right axis)".format(v) if self.typ[v]['yAxis'] == 2 else v
+            tooltips[key] = {}
             vals = [
-                {"x":a[0], "y":a[1] + random.randint(10, 30) }
+                {"x":a[0], "y":a[1] + random.randint(10, 30)}
                 for a in data[v][0]['points']
                 if a[0] >= highest_min_x
             ]
             vals.reverse()
+            for val in vals:
+                pretty_date = datetime.datetime.strftime(datetime.datetime.fromtimestamp(val["x"]/1000), self.date_format)
+                tooltips[key][pretty_date] = "<div class='overhead-popover'>" + "<br />".join([pretty_date, "{}: {}".format(key, val['y'])]) + "</div>"
             ar.append({
                 "key":v,
                 "values":vals,
@@ -180,7 +186,8 @@ class DualAxisTimeChart(InfluxChart):
                 "type": self.typ[v]['type'],
                 "color": self.typ[v]['color'],
             })
-        return ar
+        logging.info(tooltips)
+        return {"points": ar, "messages": tooltips}
 
     def query(self):
         res = {}
@@ -396,7 +403,8 @@ class WordBubble(object):
 class DummyPieChart(object):
     def __init__(self, title, data):
         self.title = title
-        self.data = [{"label": k, "value": v} for k, v in data.iteritems()]
+        mean = sum(data.values())
+        self.data = [{"label": k, "value": v, "percent": "{0:.0f}%".format(100*(float(v)/mean))} for k, v in data.iteritems()]
 
     def dump(self):
         return json.dumps(self.data)

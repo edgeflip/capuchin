@@ -286,15 +286,72 @@ text.word-bubble{
 .nvd3.multiChart .axis .nv-axis line { stroke: none; fill: none; }
 
 .nv-legend-text {
-    font-size: 110%;
     font-family: 'Montserrat', sans-serif;
 }
 
+.nvd3.nv-pie path {
+    stroke-width: 0px;
+}
 circle.nv-point
 {
     stroke-opacity: 1!important;
 }
 
-.report-chart svg {
-    height: 100%;
+.overhead-popover {
+    position: absolute;
+    bottom: 5px;
+    left: -65px;
+    -webkit-border-radius: 5px 5px 5px 5px ;
+    -moz-border-radius: 5px 5px 5px 5px ;
+    border-radius: 5px 5px 5px 5px ;
+    background-color: #155982;
+    color: #F1F2F2;
+    padding: 5px;
+    font-family: 'Montserrat', sans-serif;
+}
+
+
+.overhead-popover:before {
+    position: absolute;
+    width: 0;
+    height: 0;
+    bottom: -15px;
+    left: 50px;
+    display: block;
+    border-right: 15px solid transparent;
+    border-top: 15px solid #155982;
+    border-left: 15px solid transparent;
+    content: '';
+}
+
+.nvtooltip {
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
+    display: inline;
+}
+.nvtooltip:before {
+    width: 0;
+    display: inline;
+    height: 0;
+    border: 0px;
+    padding: 0px;
+    margin: 0px;
+    content: '';
+}
+
+.pie-hover-text {
+    color: #F1F2F2;
+    fill: #F1F2F2;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: bold;
+    font-size: 125%;
+}
+
+.nv-bar:hover {
+    fill: #363738;
+}
+
+.nv-area {
+    pointer-events: visibleStroke;
 }
