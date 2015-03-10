@@ -28,10 +28,6 @@ $(document).ready(function(){
         data_url:"{{url_for('.chart', chart_id='hours_active')}}",
         height:250,
     }).render(12);
-    $("#psycho_charts").usa({
-        name:"Users by City",
-        data_url:"{{url_for('.chart', chart_id='city_population')}}"
-    }).render(12);
     $("#psycho_charts").horizontal_percent_multibar({
         name:"Interests",
         data_url:"{{url_for('.chart', chart_id='interests')}}",

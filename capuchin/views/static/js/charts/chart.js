@@ -31,6 +31,39 @@ function mouseout(p) {
     d3.select(g).selectAll("text.value").style("display","none");
 };
 
+function DumpObjectIndented(obj, indent)
+{
+  var result = "";
+  if (indent == null) indent = "";
+
+  for (var property in obj)
+  {
+    var value = obj[property];
+    if (typeof value == 'string')
+      value = "'" + value + "'";
+    else if (typeof value == 'object')
+    {
+      if (value instanceof Array)
+      {
+        // Just let JS convert the Array to a string!
+        value = "[ " + value + " ]";
+      }
+      else
+      {
+        // Recursive dump
+        // (replace "  " by "\t" or something else if you prefer)
+        var od = DumpObjectIndented(value, indent + "  ");
+        // If you like { on the same line as the key
+        //value = "{\n" + od + "\n" + indent + "}";
+        // If you prefer { and } to be aligned
+        value = "\n" + indent + "{\n" + od + "\n" + indent + "}";
+      }
+    }
+    result += indent + "'" + property + "' : " + value + ",\n";
+  }
+  return result.replace(/,\n$/, "");
+}
+
 (function( $ ) {
     $.fn.chart = function(options) {
         var settings = $.extend({
@@ -172,18 +205,35 @@ function mouseout(p) {
                 .y(function(d) { return d.value })
                 .margin({top: 30, right: 20, bottom: 50, left: 175})
                 .showValues(true)           //Show bar value next to each bar.
-                .tooltips(true)             //Show tooltips on hover.
+                .tooltips(false)             //Show tooltips on hover.
                 .transitionDuration(350)
                 .showControls(false);        //Allow user to switch between "Grouped" and "Stacked" mode.
+                chart.showYAxis(false);
 
-                chart.yAxis
-                .tickFormat(d3.format(',.0f'));
-
+                var chartSelector = '#chart'+settings.id;
                 d3.select('#chart'+settings.id+' svg')
                 .datum(data.data)
                 .transition().duration(500)
                 .call(chart);
+                d3.selectAll(chartSelector + ' .tick line').style('display', 'none');
 
+                d3.selectAll(chartSelector + ' .nv-series')[0].forEach(function(d,i) {
+                  // select the individual group element
+                  var group = d3.select(d);
+                  // create another selection for the circle within the group
+                  var circle = group.select('circle');
+                  // grab the color used for the circle
+                  var color = circle.style('fill');
+                  // remove the circle
+                  circle.remove();
+                  // replace the circle with a path
+                  group.append('path')
+                    // match the path data to the appropriate symbol
+                    .attr('d', d3.svg.symbol().type('square').size(160))
+                    .attr('class', 'nv-legend-symbol')
+                    // make sure the fill color matches the original circle
+                    .style('fill', color);
+                });
                 nv.utils.windowResize(chart.update);
 
                 return chart;
@@ -203,7 +253,7 @@ function mouseout(p) {
                 .y(function(d) { return d.value })
                 .margin({top: 30, right: 20, bottom: 50, left: 175})
                 .showValues(true)           //Show bar value next to each bar.
-                .tooltips(true)             //Show tooltips on hover.
+                .tooltips(false)             //Show tooltips on hover.
                 .transitionDuration(350)
                 .showControls(false)        //Allow user to switch between "Grouped" and "Stacked" mode.
                 .showLegend(false);
@@ -211,11 +261,30 @@ function mouseout(p) {
                 chart.showYAxis(false);
                 chart.valueFormat(d3.format('p'));
 
-                d3.select('#chart'+settings.id+' svg')
+                var chartSelector = '#chart'+settings.id;
+                d3.select(chartSelector + ' svg')
                 .datum(data.data)
                 .transition().duration(500)
                 .call(chart);
+                d3.selectAll(chartSelector + ' .tick line').style('display', 'none');
 
+                d3.selectAll(chartSelector + ' .nv-series')[0].forEach(function(d,i) {
+                  // select the individual group element
+                  var group = d3.select(d);
+                  // create another selection for the circle within the group
+                  var circle = group.select('circle');
+                  // grab the color used for the circle
+                  var color = circle.style('fill');
+                  // remove the circle
+                  circle.remove();
+                  // replace the circle with a path
+                  group.append('path')
+                    // match the path data to the appropriate symbol
+                    .attr('d', d3.svg.symbol().type('square').size(160))
+                    .attr('class', 'nv-legend-symbol')
+                    // make sure the fill color matches the original circle
+                    .style('fill', color);
+                });
                 nv.utils.windowResize(chart.update);
 
                 return chart;
@@ -233,17 +302,65 @@ function mouseout(p) {
                 .x(function(d) { return d.label })
                 .y(function(d) { return d.value })
                 .showLabels(true)     //Display pie labels
-                .labelThreshold(.05)  //Configure the minimum slice size for labels to show up
-                .labelType("percent") //Configure what type of data to show in the label. Can be "key", "value" or "percent"
-                .donut(true)          //Turn on Donut mode. Makes pie chart look tasty!
-                .donutRatio(0.35)     //Configure how big you want the donut hole size to be.
+                .color(["#CC3A17", "#8561A9", "#4785AB", "#006A3B", "#87C440", "#EEC03C", "#F5871F", "#A0CAE2"])
                 ;
 
-                d3.select('#chart'+settings.id+' svg')
+                var h = 250;
+                var r = h/2;
+                var arc = d3.svg.arc().outerRadius(r);
+                var chartSelector = '#chart'+settings.id;
+                d3.select(chartSelector +' svg')
                 .datum(data.data)
                 .transition().duration(350)
                 .call(chart);
 
+                d3.selectAll(chartSelector + ' .nv-label text')
+                .attr("transform", function(d) {
+                    d.innerRadius = -250;
+                    d.outerRadius = r;
+                    return "translate(" + arc.centroid(d) + ")";}
+                )
+                .attr("text-anchor", "middle")
+                .style('display', 'none');
+                d3.selectAll(chartSelector + ' .nv-label text').style('display', 'none');
+                d3.selectAll(chartSelector +' .nv-slice')
+                .on("mouseover", function(d) {
+                    var orig_color = d3.select(this).attr("fill");
+                    d3.select(this).attr("orig_color", orig_color);
+                    d3.select(this).attr("fill", "#363738");
+                    var match = d3.selectAll(chartSelector + ' .nv-label text').filter(function(text, i) { return text['data']['label'] == d['data']['label'] });
+                    match.text("");
+                    match.append('svg:tspan').attr('x', 0).attr('dy', 0).attr('class', 'pie-hover-text').text(d['data']['label']);
+                    match.append('svg:tspan').attr('x', 0).attr('dy', 15).attr('class', 'pie-hover-text').text(d['data']['percent']);
+                    match.style('display', 'inline');
+                }).on("mouseout", function(d) {
+                    var match = d3.selectAll(chartSelector + ' .nv-label text').filter(function(text, i) { return text['data']['label'] == d['data']['label'] });
+                    var node = match.node();
+                    while(node.lastChild) {
+                        node.removeChild(node.lastChild);
+                    }
+                    var orig_color = d3.select(this).attr("orig_color");
+                    d3.select(this).attr("fill", orig_color);
+                    match.style('display', 'none');
+                });
+
+                d3.selectAll(chartSelector + ' .nv-series')[0].forEach(function(d,i) {
+                  // select the individual group element
+                  var group = d3.select(d);
+                  // create another selection for the circle within the group
+                  var circle = group.select('circle');
+                  // grab the color used for the circle
+                  var color = circle.style('fill');
+                  // remove the circle
+                  circle.remove();
+                  // replace the circle with a path
+                  group.append('path')
+                    // match the path data to the appropriate symbol
+                    .attr('d', d3.svg.symbol().type('square').size(160))
+                    .attr('class', 'nv-legend-symbol')
+                    // make sure the fill color matches the original circle
+                    .style('fill', color);
+                });
                 nv.utils.windowResize(chart.update);
 
                 return chart;
@@ -260,6 +377,9 @@ function mouseout(p) {
             nv.addGraph(function() {
                 var chart = nv.models.multiChart()
                     .margin({top: 30, right: 60, bottom: 50, left: 70})
+                    .tooltipContent(function (key, x, val, graph) {
+                        return data.data.messages[key][x];
+                    });
 
                 //Format x-axis labels with custom function.
                 chart.xAxis
@@ -272,7 +392,7 @@ function mouseout(p) {
                 }
 
                 // Get normalised data for chart
-                var seriesData = data.data;
+                var seriesData = data.data.points;
 
                 // Get max values for each axis
                 var minY1 = 0;
@@ -317,9 +437,11 @@ function mouseout(p) {
 
                 var chartSelector = '#chart'+settings.id;
                 d3.select(chartSelector + ' svg')
-                .datum(data.data)
+                .datum(data.data.points)
                 .call(chart);
 
+                d3.select(chartSelector + " .legendWrap")
+                  .attr("transform", "translate(0,-30)");
                 d3.selectAll(chartSelector + ' .nv-series')[0].forEach(function(d,i) {
                   // select the individual group element
                   var group = d3.select(d);
@@ -332,7 +454,8 @@ function mouseout(p) {
                   // replace the circle with a path
                   group.append('path')
                     // match the path data to the appropriate symbol
-                    .attr('d', d3.svg.symbol().type('square'))
+                    .attr('d', d3.svg.symbol().type('square').size(160))
+                    .attr('class', 'nv-legend-symbol')
                     // make sure the fill color matches the original circle
                     .style('fill', color);
                 });
@@ -354,7 +477,7 @@ function mouseout(p) {
                 var chart = nv.models.multiChart()
                     .margin({top: 30, right: 60, bottom: 50, left: 70})
                     .tooltipContent(function (key, x, val, graph) {
-                        if(key == "Benchmark Engagement %") {
+                        if(key == "Benchmark %") {
                             return "Benchmark Engagement";
                         } else {
                             return data.data.messages[x];
@@ -371,6 +494,24 @@ function mouseout(p) {
                 .datum(data.data.points)
                 .call(chart);
 
+                var chartSelector = '#chart'+settings.id;
+                d3.selectAll(chartSelector + ' .nv-series')[0].forEach(function(d,i) {
+                  // select the individual group element
+                  var group = d3.select(d);
+                  // create another selection for the circle within the group
+                  var circle = group.select('circle');
+                  // grab the color used for the circle
+                  var color = circle.style('fill');
+                  // remove the circle
+                  circle.remove();
+                  // replace the circle with a path
+                  group.append('path')
+                    // match the path data to the appropriate symbol
+                    .attr('d', d3.svg.symbol().type('square').size(160))
+                    .attr('class', 'nv-legend-symbol')
+                    // make sure the fill color matches the original circle
+                    .style('fill', color);
+                });
                 nv.utils.windowResize(chart.update);
                 return chart
             });

@@ -107,17 +107,17 @@ def growth_vs_competitors(start, end):
 def growth_over_time(start, end):
     # two y axes
     comparables = {
-        'Page Likes': {
-            'series': 'insights.{}.page_fan_adds.day',
-            'yAxis': 2,
-            'type': 'line',
-            'color': "#4785AB",
-        },
         'Audience': {
             'series': 'insights.{}.members.lifetime',
-            'yAxis': 1,
+            'yAxis': 2,
             'type': 'area',
             'color': "#EEC03C",
+        },
+        'Page Likes': {
+            'series': 'insights.{}.page_fan_adds.day',
+            'yAxis': 1,
+            'type': 'line',
+            'color': "#4785AB",
         },
     }
 
@@ -128,13 +128,6 @@ def growth_over_time(start, end):
         end=end,
         date_format = "%m/%d"
     )
-
-def audience_by_source(start, end):
-    return DummyPieChart('Audience by Source', {
-        'Smart Sharing': 12,
-        'Email': 87,
-        'Facebook': 45,
-    })
 
 def audience_by_source(start, end):
     return DummyPieChart('Audience by Source', {
@@ -172,16 +165,6 @@ def hours_active():
     )
 
 
-    return FreeHistogramChart(
-        current_user.client,
-        [
-            {
-                "display":"Page Fans Online",
-                "q":"SELECT sum(value), type FROM insights.{}.page_fans_online.day group by type",
-
-            },
-        ]
-    )
 def post_performance(start, end):
     #posts = Post.records(current_user.client, "*", 0, 10, None)
     #for post in posts.hits:
@@ -194,7 +177,7 @@ def post_performance(start, end):
             'value': 145,
             'views': 145,
             'engagement': 32,
-            'message': 'Test post message',
+            'message': "What we're up to at Edgeflip",
         },
         {
             'post_id': '123658315_2346352359',
@@ -202,7 +185,7 @@ def post_performance(start, end):
             'value': 42,
             'views': 42,
             'engagement': 40,
-            'message': 'Another test',
+            'message': 'Edgeflip is proud to support HeForShe',
         },
         {
             'post_id': '123658315_2346352358',
@@ -210,7 +193,7 @@ def post_performance(start, end):
             'value': 360,
             'views': 360,
             'engagement': 28,
-            'message': 'Test 3',
+            'message': 'Redeeming the Humble Thank You Page',
         },
         {
             'post_id': '123658315_2346352358',
@@ -218,7 +201,7 @@ def post_performance(start, end):
             'value': 98,
             'views': 98,
             'engagement': 26,
-            'message': 'Test 4',
+            'message': "We're doing a webinar",
         },
     ]
     engagement_dataset = [
@@ -228,7 +211,7 @@ def post_performance(start, end):
             'value': 32,
             'views': 145,
             'engagement': 32,
-            'message': 'Test post message',
+            'message': "What we're up to at Edgeflip",
         },
         {
             'post_id': '123658315_2346352359',
@@ -236,7 +219,7 @@ def post_performance(start, end):
             'value': 40,
             'views': 42,
             'engagement': 40,
-            'message': 'Another test',
+            'message': 'Edgeflip is proud to support HeForShe',
         },
         {
             'post_id': '123658315_2346352358',
@@ -244,7 +227,7 @@ def post_performance(start, end):
             'value': 28,
             'views': 360,
             'engagement': 28,
-            'message': 'Test 3',
+            'message': 'Redeeming the Humble Thank You Page',
         },
         {
             'post_id': '123658315_2346352358',
@@ -252,7 +235,7 @@ def post_performance(start, end):
             'value': 26,
             'views': 98,
             'engagement': 26,
-            'message': 'Test 4',
+            'message': "We're doing a webinar",
         },
     ]
     benchmark_dataset = [
