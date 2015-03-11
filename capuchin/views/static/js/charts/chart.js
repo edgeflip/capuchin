@@ -155,6 +155,9 @@ function DumpObjectIndented(obj, indent)
                 });
                 chart.yAxis
                 .tickFormat(d3.format(',.1f'));
+
+                var chartSelector = '#chart'+settings.id;
+                d3.selectAll(chartSelector + ' .tick line').style('display', 'none');
                 d3.select("#chart"+settings.id+" svg")
                 .datum(data.data)
                 .transition().duration(500)
@@ -185,6 +188,8 @@ function DumpObjectIndented(obj, indent)
                 .datum(data.data)
                 .transition().duration(500)
                 .call(chart);
+                var chartSelector = '#chart'+settings.id;
+                d3.selectAll(chartSelector + ' .tick line').style('display', 'none');
 
                 nv.utils.windowResize(chart.update);
 
@@ -302,7 +307,9 @@ function DumpObjectIndented(obj, indent)
                 .x(function(d) { return d.label })
                 .y(function(d) { return d.value })
                 .showLabels(true)     //Display pie labels
-                .color(["#CC3A17", "#8561A9", "#4785AB", "#006A3B", "#87C440", "#EEC03C", "#F5871F", "#A0CAE2"])
+                .donut(true)
+                .donutRatio(0.20)
+                .color(["#CC3A17", "#8561A9", "#4785AB", "#006A3B", "#87C440", "#363738", "#F5871F", "#A0CAE2"])
                 ;
 
                 var h = 250;
@@ -314,20 +321,19 @@ function DumpObjectIndented(obj, indent)
                 .transition().duration(350)
                 .call(chart);
 
-                d3.selectAll(chartSelector + ' .nv-label text')
-                .attr("transform", function(d) {
-                    d.innerRadius = -250;
-                    d.outerRadius = r;
-                    return "translate(" + arc.centroid(d) + ")";}
-                )
-                .attr("text-anchor", "middle")
-                .style('display', 'none');
+                //d3.selectAll(chartSelector + ' .nv-label text')
+                //.attr("transform", function(d) {
+                    //d.innerRadius = -250;
+                    //d.outerRadius = r;
+                    //return "translate(" + arc.centroid(d) + ")";}
+                //)
+                //.attr("text-anchor", "middle")
                 d3.selectAll(chartSelector + ' .nv-label text').style('display', 'none');
                 d3.selectAll(chartSelector +' .nv-slice')
                 .on("mouseover", function(d) {
                     var orig_color = d3.select(this).attr("fill");
                     d3.select(this).attr("orig_color", orig_color);
-                    d3.select(this).attr("fill", "#363738");
+                    d3.select(this).attr("fill", "#EEC03C");
                     var match = d3.selectAll(chartSelector + ' .nv-label text').filter(function(text, i) { return text['data']['label'] == d['data']['label'] });
                     match.text("");
                     match.append('svg:tspan').attr('x', 0).attr('dy', 0).attr('class', 'pie-hover-text').text(d['data']['label']);

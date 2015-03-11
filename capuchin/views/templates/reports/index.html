@@ -11,17 +11,17 @@ $(document).ready(function(){
     $("#audience_charts").lineplusarea({
         name:"Total Growth over Time",
         data_url:"{{url_for('.chart', chart_id='total_growth_over_time')}}",
-        height:250,
+        height:300,
     }).render(12);
     $("#audience_charts").pie({
         name:"Audience by Source",
         data_url:"{{url_for('.chart', chart_id='audience_by_source')}}",
-        height:250,
+        height:300,
     }).render(6);
     $("#audience_charts").horizontal_multibar({
         name:"Growth vs Competitors",
         data_url:"{{url_for('.chart', chart_id='growth_vs_competitors')}}",
-        height:250,
+        height:300,
     }).render(6);
     $("#psycho_charts").bar({
         name:"Hours Active",
@@ -51,14 +51,14 @@ $(document).ready(function(){
 {% block content %}
     <div class="row">
         <h3>Audience Growth</h3>
-        <div class="col-md-8" id="audience_charts"></div>
+        <div class="col-md-12" id="audience_charts"></div>
     </div>
     <div class="row">
         <h3>Page Performance</h3>
-        <div class="col-md-8" id="page_charts"></div>
+        <div class="col-md-12" id="page_charts"></div>
     </div>
     <div class="row">
         <h3>Psychometrics</h3>
-        <div class="col-md-8" id="psycho_charts"></div>
+        <div class="col-md-12" id="psycho_charts"></div>
     </div>
 {% endblock %}
