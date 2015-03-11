@@ -111,7 +111,7 @@ def growth_over_time(start, end):
             'series': 'insights.{}.members.lifetime',
             'yAxis': 2,
             'type': 'area',
-            'color': "#EEC03C",
+            'color': "#F1F2F2",
         },
         'Page Likes': {
             'series': 'insights.{}.page_fan_adds.day',

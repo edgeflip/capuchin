@@ -287,8 +287,8 @@ circle.nv-point
     -webkit-border-radius: 5px 5px 5px 5px ;
     -moz-border-radius: 5px 5px 5px 5px ;
     border-radius: 5px 5px 5px 5px ;
-    background-color: #155982;
-    color: #F1F2F2;
+    background-color: #EEC03C;
+    color: #363738;
     padding: 5px;
     font-family: 'Montserrat', sans-serif;
 }
@@ -302,7 +302,7 @@ circle.nv-point
     left: 50px;
     display: block;
     border-right: 15px solid transparent;
-    border-top: 15px solid #155982;
+    border-top: 15px solid #EEC03C;
     border-left: 15px solid transparent;
     content: '';
 }
@@ -324,15 +324,15 @@ circle.nv-point
 }
 
 .pie-hover-text {
-    color: #F1F2F2;
-    fill: #F1F2F2;
+    color: #363738;
+    fill: #363738;
     font-family: 'Montserrat', sans-serif;
     font-weight: bold;
     font-size: 125%;
 }
 
 .nv-bar:hover {
-    fill: #363738;
+    fill: #EEC03C;
 }
 
 .nv-area {
