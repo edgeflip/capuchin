@@ -251,6 +251,9 @@ function DumpObjectIndented(obj, indent)
                     // make sure the fill color matches the original circle
                     .style('fill', color);
                 });
+                d3.select(chartSelector + " .nv-legend")
+                  .attr("transform", "translate(-135,255)");
+
                 nv.utils.windowResize(chart.update);
 
                 return chart;
@@ -362,6 +365,13 @@ function DumpObjectIndented(obj, indent)
                     match.style('display', 'none');
                 });
 
+                // All of our manual tweaks will be for naught if they click the legend
+                for (var property in chart.legend.dispatch) {
+                        chart.legend.dispatch[property] = function() { };
+                }
+
+                d3.select(chartSelector + ' .nv-pie')
+                  .attr("transform", "translate(-140,0)");
                 d3.selectAll(chartSelector + ' .nv-series')[0].forEach(function(d,i) {
                   // select the individual group element
                   var group = d3.select(d);
@@ -379,6 +389,8 @@ function DumpObjectIndented(obj, indent)
                     // make sure the fill color matches the original circle
                     .style('fill', color);
                 });
+                d3.select(chartSelector + " .nv-legend")
+                  .attr("transform", "translate(-175,275)");
                 nv.utils.windowResize(chart.update);
 
                 return chart;
@@ -544,6 +556,8 @@ function DumpObjectIndented(obj, indent)
                     // make sure the fill color matches the original circle
                     .style('fill', color);
                 });
+                d3.select(chartSelector + " .legendWrap")
+                  .attr("transform", "translate(-80,195)");
                 nv.utils.windowResize(chart.update);
                 return chart
             });
