@@ -133,9 +133,10 @@ def growth_over_time(start, end):
 
 def audience_by_source(start, end):
     return DummyPieChart('Audience by Source', {
-        'Smart Sharing': 12,
+        'Smart Sharing': 25,
         'Email': 87,
         'Facebook': 45,
+        'Twitter': 30,
     })
 
 
