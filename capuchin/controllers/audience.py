@@ -5,6 +5,7 @@ from capuchin import config
 from capuchin import filters
 from capuchin.models.segment import Segment
 from capuchin.models.interest import Interest
+from capuchin.models.user import User
 from capuchin.views.tables.audience import Users, Segments
 import logging
 import slugify
@@ -86,6 +87,15 @@ class Default(MethodView):
             users=Users(current_user.client),
         )
 
+class View(MethodView):
+
+    def get(self, id):
+        person = User(id=id)
+        return render_template(
+            "audience/view.html",
+            person=person
+        )
+
 class Create(MethodView):
 
     def get(self, id=None, page=0, template=None):
@@ -144,3 +154,4 @@ audience.add_url_rule("/segment/<id>/<int:page>", view_func=Create.as_view("page
 audience.add_url_rule("/segment/<id>/<int:page>/filters", view_func=Create.as_view("filter_update"))
 audience.add_url_rule("/segment/autocomplete/<field>", view_func=Autocomplete.as_view("autocomplete"))
 audience.add_url_rule("/segment/<id>/save", view_func=Save.as_view("save"))
+audience.add_url_rule("/view/<id>", view_func=View.as_view("view"))

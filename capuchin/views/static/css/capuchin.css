@@ -12,6 +12,27 @@ body {
     background-image: none;
 }
 
+.person-details{
+    margin-top: 35px;
+}
+
+.person-details .person-list{
+    border-left: 2px solid #eeeeee;
+}
+
+.person-details h4{
+    margin-top: 0px;
+    padding-top: 0px;
+}
+
+h3{
+    color: #4785AB;
+}
+
+h4{
+    color: #4785AB;
+}
+
 html {
   position: relative;
   min-height: 100%;
@@ -31,6 +52,10 @@ div.post-preview{
 
 .modal-body a{
     margin-bottom: 30px;
+}
+
+.dl-horizontal dt{
+    text-align: left;
 }
 
 .ui-autocomplete-multiselect.ui-state-default {
@@ -159,10 +184,6 @@ div.caption p.details{
     border-top: 1px solid #999999;
     padding: 20px;
     color: #FFFFFF;
-}
-
-h3{
-    color: #4785AB;
 }
 
 .footer h3{

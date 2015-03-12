@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Audience{% endblock %}
+
+{% set active_page='audience' %}
+
+{% block head %}
+<script type="text/javascript">
+    $(document).ready(function(){
+        $(document).pjax(".pager", "#records", {push:false, type:"POST"});
+    });
+</script>
+{% endblock %}
+
+
+{% block content %}
+<div class="row person-details">
+    <div class="col-md-2">
+        <div class="thumbnail">
+            <img src="https://graph.facebook.com/{{person.clients[0].asid}}/picture?type=square" />
+        </div>
+    </div>
+    <div class="col-md-4">
+        <h4>{{person.first_name}} {{person.last_name}}</h4>
+        <dl class="dl-horizontal">
+            <dt>Location</dt>
+            <dd>{{person.location_name.location}}</dd>
+            <dt>Birthday</dt>
+            <dd>{{person.birthday}} - {{person.age}} Years Old</dd>
+            <dt>Joined</dt>
+            <dd>{{person.first_activity}}</dd>
+            <dt>Engagement</dt>
+            <dd>{{person.engagement}}</dd>
+            <dt>Influence Score</dt>
+            <dd>77/100</dd>
+            <dt>Affiliations</dt>
+            <dd>{{person.affiliations[:3]|join(', ', attribute='name')}}</dd>
+        </dl>
+    </div>
+    <div class="col-md-3 person-list">
+        <h4><span class="icon-like"></span> Likes</h4>
+        <ul>
+        {% for l in person.likes[:7] %}
+            <li>{{l.name}}</li>
+        {% endfor %}
+        </ul>
+    </div>
+    <div class="col-md-3 person-list">
+        <h4><span class="icon-flag"></span> Interests</h4>
+        <ul>
+        {% for i in person.interests %}
+            <li>i</li>
+        {% endfor %}
+        </ul>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-2">
+        <div class="thumbnail">
+            {# activity graph #}
+        </div>
+    </div>
+    <div class="col-md-10">
+        <h3>Activity</h3>
+        <table class='table'>
+            <thead>
+                <th>Date</th>
+                <th>Action</th>
+                <th>Description</th>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

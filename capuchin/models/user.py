@@ -22,7 +22,7 @@ class User(ESObject):
         return q
 
     def url(self):
-        return url_for('dashboard.index', id=self.efid)
+        return url_for('audience.view', id=self.efid)
 
 
 def parse_email(val):
