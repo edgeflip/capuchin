@@ -183,9 +183,9 @@ class DualAxisTimeChart(InfluxChart):
                 if a[0] >= highest_min_x
             ]
             vals.reverse()
-            for val in vals:
+            for i, val in enumerate(vals):
                 pretty_date = datetime.datetime.strftime(datetime.datetime.fromtimestamp(val["x"]/1000), self.date_format)
-                tooltips[key][pretty_date] = "<div class='overhead-popover'>" + "<br />".join([pretty_date, "{}: {}".format(key, val['y'])]) + "</div>"
+                tooltips[key][i] = "<div class='overhead-popover'>" + "<br />".join([pretty_date, "{}: {}".format(key, val['y'])]) + "</div>"
             ar.append({
                 "key":v,
                 "values":vals,
