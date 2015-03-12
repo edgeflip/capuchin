@@ -1,3 +1,4 @@
+from flask import url_for
 import os
 import logging
 import datetime
@@ -13,6 +14,12 @@ SOURCE_PASSWORD = 'Yiiphae9'
 
 REDIRECTOR_URL = os.getenv("CHAPO_URL", "https://staging.edgeflip.com/canvas/r/")
 REDIRECTOR_AUTH = os.getenv("CHAPO_AUTH", "capuchin:693828ebddb5f5b7c6f528233fca9d21b4d92941")
+
+MESSAGES = [
+    "Hey {name}, please give us money!!!",
+    "Seriously, {OrgName} will do anything",
+    "Checkout this post, you're going to LOVE it!",
+]
 
 HASH_ROUNDS = 3998
 HASH_ALGO = "pbkdf2-sha512"

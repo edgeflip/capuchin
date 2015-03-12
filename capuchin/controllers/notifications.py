@@ -23,19 +23,14 @@ class NotificationsCreate(MethodView):
 
     def get(self):
         posts = Post.records(client=current_user.client)
-        messages = [
-            "Hey {name}, please give us money!!!",
-            "Seriously, {OrgName} will do anything",
-            "Checkout this post, you're going to LOVE it!",
-        ]
         segment_id = request.args.get('segment')
         post_id = request.args.get('post')
         engage = request.args.get("engage")
         return render_template(
             "notifications/create.html",
             segments=Segment.find({'name':{'$ne':None}}),
-            posts=posts,
-            messages=messages,
+            notification={'posts':posts, 'messages':config.MESSAGES},
+            messages=config.MESSAGES,
             segment_id=segment_id,
             post_id=post_id,
             engage=engage,

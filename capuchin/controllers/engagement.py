@@ -5,7 +5,7 @@ from capuchin import config
 from capuchin import filters
 from capuchin.models.post import Post
 from capuchin.views.insights.charts import HistogramChart
-from capuchin.views.tables.dashboard import Posts
+from capuchin.views.tables.dashboard import Posts, Notifications
 import logging
 import slugify
 import math
@@ -50,10 +50,12 @@ class View(MethodView):
 
     def get(self, id):
         post = Post(id=id)
+        notifications = Notifications(current_user.client)
         logging.info(post)
         return render_template(
             "posts/view.html",
             post=post,
+            notifications=notifications,
         )
 
 def engagement_graph(post):

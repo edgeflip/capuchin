@@ -1,6 +1,6 @@
-<h3>New Segment</h3>
+<h3>{{name}}</h3>
 <div class="col-md-6 form-horizontal">
-{% for filter in filters[:4] %}
+{% for filter in filters[:5] %}
     <div class="form-group">
         <label for="location" class="col-md-3 control-label"><span class="{{filter['icon']}}"></span> {{filter['display']}}</label>
         <div class="col-md-9">
@@ -10,7 +10,7 @@
 {% endfor %}
 </div>
 <div class="col-md-6 form-horizontal">
-{% for filter in filters[4:] %}
+{% for filter in filters[5:] %}
     <div class="form-group">
         <label for="location" class="col-md-3 control-label"><span class="{{filter['icon']}}"></span> {{filter['display']}}</label>
         <div class="col-md-9">
@@ -19,7 +19,7 @@
     </div>
 {% endfor %}
     <div>
-        <button class="btn btn-lg btn-primary">Refresh</button>
-        <button class="btn btn-lg btn-danger">Save Segment</button>
+        <button class="btn btn-primary">Refresh</button>
+        <button class="btn btn-danger">Save Segment</button>
     </div>
 </div>

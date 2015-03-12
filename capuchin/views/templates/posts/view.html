@@ -1,33 +1,48 @@
 {% extends "base.html" %}
 
 {% block title %}Post View{% endblock %}
-
+{% set active_page='engagement' %}
 {% block head %}
 <script src="/static/js/charts/chart.js"></script>
 <script>
 $(document).ready(function(){
     $("#charts").multibar({
-        name:"Engagement",
+        name:"Performance",
         data_url:"{{url_for('.chart', chart_id='engagement', post_id=post.id)}}"
-    }).render(9);
+    }).render(8);
 });
 </script>
 {% endblock %}
 
 {% block content %}
 <div class="row">
-    <div class="col-md-3">
-        <div class="thumbnail">
-            <img src="{{post.picture}}" />
+    <ol class="breadcrumb">
+        <li>Measure</li>
+        <li>{{post.message|truncate(25)}}</li>
+    </ol>
+</div>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&appId={{current_user.client.social.facebook.app_id}}&version=v2.0";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<div class="row">
+    <div class="col-md-4">
+        <h3>Post Preview</h3>
+        <div
+            class="fb-post post-preview"
+            data-href="https://www.facebook.com/{{current_user.client.social.facebook.name}}/posts/{{post.id.split("_")[-1]}}"
+            data-width="350"
+        >
         </div>
-        {{post.message}}
-        <h4>Comments</h4>
-        {% for c in post.comments %}
-            <div class="thumbnail">
-                {{c.message}}
-            </div>
-        {% endfor %}
     </div>
     <div id="charts"></div>
+</div>
+<div class="row">
+    <h3>Activity</h3>
+    {{notifications.render({"post_id":post.id})|safe}}
 </div>
 {% endblock %}

@@ -63,13 +63,19 @@
                             <p>SociallyMinded</p>
                         </a>
                     </div>
+                    {% set nav_links = [
+                        {'href': url_for('audience.index'), 'title':'Audience', 'id':'audience'},
+                        {'href': url_for('engagement.index'), 'title':'Engagement', 'id':'engagement'},
+                        {'href': url_for('reports.index'), 'title':'Insights', 'id':'insights'},
+                    ] %}
 
                     <!-- Collect the nav links, forms, and other content for toggling -->
                     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                        {% set active_page = active_page|default('dashboard') -%}
                         <ul class="nav navbar-nav">
-                            <li><a class="btn btn-default" href="{{ url_for('audience.index') }}">Audience</a></li>
-                            <li><a class="btn btn-default" href="{{ url_for('engagement.index') }}">Engagement</a></li>
-                            <li><a class="btn btn-default" href="{{ url_for('reports.index') }}">Measure</a></li>
+                            {% for nav in nav_links %}
+                                <li><a class="btn btn-default {% if active_page == nav['id'] %}active{% endif %}" href="{{nav['href']}}">{{nav['title']}}</a></li>
+                            {% endfor %}
                             <li><a class="btn btn-default create" href="#">Create</a></li>
                         </ul>
                         <form class="navbar-form navbar-left" role="search">

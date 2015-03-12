@@ -69,7 +69,7 @@ class Segment(orm.Document):
             size=0,
             body=q,
         )
-        return res["aggregations"]
+        return res.get("aggregations", {})
 
     def get_lists(self):
         q = {"aggregations":{}}

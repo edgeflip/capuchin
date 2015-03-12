@@ -27,7 +27,13 @@ db = Blueprint(
     template_folder=config.TEMPLATES,
 )
 
-
+@db.context_processor
+def notification_creation():
+    return {'notification':{
+        'posts':Post.records(client=current_user.client),
+        'messages':config.MESSAGES
+    }
+}
 
 class DashboardDefault(MethodView):
 
@@ -65,11 +71,14 @@ class DashboardChart(MethodView):
         "referrers":referrers,
         "top_words":top_words,
         "top_likes":top_likes,
+        "total_growth_over_time": growth_over_time,
     }
 
 
     def get(self, chart_id):
-        res = self.charts[chart_id]()
+        start_ts = request.args.get("start_ts", None)
+        end_ts = request.args.get("end_ts", None)
+        res = self.charts[chart_id](start=start_ts, end=end_ts)
         obj = {'data':res.data}
         try:
             obj['date_format'] = res.date_format

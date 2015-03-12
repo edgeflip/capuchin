@@ -1,0 +1,32 @@
+<div id="range{{filter['field']|string|slugify}}"></div>
+<div class="row">
+    <div class="col-md-6">
+        <div id="range-{{filter['field']|string|slugify}}-min" class="range-min pull-left">
+            {{values.get(filter['field'], 13)}}
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div id="range-{{filter['field']|string|slugify}}-max" class="range-max pull-right">
+            {{values.get(filter['field'], "65+")}}
+        </div>
+    </div>
+</div>
+<script>
+var {{filter['field']|string|slugify}} = [13, 65];
+$("#range{{filter['field']|string|slugify}}").slider({
+    animate:"fast",
+    max:65,
+    min:13,
+    range:true,
+    step:{{filter['aggregation_args']['interval']}},
+    values:[{{values.get(filter['field'], 13)}}, {{values.get(filter['field'], 65)}}],
+    slide:function(e, ui){
+        {{filter['field']}} = ui.values;
+        $("#range-{{filter['field']|string|slugify}}-min").html(ui.values[0]);
+        var val = ui.values[1];
+        if(ui.values[1] == 65) val = "65+";
+        $("#range-{{filter['field']|string|slugify}}-max").html(val);
+        filters["{{filter['field']}}"] = ui.values;
+    }
+});
+</script>

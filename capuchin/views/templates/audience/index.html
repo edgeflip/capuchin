@@ -2,6 +2,8 @@
 
 {% block title %}Audience{% endblock %}
 
+{% set active_page='audience' %}
+
 {% block head %}
 <script type="text/javascript">
     $(document).ready(function(){
@@ -37,7 +39,7 @@
 </div>
 <div class="row">
     <div class="col-md-9">
-        <h3>Segments <a href="{{ url_for('.create') }}" class="btn btn-success">Create</a></h3>
+        <h3>Segments <a href="{{ url_for('.create') }}" class="btn btn-primary">Create</a></h3>
         {{segments.render(q={"name":{"$ne":None}})|safe}}
         <div id="records">
             <h3>Your Audience</h3>

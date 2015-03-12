@@ -111,7 +111,7 @@ class Create(MethodView):
             users=users,
             id=id,
             pagination=create_pagination(records.total, page),
-            name=segment.name,
+            name=segment.name if segment.name else "New Segment",
             page=page
         )
 

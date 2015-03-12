@@ -4,6 +4,10 @@ body {
     font-size: 12px;
 }
 
+.footer{
+    font-size: 11px;
+}
+
 .btn{
     background-image: none;
 }

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Engagement{% endblock %}
-
+{% set active_page='engagement' %}
 {% block head %}
 <script type="text/javascript">
     $(document).pjax(".pager", "#records", {push:false, type:"POST"});
@@ -32,7 +32,22 @@
     </div>
 </div>
 <div class="row">
-    <h3>Posts</h3>
+    <div class="row">
+        <div class="col-md-8">
+            <h3>Posts <a target="_blank" href="https://facebook.com/{{current_user.client.social.facebook.id}}" class="btn btn-primary">New Post</a></h3>
+        </div>
+        <div class="col-md-4">
+            <form action="{{url_for('.index')}}" method="GET">
+                <div class="input-group">
+                    <input name="q" type="text" class="form-control" placeholder="Search for..." value="{{q if q!='*' else ''}}">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="submit">Search!</button>
+                    </span>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div id="records">
         {% include "posts/records.html" %}
     </div>

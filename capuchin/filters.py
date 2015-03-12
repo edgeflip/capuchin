@@ -1,7 +1,14 @@
 FILTERS = [
     {
-        "display":"Location",
-        "field":"location_name.location",
+        "display":"City",
+        "field":"location_name.city",
+        "type":"term",
+        "aggregation_args":{},
+        "icon":"icon-pointer"
+    },
+    {
+        "display":"State",
+        "field":"location_name.state",
         "type":"term",
         "aggregation_args":{},
         "icon":"icon-pointer"
@@ -9,7 +16,7 @@ FILTERS = [
     {
         "display":"Age",
         "field":"age",
-        "type":"range",
+        "type":"age",
         "icon":"icon-eyeglasses",
         "aggregation_args":{
             "interval":10,
@@ -46,6 +53,12 @@ FILTERS = [
         "aggregation_args":{}
     },
     {
+        "display":"Affiliations",
+        "field":"affiliations.name",
+        "type":"term",
+        "aggregation_args":{}
+    },
+    {
         "display":"Link to List",
         "field":"lists",
         "type":"lists",
@@ -53,28 +66,6 @@ FILTERS = [
         "aggregation_args":{}
     },
 ]
-"""
-    {
-        "display":"Affiliations",
-        "field":"affiliations.name",
-        "type":"term",
-        "aggregation_args":{}
-    },
-    {
-        "display":"Popularity",
-        "field":"num_people_interacted_with_my_posts",
-        "type":"range",
-        "aggregation_args":{
-            "interval" : 100,
-            "min_doc_count": 100,
-            "extended_bounds" : {
-                "min" : 100,
-                "max" : 5000
-            }
-        }
-    },
-]
-"""
 
 def range_filter(field, value):
     return {
@@ -100,10 +91,26 @@ def term_list_filter(field, value):
         }
     }
 
+def age_filter(field, value):
+    obj = range_filter(field, value)
+    if value[1] == 65:
+        del obj['range'][field]['to']
+        obj['range'][field]['gte'] = value[1]
+    else:
+        obj['range'][field]['to'] = value[1]
+
+    return obj
+
 FILTER_TYPES = {
     "range": range_filter,
     "term": term_filter,
     "term_list": term_list_filter,
+    "age": age_filter,
+    "joined": range_filter,
+    "interests": term_filter,
+    "engagement": range_filter,
+    "lists": term_filter,
+    "gender": term_list_filter,
 }
 
 def get_filter(filters, field):

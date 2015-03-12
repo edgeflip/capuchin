@@ -22,7 +22,7 @@ user_columns = [
     Column('gender', "Gender", sortable=True),
     Column('location_name.city', "Location", formatter=user_location),
     Column('', "Source", formatter=lambda v, r: "Facebook Ad"),
-    Column('last_notification', "Last Notification", formatter=user_notification),
+    Column('last_notification', "Last Notification", formatter=user_notification, sortable=True),
     Column('', 'Link', formatter=lambda v,r: "Action", cls="actions"),
 ]
 
@@ -35,7 +35,7 @@ def segment_count(v, r):
     return "{:,}".format(r.count)
 
 def segment_actions(v, r):
-    return "<div class=\"btn-group\">\
+    return "<div class=\"btn-group btn-group-xs\">\
         <a class='btn btn-primary' href=\"{}\" role=\"button\">Grow</a>\
         <a class=\"btn btn-primary\" href=\"{}\" role=\"button\">Engage</a>\
     </div>".format(
@@ -48,10 +48,10 @@ def date_formatter(v, r):
 
 segment_columns = [
     Column('name', "Name", sortable=True),
-    Column('created', "Created", formatter=date_formatter),
+    Column('created', "Created", formatter=date_formatter, sortable=True),
     Column('', 'Members', formatter=segment_count),
-    Column('', 'Engagement', formatter=lambda r,v: "..."),
-    Column('last_notification', "Last Notification", formatter=date_formatter),
+    Column('', 'Engagement', formatter=lambda r,v: "...", sortable=True),
+    Column('last_notification', "Last Notification", formatter=date_formatter, sortable=True),
     Column('', 'Actions', formatter=segment_actions),
 ]
 
