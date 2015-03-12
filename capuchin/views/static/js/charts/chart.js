@@ -408,7 +408,7 @@ function DumpObjectIndented(obj, indent)
                 var chart = nv.models.multiChart()
                     .margin({top: 30, right: 60, bottom: 50, left: 70})
                     .tooltipContent(function (key, x, val, graph) {
-                        return data.data.messages[key][x];
+                        return data.data.messages[key][graph.pointIndex];
                     });
 
                 //Format x-axis labels with custom function.
@@ -499,6 +499,9 @@ function DumpObjectIndented(obj, indent)
                     .style('fill', color);
                 });
 
+                d3.selectAll(chartSelector + " .nv-axisMaxMin")[0].forEach(function(d,i) {
+                    d3.select(d).style('display', 'none');
+                });
                 nv.utils.windowResize(chart.update);
                 return chart
             });
