@@ -289,6 +289,10 @@ text.word-bubble{
     font-family: 'Montserrat', sans-serif;
 }
 
+.nvd3 text {
+    font-family: 'Montserrat', sans-serif;
+}
+
 .nvd3.nv-pie path {
     stroke-width: 0px;
 }
