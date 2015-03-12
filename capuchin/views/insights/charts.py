@@ -8,13 +8,14 @@ import datetime
 
 class InfluxChart(object):
 
-    def __init__(self, client, typ, where="", prefix="insights", date_format="%m/%d/%y", massage=True):
+    def __init__(self, client, typ, where="", prefix="insights", date_format="%m/%d/%y", massage=True, tooltip_formatter=None):
         self.INFLUX = db.init_influxdb()
         self.client = client
         self.typ = typ
         self.where=where
         self.prefix = prefix
         self.date_format = date_format
+        self.tooltip_formatter = tooltip_formatter
         try:
             self.data = self.query()
             logging.debug(self.data)
@@ -71,17 +72,23 @@ class FBInsightsDiscreteBarChart(InfluxChart):
         return data.json()
 
     def massage(self, data):
-        values = [{
-            "label":a[2],
-            "value":a[1]
-        } for a in data[0]['points']]
+        tooltips = {}
+        values = []
+        for a in data[0]['points']:
+            y = a[1]
+            x = a[2]
+            tooltips[x] = self.tooltip_formatter(x, y)
+            values.append({
+                "label":x,
+                "value":y
+            })
 
         values = sorted(values, key=lambda x: int(x['label']))
         data = [{
             "key": "Stuff",
             "values": values
         }]
-        return data
+        return {"points": data, "messages": tooltips}
 
 
 class FBInsightsMultiBarChart(InfluxChart):
@@ -184,7 +191,8 @@ class DualAxisTimeChart(InfluxChart):
                 "values":vals,
                 "yAxis": self.typ[v]['yAxis'],
                 "type": self.typ[v]['type'],
-                "color": self.typ[v]['color'],
+                "color": self.typ[v]['fill_color'],
+                "stroke_color": self.typ[v]['stroke_color'],
             })
         logging.info(tooltips)
         return {"points": ar, "messages": tooltips}

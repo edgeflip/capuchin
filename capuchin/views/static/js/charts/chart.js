@@ -7,6 +7,12 @@ function truncate(str, maxLength, suffix) {
     return str;
 }
 
+d3.selection.prototype.moveToFront = function() {
+    return this.each(function(){
+        this.parentNode.appendChild(this);
+    });
+};
+
 function flatten(root) {
     var nodes = [];
 
@@ -180,16 +186,22 @@ function DumpObjectIndented(obj, indent)
                 var chart = nv.models.discreteBarChart()
                     .x(function(d) { return d.label })
                     .y(function(d) { return d.value })
-                    .color(['#4785AB']);
+                    .color(function(d) { return '#4785AB'; })
+                    .tooltipContent(function (key, x, val, graph) {
+                        return data.data.messages[x];
+                    });
 
                 chart.yAxis
                 .tickFormat(d3.format(',.1f'));
                 d3.select("#chart"+settings.id+" svg")
-                .datum(data.data)
+                .datum(data.data.points)
                 .transition().duration(500)
                 .call(chart);
                 var chartSelector = '#chart'+settings.id;
                 d3.selectAll(chartSelector + ' .tick line').style('display', 'none');
+                d3.selectAll(chartSelector + ' path.domain')[0].forEach(function(d,i) {
+                    d3.select(d).style('display', 'none');
+                });
 
                 nv.utils.windowResize(chart.update);
 
@@ -210,7 +222,7 @@ function DumpObjectIndented(obj, indent)
                 .y(function(d) { return d.value })
                 .margin({top: 30, right: 20, bottom: 50, left: 175})
                 .showValues(true)           //Show bar value next to each bar.
-                .tooltips(false)             //Show tooltips on hover.
+                .tooltips(false)             //Show tooltips on hover
                 .transitionDuration(350)
                 .showControls(false);        //Allow user to switch between "Grouped" and "Stacked" mode.
                 chart.showYAxis(false);
@@ -239,6 +251,9 @@ function DumpObjectIndented(obj, indent)
                     // make sure the fill color matches the original circle
                     .style('fill', color);
                 });
+                d3.select(chartSelector + " .nv-legend")
+                  .attr("transform", "translate(-135,255)");
+
                 nv.utils.windowResize(chart.update);
 
                 return chart;
@@ -350,6 +365,13 @@ function DumpObjectIndented(obj, indent)
                     match.style('display', 'none');
                 });
 
+                // All of our manual tweaks will be for naught if they click the legend
+                for (var property in chart.legend.dispatch) {
+                        chart.legend.dispatch[property] = function() { };
+                }
+
+                d3.select(chartSelector + ' .nv-pie')
+                  .attr("transform", "translate(-140,0)");
                 d3.selectAll(chartSelector + ' .nv-series')[0].forEach(function(d,i) {
                   // select the individual group element
                   var group = d3.select(d);
@@ -367,6 +389,8 @@ function DumpObjectIndented(obj, indent)
                     // make sure the fill color matches the original circle
                     .style('fill', color);
                 });
+                d3.select(chartSelector + " .nv-legend")
+                  .attr("transform", "translate(-175,275)");
                 nv.utils.windowResize(chart.update);
 
                 return chart;
@@ -446,8 +470,17 @@ function DumpObjectIndented(obj, indent)
                 .datum(data.data.points)
                 .call(chart);
 
+                d3.select(chartSelector + ' .lines1Wrap')
+                .moveToFront();
+
+                d3.select(chartSelector + ' .lines2Wrap')
+                .moveToFront();
+
                 d3.select(chartSelector + " .legendWrap")
-                  .attr("transform", "translate(0,-30)");
+                  .attr("transform", "translate(-240,240)");
+                d3.selectAll(chartSelector + ' path.domain')[0].forEach(function(d,i) {
+                    d3.select(d).style('display', 'none');
+                });
                 d3.selectAll(chartSelector + ' .nv-series')[0].forEach(function(d,i) {
                   // select the individual group element
                   var group = d3.select(d);
@@ -501,6 +534,11 @@ function DumpObjectIndented(obj, indent)
                 .call(chart);
 
                 var chartSelector = '#chart'+settings.id;
+
+                d3.selectAll(chartSelector + ' path.domain')[0].forEach(function(d,i) {
+                    d3.select(d).style('display', 'none');
+                });
+
                 d3.selectAll(chartSelector + ' .nv-series')[0].forEach(function(d,i) {
                   // select the individual group element
                   var group = d3.select(d);
@@ -518,6 +556,8 @@ function DumpObjectIndented(obj, indent)
                     // make sure the fill color matches the original circle
                     .style('fill', color);
                 });
+                d3.select(chartSelector + " .legendWrap")
+                  .attr("transform", "translate(-80,195)");
                 nv.utils.windowResize(chart.update);
                 return chart
             });

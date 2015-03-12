@@ -305,12 +305,21 @@ text.word-bubble{
     font-family: 'Montserrat', sans-serif;
 }
 
+.nvd3 text {
+    font-family: 'Montserrat', sans-serif;
+}
+
 .nvd3.nv-pie path {
     stroke-width: 0px;
 }
 circle.nv-point
 {
     stroke-opacity: 1!important;
+    stroke-width: 6px;
+}
+
+.nvd3 g.nv-groups path.nv-line {
+    stroke-width: 4px;
 }
 
 .overhead-popover {
@@ -362,6 +371,10 @@ circle.nv-point
     font-family: 'Montserrat', sans-serif;
     font-weight: bold;
     font-size: 125%;
+}
+
+.nv-bar {
+    fill: #4785AB;
 }
 
 .nv-bar:hover {
