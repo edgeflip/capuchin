@@ -111,13 +111,15 @@ def growth_over_time(start, end):
             'series': 'insights.{}.members.lifetime',
             'yAxis': 2,
             'type': 'area',
-            'color': "#F1F2F2",
+            'fill_color': "#4785AB",
+            'stroke_color': "#363738",
         },
         'Page Likes': {
             'series': 'insights.{}.page_fan_adds.day',
             'yAxis': 1,
             'type': 'line',
-            'color': "#4785AB",
+            'fill_color': "#CC3A17",
+            'stroke_color': "#155982",
         },
     }
 
@@ -159,9 +161,22 @@ def actions():
 
 
 def hours_active():
+    def hour_tooltip_formatter(x, y):
+        hour = int(x)
+        if hour == 0:
+            pretty_hour = 'midnight'
+        elif hour < 12:
+            pretty_hour = '{} AM'.format(hour)
+        elif hour == 12:
+            pretty_hour = 'noon'
+        else:
+            pretty_hour = '{} PM'.format(hour-12)
+        return "<div class='overhead-popover'>" + pretty_hour + ": " + "{0:.1f}".format(y) + " average users active</div>"
+
     return FBInsightsDiscreteBarChart(
         current_user.client,
         typ="page_fans_online.day",
+        tooltip_formatter=hour_tooltip_formatter,
     )
 
 
@@ -268,7 +283,7 @@ def post_performance(start, end):
             'data': benchmark_dataset,
             'yAxis': 2,
             'type': 'line',
-            'color': "#EEC03C",
+            'color': "#363738",
         },
     }
 
