@@ -129,17 +129,22 @@ class DummyDualAxisTimeChart(InfluxChart):
         logging.info(data)
         ar = []
 
+        tooltips = {}
         for v, d in data.iteritems():
+            key = "{} (right axis)".format(v) if self.typ[v]['yAxis'] == 2 else v
+            tooltips[key] = {}
             vals = [
                 {"x":a['ts'], "y":a['value'], "message": a.get('message', None), "views": a.get('views', None), "engagement": a.get('engagement', None)}
                 for a in d
             ]
             vals.reverse()
-            tooltips = {}
-            for val in vals:
+            for i, val in enumerate(vals):
                 pretty_date = datetime.datetime.strftime(datetime.datetime.fromtimestamp(val["x"]/1000), self.date_format)
                 if val['message']:
-                    tooltips[pretty_date] = "<div class='overhead-popover'>" + "<br />".join([val['message'], pretty_date, "Views: {}".format(val['views']), "Engagement: {}%".format(val['engagement'])]) + "</div>";
+                    tooltips[key][i] = "<div class='overhead-popover'>" + "<br />".join([val['message'], pretty_date, "Views: {}".format(val['views']), "Engagement: {}%".format(val['engagement'])]) + "</div>";
+                else:
+                    tooltips[key][i] = "<div class='overhead-popover'>" + "<br />".join([pretty_date, "{}: {}".format(key, val['y'])]) + "</div>"
+
             ar.append({
                 "key":v,
                 "values":vals,
@@ -177,8 +182,9 @@ class DualAxisTimeChart(InfluxChart):
         for v, d in data.iteritems():
             key = "{} (right axis)".format(v) if self.typ[v]['yAxis'] == 2 else v
             tooltips[key] = {}
+            scale = 1 if "Page Likes" in key else 0
             vals = [
-                {"x":a[0], "y":a[1] + random.randint(10, 30)}
+                {"x":a[0], "y":a[1] + random.randint(250, 300) + scale * int(str(a[0])[3:-3])/100}
                 for a in data[v][0]['points']
                 if a[0] >= highest_min_x
             ]

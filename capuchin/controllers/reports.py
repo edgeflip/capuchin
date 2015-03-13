@@ -43,6 +43,7 @@ class Chart(MethodView):
     time_based_charts = {
         "growth_vs_competitors": growth_vs_competitors,
         "total_growth_over_time": growth_over_time,
+        "net_growth_per_day": net_growth_per_day,
         "audience_by_source": audience_by_source,
         "post_performance": post_performance,
     }

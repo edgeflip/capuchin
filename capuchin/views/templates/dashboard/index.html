@@ -12,6 +12,8 @@ $(document).ready(function(){
         name:"Total Growth over Time",
         data_url:"{{url_for('.chart', chart_id='total_growth_over_time')}}",
         height:300,
+        legend_x:-250,
+        legend_y:240,
     }).render(12);
     /*
     $("#charts").usa({

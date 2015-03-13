@@ -13,6 +13,15 @@ $(document).ready(function(){
         name:"Total Growth over Time",
         data_url:"{{url_for('.chart', chart_id='total_growth_over_time')}}",
         height:300,
+        legend_x:-240,
+        legend_y:240,
+    }).render(12);
+    $("#audience_charts").manylines({
+        name:"Net Growth per Day",
+        data_url:"{{url_for('.chart', chart_id='net_growth_per_day')}}",
+        height:250,
+        legend_x:-320,
+        legend_y:188,
     }).render(12);
     $("#audience_charts").pie({
         name:"Audience by Source",
@@ -23,6 +32,8 @@ $(document).ready(function(){
         name:"Growth vs Competitors",
         data_url:"{{url_for('.chart', chart_id='growth_vs_competitors')}}",
         height:300,
+        legend_x:-112,
+        legend_y:255,
     }).render(6);
     $("#psycho_charts").bar({
         name:"Hours Active",
@@ -43,6 +54,8 @@ $(document).ready(function(){
         name:"Posts",
         data_url:"{{url_for('.chart', chart_id='post_performance')}}",
         height:250,
+        legend_x:-77,
+        legend_y:195,
     }).render(12);
 
 });

@@ -91,6 +91,12 @@ def likes():
     )
 
 def growth_vs_competitors(start, end):
+    return DummyHorizontalBarChart('Growth vs Competitors (last week)', {
+        'You': 0.03,
+        'Divvy Bikes': 0.01,
+        'The White House': 0.07,
+        'United Nations': 0.04,
+    })
     comparables = \
         [{ 'series': 'insights.{}.page_fans.lifetime', 'display': 'You'}] +\
         [{ 'series': 'insights.{}.competitors.' + competitor.id + '.lifetime', 'display': competitor.name} for competitor in current_user.client.competitors]
@@ -104,32 +110,67 @@ def growth_vs_competitors(start, end):
         date_format = "%m/%d/%y"
     )
 
+def generate_points(daily_values):
+    return [
+        {
+            'ts': int((datetime.date.today() - datetime.timedelta(days_back)).strftime('%s'))*1000,
+            'value': v,
+        }
+        for days_back, v in enumerate(reversed(daily_values))
+    ]
+
 def growth_over_time(start, end):
-    # two y axes
+
+    audience_dataset = generate_points([240, 242, 245, 250, 248, 254, 255, 250])
+    pagelike_dataset = generate_points([450, 458, 475, 492, 502, 528, 530, 545])
+
     comparables = {
         'Audience': {
-            'series': 'insights.{}.members.lifetime',
-            'yAxis': 2,
-            'type': 'area',
-            'fill_color': "#4785AB",
-            'stroke_color': "#363738",
-        },
-        'Page Likes': {
-            'series': 'insights.{}.page_fan_adds.day',
+            'data': audience_dataset,
             'yAxis': 1,
             'type': 'line',
-            'fill_color': "#CC3A17",
-            'stroke_color': "#155982",
+            'color': "#CC3A17",
+        },
+        'Page Likes': {
+            'data': pagelike_dataset,
+            'yAxis': 2,
+            'type': 'area',
+            'color': "#4785AB",
         },
     }
 
-    return DualAxisTimeChart(
+    return DummyDualAxisTimeChart(
         current_user.client,
         comparables,
-        start=start,
-        end=end,
         date_format = "%m/%d"
     )
+
+
+def net_growth_per_day(start, end):
+    audience_dataset = generate_points([2, 3, 5, -2, 6, 1, -5])
+    pagelike_dataset = generate_points([8, 17, 17, 10, 26, 2, 15])
+
+    comparables = {
+        'Audience': {
+            'data': audience_dataset,
+            'yAxis': 1,
+            'type': 'line',
+            'color': "#CC3A17",
+        },
+        'Page Likes': {
+            'data': pagelike_dataset,
+            'yAxis': 1,
+            'type': 'line',
+            'color': "#4785AB",
+        },
+    }
+
+    return DummyDualAxisTimeChart(
+        current_user.client,
+        comparables,
+        date_format = "%m/%d"
+    )
+
 
 def audience_by_source(start, end):
     return DummyPieChart('Audience by Source', {

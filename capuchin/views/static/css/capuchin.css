@@ -303,7 +303,9 @@ text.word-bubble{
     stroke: #000;
 }
 
-.nvd3.multiChart .axis .nv-axis line { stroke: none; fill: none; }
+.nvd3.multiChart .y1 .nv-axis line { stroke: none; fill: none; }
+.nvd3.multiChart .y2 .nv-axis line { stroke: none; fill: none; }
+.nvd3.multiChart .x .nv-axis line { stroke: #f1f2f2; fill: none; z-index: 0; }
 
 .nv-legend-text {
     font-family: 'Montserrat', sans-serif;
@@ -319,11 +321,11 @@ text.word-bubble{
 circle.nv-point
 {
     stroke-opacity: 1!important;
-    stroke-width: 6px;
+    stroke-width: 4px;
 }
 
 .nvd3 g.nv-groups path.nv-line {
-    stroke-width: 4px;
+    stroke-width: 2px;
 }
 
 .overhead-popover {
@@ -387,4 +389,5 @@ circle.nv-point
 
 .nv-area {
     pointer-events: visibleStroke;
+    opacity: 0.5;
 }
