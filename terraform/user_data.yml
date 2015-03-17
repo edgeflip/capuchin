@@ -4,34 +4,34 @@ output : { all : '| tee -a /var/log/cloud-init-output.log' }
 ssh_keys:
     rsa_private: |
         -----BEGIN RSA PRIVATE KEY-----
-        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
+        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
         -----END RSA PRIVATE KEY-----
 
-    rsa_public: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDG7gAyfM49HJYvOLTH7s9QkUJJblq8r1Lx0errIEQzCzGtQr5sm2o6+XkqcgceaGMM8+BgBxOCMr1H+ahBLPMhQTidDVmfXK1ntHFc9UwghGzMB+oKAzEltwO+hTrjlDOOhFfrgDyR394Y2CwtuXT3Ye0pnMCVEp+tYSUBgVD/tUDZd55bOdKE1JX1sCxuXP/tCMJ8TpSQazbAQGKlMeb4LGPTK++uB0pykMc4pRfV8WdxdZy3NXc1a1VAA9RsB48D1LDlrbcGHAxvLeWVdQ+VZb4KWslUy8JqEDtOluJlJ8KQZ5adrWJUJVAy7obzTLj3wTksU+2U/oEvBC2pFNBV entone@beagsley
+    rsa_public: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDZOQ78dAyFuLITE9+3BHv2PYoQMlSk0r39RvX8LSVCtdrje+ZjLNiYcy7neX1XhJKGCK7QxvXB20QlXA69V5IqbDoZwHBYO/HqtHP643bYdMXFLNeRdibqwmtlKhowbu6AHfRQ18VxuBZt3MjGOkvkuxQ51VraeG+0qVIvgFxRh//mh4Wn/tqMIyo1hNPx/oT+WChOAuyWU/arqrYjw8MjIExP9ILlGaTt0RbXldX8p+zhZwjrd9caoASa9l02J+MJLflCzZTIn6c8dweMmuLI1wEZox7YUYrryIafcf5JFemJv9scr4/SGeVWdS7GGLyHplJjnPh2BLulkKbb37tD chris@entropealabs.com
 
 
 packages:
@@ -46,4 +46,4 @@ runcmd:
     - ssh-keyscan github.com >> /root/.ssh/known_hosts
     - git clone git@github.com:edgeflip/capuchin.git /app
     - cd /app
-    - fig up -d
+    - fig -f docker-compose.yml up -d
