@@ -4,34 +4,34 @@ output : { all : '| tee -a /var/log/cloud-init-output.log' }
 ssh_keys:
     rsa_private: |
         -----BEGIN RSA PRIVATE KEY-----
-        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
+        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
         -----END RSA PRIVATE KEY-----
 
-    rsa_public: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDG7gAyfM49HJYvOLTH7s9QkUJJblq8r1Lx0errIEQzCzGtQr5sm2o6+XkqcgceaGMM8+BgBxOCMr1H+ahBLPMhQTidDVmfXK1ntHFc9UwghGzMB+oKAzEltwO+hTrjlDOOhFfrgDyR394Y2CwtuXT3Ye0pnMCVEp+tYSUBgVD/tUDZd55bOdKE1JX1sCxuXP/tCMJ8TpSQazbAQGKlMeb4LGPTK++uB0pykMc4pRfV8WdxdZy3NXc1a1VAA9RsB48D1LDlrbcGHAxvLeWVdQ+VZb4KWslUy8JqEDtOluJlJ8KQZ5adrWJUJVAy7obzTLj3wTksU+2U/oEvBC2pFNBV entone@beagsley
+    rsa_public: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC+CYPF090QpJPgG4mY2xs/+0RzgImwMqZZJAV2kC8VFzNthsz6kR1OCBIHWbDf0p39wR33ZqOzxEVh6Hd9AaJ/tDETgq6KqLpo8WSsAJzMiRKqailoC2TxdfM92pmC+mDjGR8o5kvukYBXQFcOlIyaDnuH4ezfzbHu2RoGICTSaSOq0lIn7VRQeR+/8zcMO9yqPIFq/rhP7GgL+k1Tsp+SCcnL5ub/xBjVXizocVNZy+Bp6x0xCEjiX5Wv1JmeazGv9m+tq93QQB3q+viIXkKD0Lm5fzNg7GjwlIQn46afGryql/zOjFvGQqSlXJeZ2DQsimaBDnvIABW0TnuUPK17 devs@edgeflip.com
 
 
 packages:
