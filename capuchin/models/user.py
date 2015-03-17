@@ -40,8 +40,8 @@ def parse_email(val):
 
 def parse_location(val):
     try:
-        city = val.split(" ")[0]
-        state = val.split(" ")[-1]
+        city = val.split(",")[0].strip()
+        state = val.split(",")[-1].strip()
     except:
         city = None
         state = None

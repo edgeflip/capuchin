@@ -96,15 +96,17 @@ class SyncUsers(Command):
     def run(self):
         ES = db.init_elasticsearch()
         offset = ES.count(config.ES_INDEX, config.USER_RECORD_TYPE)['count']
-        diff = self.get_total() - offset
+        total = self.get_total()
+        diff = total - offset
         logging.info("DIFF: {}".format(diff))
-        worker_total = math.ceil(diff/10) if diff > 10 else diff
-        gs = []
-        r = range(10) if diff > 10 else range(1)
-        for i in range(10):
-            gs.append(gevent.spawn(self.worker, offset=offset, total=worker_total))
+        self.worker(offset=offset, total=total)
+        #worker_total = math.ceil(diff/10) if diff > 10 else diff
+        #gs = []
+        #r = range(10) if diff > 10 else range(1)
+        #for i in range(10):
+        #    gs.append(gevent.spawn(self.worker, offset=offset, total=worker_total))
 
-        gevent.joinall(gs)
+        #gevent.joinall(gs)
 
 class UpdateMapping(Command):
 

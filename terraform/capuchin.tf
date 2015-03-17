@@ -4,74 +4,65 @@ provider "aws" {
     region = "${var.aws_region}"
 }
 
-module "vpc" {
-    source = "github.com/entone/terraform-aws-vpc"
-    network = "10.0"
-    aws_key_name = "devops"
-    aws_access_key = "${var.aws_access_key}"
-    aws_secret_key = "${var.aws_secret_key}"
-    aws_region = "${var.aws_region}"
-    aws_key_path = "${var.aws_key_path}"
+resource "aws_vpc" "capuchin_vpc" {
+    cidr_block = "10.0.0.0/16"
+    enable_dns_hostnames = true
+    enable_dns_support = true
+    tags {
+        Name = "capuchin"
+    }
 }
 
-resource "aws_elb" "web" {
-    name = "capuchin-elb"
+resource "aws_subnet" "capuchin_public_subnet" {
+    vpc_id = "${aws_vpc.capuchin_vpc.id}"
+    cidr_block = "10.0.0.0/24"
 
-    subnets = [
-        "${module.vpc.bastion_subnet}",
-    ]
-
-    listener {
-        instance_port = 8000
-        instance_protocol = "http"
-        lb_port = 80
-        lb_protocol = "http"
+    tags {
+        Name = "capuchin_public_subnet"
     }
-
-    health_check {
-        healthy_threshold = 2
-        unhealthy_threshold = 2
-        timeout = 3
-        target = "HTTP:8000/healthcheck"
-        interval = 30
-    }
-
-    security_groups = [
-        "${aws_security_group.web.id}"
-    ]
-
-    instances = ["${aws_instance.capuchin.id}"]
 }
 
-resource "aws_instance" "capuchin" {
-    ami = "${lookup(var.amis, var.aws_region)}"
-    instance_type = "t2.medium"
-    key_name = "devops"
-    subnet_id = "${module.vpc.aws_subnet_app_id}"
-    connection {
-        # The default username for our AMI
-        user = "ubuntu"
+resource "aws_internet_gateway" "capuchin_igw" {
+    vpc_id = "${aws_vpc.capuchin_vpc.id}"
 
-        # The path to your keyfile
-        key_file = "${var.aws_key_path}"
+    tags {
+        Name = "capuchin_igw"
     }
-
-    user_data = "${file(\"./user_data.yml\")}"
-
-    security_groups = [
-        "${aws_security_group.app.id}",
-    ]
 }
 
-resource "aws_security_group" "app" {
-    name = "edgflip_app"
-    description = "Allows ssh and elb connections to app nodes"
-    vpc_id = "${module.vpc.aws_vpc_id}"
+resource "aws_route_table" "capuchin_public_rt" {
+    vpc_id = "${aws_vpc.capuchin_vpc.id}"
 
-    # HTTP access from anywhere
+    route {
+        cidr_block = "0.0.0.0/0"
+        gateway_id = "${aws_internet_gateway.capuchin_igw.id}"
+    }
+
+    tags {
+        Name = "capuchin_public_rt"
+    }
+}
+
+resource "aws_route_table_association" "capuchin_public_rta" {
+    subnet_id = "${aws_subnet.capuchin_public_subnet.id}"
+    route_table_id = "${aws_route_table.capuchin_public_rt.id}"
+}
+
+resource "aws_security_group" "capuchin_app_sg" {
+    name = "allow_all"
+    description = "Allow all inbound traffic"
+    vpc_id = "${aws_vpc.capuchin_vpc.id}"
+
+    ingress{
+        from_port = 80
+        to_port = 80
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
     ingress {
-        from_port = 8000
-        to_port = 8000
+        from_port = 443
+        to_port = 443
         protocol = "tcp"
         cidr_blocks = ["0.0.0.0/0"]
     }
@@ -82,18 +73,28 @@ resource "aws_security_group" "app" {
         protocol = "tcp"
         cidr_blocks = ["0.0.0.0/0"]
     }
+
+    tags {
+        Name = "capuchin_app_sg"
+    }
 }
 
-resource "aws_security_group" "web" {
-    name = "edgflip_public"
-    description = "Allows all requests to ELB on port 80"
-    vpc_id = "${module.vpc.aws_vpc_id}"
+resource "aws_instance" "capuchin_app" {
+    ami = "ami-167d5f7e"
+    instance_type = "m1.medium"
+    subnet_id = "${aws_subnet.capuchin_public_subnet.id}"
+    security_groups = [
+        "${aws_security_group.capuchin_app_sg.id}",
+    ]
 
-    # HTTP access from anywhere
-    ingress {
-        from_port = 80
-        to_port = 80
-        protocol = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
+    key_name = "devops"
+    user_data = "${file(\"./user_data.yml\")}"
+    tags {
+        Name = "capuchin_app"
     }
+}
+
+resource "aws_eip" "capuchin_app_eip" {
+    instance = "${aws_instance.capuchin_app.id}"
+    vpc = true
 }

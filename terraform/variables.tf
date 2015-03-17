@@ -10,6 +10,3 @@ variable "amis" {
         us-west-1 = "ami-50120b15"
     }
 }
-
-variable "git_repo" {}
-variable "app" {}

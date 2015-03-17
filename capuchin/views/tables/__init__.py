@@ -136,7 +136,7 @@ class MongoTable(Table):
             d = 1 if sort[1]=='asc' else -1
             sort = [(sort[0], d)]
 
-        sort = sort if sort else [('_id',1)]
+        sort = sort if sort else [('_id',-1)]
         records = self.cls.find(q).sort(sort).skip(int(from_)).limit(int(size))
         total = records.count()
         return records, total
