@@ -1322,3 +1322,23 @@ function DumpObjectIndented(obj, indent)
         return $(this).chart(options);
     };
 })(jQuery);
+
+(function($){
+    $.fn.sparkline = function(options){
+        options.build_chart = function(settings, data){
+            nv.addGraph({
+             generate: function() {
+                 var chart = nv.models.sparkline()
+                 .width(100)
+                 .height(80)
+                 .color(["#4785AB"])
+                 d3.select('#chart'+settings.id+' svg')
+                 .datum(data.data)
+                 .call(chart);
+                 return chart;
+             }
+            });
+        };
+        return $(this).chart(options);
+    };
+})(jQuery);

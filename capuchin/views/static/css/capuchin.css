@@ -349,6 +349,18 @@ circle.nv-point
     stroke-width: 2px;
 }
 
+.nv-sparkline {
+    stroke-width: 2px;
+}
+
+.nv-sparkline .nv-minValue {
+    display: none;
+}
+
+.nv-sparkline .nv-maxValue {
+    display: none;
+}
+
 .overhead-popover {
     position: absolute;
     bottom: 5px;
@@ -411,4 +423,93 @@ circle.nv-point
 .nv-area {
     pointer-events: visibleStroke;
     opacity: 0.5;
+}
+
+.bubble .checkbox {
+    margin-bottom: 10px;
+}
+.bubble .checkbox {
+    font-weight: normal;
+}
+.ui-tabs .ui-widget-header {
+    background: white;
+    border: none;
+}
+
+#tabpicker .ui-state-default {
+    background: #A0CAE2;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.ui-tabs .ui-state-default a {
+    color: #F1F2F2;
+}
+.ui-tabs .ui-state-active a {
+    color: #F1F2F2;
+}
+#tabpicker li.ui-tabs-active {
+    background: #4785AB;
+    color: #F1F2F2;
+}
+
+.ui-tabs .ui-tabs-panel {
+    background: white;
+}
+
+.ui-tabs .ui-tabs-nav li {
+    position: relative;
+    border: none;
+    padding-right: 0px;
+    margin-right: 20px;
+}
+
+.ui-tabs li.ui-state-default ::before {
+    position: absolute;
+    width: 0;
+    height: 0;
+    bottom: 0px;
+    right: -50px;
+    display: block;
+    border-right: 15px dotted rgba(255,255,255,0);
+    border-top: 31px dotted rgba(255,255,255,0);
+    border-left: 42px solid #A0CAE2;
+    content: '';
+}
+
+.ui-tabs li.ui-state-active ::after {
+    position: absolute;
+    width: 0;
+    height: 0;
+    bottom: 0px;
+    right: -50px;
+    display: block;
+    border-right: 15px dotted rgba(255,255,255,0);
+    border-top: 32px dotted rgba(255,255,255,0);
+    border-left: 42px solid #4785AB;
+    content: '';
+}
+
+.daterangepicker {
+    margin-right: 20px;
+}
+
+select {
+    width: 150px;
+}
+
+.daterangepicker input {
+    line-height: 1.0;
+    padding: 0.2em;
+}
+
+.ui-selectmenu-button span.ui-selectmenu-text {
+    line-height: 1;
+    display: inline;
+}
+
+.ui-selectmenu-button {
+    overflow: visible;
+    top: 50%;
+    position: relative;
 }
