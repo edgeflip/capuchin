@@ -8,71 +8,210 @@
 <script src="/static/js/charts/chart.js"></script>
 
 <script>
-$(document).ready(function(){
-    $("#audience_charts").lineplusarea({
-        name:"Total Growth over Time",
-        data_url:"{{url_for('.chart', chart_id='total_growth_over_time')}}",
-        height:300,
-        legend_x:-240,
-        legend_y:240,
-    }).render(12);
-    $("#audience_charts").manylines({
-        name:"Net Growth per Day",
-        data_url:"{{url_for('.chart', chart_id='net_growth_per_day')}}",
-        height:250,
-        legend_x:-320,
-        legend_y:188,
-    }).render(12);
-    $("#audience_charts").pie({
-        name:"Audience by Source",
-        data_url:"{{url_for('.chart', chart_id='audience_by_source')}}",
-        height:300,
-    }).render(6);
-    $("#audience_charts").horizontal_multibar({
-        name:"Growth vs Competitors",
-        data_url:"{{url_for('.chart', chart_id='growth_vs_competitors')}}",
-        height:300,
-        legend_x:-112,
-        legend_y:255,
-    }).render(6);
-    $("#psycho_charts").bar({
-        name:"Hours Active",
-        data_url:"{{url_for('.chart', chart_id='hours_active')}}",
-        height:250,
-    }).render(12);
-    $("#psycho_charts").horizontal_percent_multibar({
-        name:"Interests",
-        data_url:"{{url_for('.chart', chart_id='interests')}}",
-        height:250,
-    }).render(6);
-    $("#psycho_charts").horizontal_percent_multibar({
-        name:"Actions",
-        data_url:"{{url_for('.chart', chart_id='actions')}}",
-        height:250,
-    }).render(6);
-    $("#page_charts").manylines({
-        name:"Posts",
-        data_url:"{{url_for('.chart', chart_id='post_performance')}}",
-        height:250,
-        legend_x:-77,
-        legend_y:195,
-    }).render(12);
+var activated = {};
+var enable_graph = function(event, ui) {
+    var tab;
+    if ('newTab' in ui) {
+        tab = ui.newTab;
+    } else {
+        tab = ui.tab;
+    }
 
-});
+    var p = $(tab[0].parentNode);
+    p.children().css("z-index", "0");
+    var title = tab[0].textContent;
+    tab.css("z-index", 1);
+    if (!activated[title]) {
+        activated[title] = true;
+        if(title == "Audience Growth") {
+            $( "#growth_range" ).selectmenu();
+            $( "#growth_from" ).datepicker({
+                disabled: true,
+                defaultDate: "-1w",
+                changeMonth: true,
+                autoSize: true,
+                onClose: function( selectedDate ) {
+                    $( "#growth_to" ).datepicker( "option", "minDate", selectedDate );
+                }
+            });
+            $( "#growth_to" ).datepicker({
+                defaultDate: "+0d",
+                changeMonth: true,
+                autoSize: true,
+                disabled: true,
+                onClose: function( selectedDate ) {
+                    $( "#growth_from" ).datepicker( "option", "maxDate", selectedDate );
+                }
+            });
+            $("#audience_charts").lineplusarea({
+                name:"Total Growth over Time",
+                data_url:"{{url_for('.chart', chart_id='total_growth_over_time')}}",
+                height:300,
+                legend_x:-240,
+                legend_y:240,
+            }).render(12);
+            $("#audience_charts").manylines({
+                name:"Net Growth per Day",
+                data_url:"{{url_for('.chart', chart_id='net_growth_per_day')}}",
+                height:250,
+                legend_x:-320,
+                legend_y:188,
+            }).render(12);
+            $("#audience_charts").pie({
+                name:"Audience by Source",
+                data_url:"{{url_for('.chart', chart_id='audience_by_source')}}",
+                height:300,
+            }).render(6);
+            $("#audience_charts").horizontal_multibar({
+                name:"Growth vs Competitors",
+                data_url:"{{url_for('.chart', chart_id='growth_vs_competitors')}}",
+                height:300,
+                legend_x:-112,
+                legend_y:255,
+            }).render(6);
+        }
+        else if(title == "Audience Profile") {
+            $( "#audience_range" ).selectmenu();
+            $( "#audience_from" ).datepicker({
+                defaultDate: "-1w",
+                changeMonth: true,
+                autoSize: true,
+                disabled: true,
+                onClose: function( selectedDate ) {
+                    $( "#audience_to" ).datepicker( "option", "minDate", selectedDate );
+                }
+            });
+            $( "#audience_to" ).datepicker({
+                defaultDate: "+0d",
+                changeMonth: true,
+                autoSize: true,
+                disabled: true,
+                onClose: function( selectedDate ) {
+                    $( "#audience_from" ).datepicker( "option", "maxDate", selectedDate );
+                }
+            });
+            $("#psycho_charts").bar({
+                name:"Hours Active",
+                data_url:"{{url_for('.chart', chart_id='hours_active')}}",
+                height:250,
+            }).render(12);
+            $("#psycho_charts").horizontal_percent_multibar({
+                name:"Interests",
+                data_url:"{{url_for('.chart', chart_id='interests')}}",
+                height:250,
+            }).render(6);
+            $("#psycho_charts").horizontal_percent_multibar({
+                name:"Actions",
+                data_url:"{{url_for('.chart', chart_id='actions')}}",
+                height:250,
+            }).render(6);
+        }
+        else {
+            $( "#performance_range" ).selectmenu();
+            $( "#performance_from" ).datepicker({
+                defaultDate: "-1w",
+                changeMonth: true,
+                autoSize: true,
+                disabled: true,
+                onClose: function( selectedDate ) {
+                    $( "#performance_to" ).datepicker( "option", "minDate", selectedDate );
+                }
+            });
+            $( "#performance_to" ).datepicker({
+                defaultDate: "+1w",
+                changeMonth: true,
+                autoSize: true,
+                disabled: true,
+                onClose: function( selectedDate ) {
+                    $( "#performance_from" ).datepicker( "option", "maxDate", selectedDate );
+                }
+            });
+            $("#page_charts").manylines({
+                name:"Posts",
+                data_url:"{{url_for('.chart', chart_id='post_performance')}}",
+                height:250,
+                legend_x:-77,
+                legend_y:195,
+            }).render(12);
+        }
+    }
+};
+$(document).ready(function(){
+    $( "#tabs" ).tabs({
+        active: 0,
+        activate: enable_graph,
+        create: enable_graph,
+    });
+    });
 </script>
 {% endblock %}
 
 {% block content %}
-    <div class="row">
-        <h3>Audience Growth</h3>
-        <div class="col-md-12" id="audience_charts"></div>
-    </div>
-    <div class="row">
-        <h3>Page Performance</h3>
-        <div class="col-md-12" id="page_charts"></div>
-    </div>
-    <div class="row">
-        <h3>Psychometrics</h3>
-        <div class="col-md-12" id="psycho_charts"></div>
+    <div id="tabs">
+        <ul id="tabpicker">
+            <li><a href="#one">Audience Growth</a></li>
+            <li><a href="#two">Audience Profile</a></li>
+            <li><a href="#three">Page Performance</a></li>
+        </ul>
+        <div class="row" id="one">
+            <span class="daterangepicker">
+                <label for="growth_range">Date Range:</label>
+                <select id="growth_range">
+                    <option value="Last Week" disabled>Last Week</option>
+                    <option value="Last Month" selected>Last Month</option>
+                    <option value="All Time" disabled>All Time</option>
+                </select>
+            </span>
+            <span class="daterangepicker">
+                <label for="growth_from">Custom:</label>
+                <input id="growth_from"></input>
+            </span>
+            <span class="daterangepicker">
+                <label for="growth_to">To:</label>
+                <input id="growth_to"></input>
+            </span>
+            <h3>Audience Growth</h3>
+            <div class="col-md-12" id="audience_charts"></div>
+        </div>
+        <div class="row" id="two">
+            <span class="daterangepicker">
+                <label for="audience_range">Date Range:</label>
+                <select id="audience_range">
+                    <option value="Last Week" disabled>Last Week</option>
+                    <option value="Last Month" selected>Last Month</option>
+                    <option value="All Time" disabled>All Time</option>
+                </select>
+            </span>
+            <span class="daterangepicker">
+                <label for="audience_from">Custom:</label>
+                <input id="audience_from"></input>
+            </span>
+            <span class="daterangepicker">
+                <label for="audience_to">To:</label>
+                <input id="audience_to"></input>
+            </span>
+            <h3>Psychometrics</h3>
+            <div class="col-md-12" id="psycho_charts"></div>
+        </div>
+        <div class="row" id="three">
+            <span class="daterangepicker">
+                <label for="performance_range">Date Range:</label>
+                <select id="performance_range">
+                    <option value="Last Week" disabled>Last Week</option>
+                    <option value="Last Month" selected>Last Month</option>
+                    <option value="All Time" disabled>All Time</option>
+                </select>
+            </span>
+            <span class="daterangepicker">
+                <label for="performance_from">Custom:</label>
+                <input id="performance_from"></input>
+            </span>
+            <span class="daterangepicker">
+                <label for="performance_to">To:</label>
+                <input id="performance_to"></input>
+            </span>
+            <h3>Page Performance</h3>
+            <div class="col-md-12" id="page_charts"></div>
+        </div>
     </div>
 {% endblock %}

@@ -161,6 +161,16 @@ class DummyDualAxisTimeChart(InfluxChart):
         return res
 
 
+class DummySparklineChart(InfluxChart):
+
+    def massage(self, data):
+        logging.info(data)
+        points = [{"x":a['ts'], "y":a['value']} for a in data]
+        return points
+
+    def query(self):
+        return self.typ
+
 class DualAxisTimeChart(InfluxChart):
 
     def __init__(self, client, typ, start, end, **kwargs):
