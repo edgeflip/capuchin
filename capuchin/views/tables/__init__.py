@@ -39,9 +39,10 @@ class Table(object):
     cls = None
     columns = []
 
-    def __init__(self, client, records=None):
+    def __init__(self, client, obj=None, records=None):
         self.client = client
         self.records = records
+        self.obj = obj
 
     def build_pagination(self, cls, id, sort, from_, size, total, **kwargs):
         if not self.pagination: return ""
@@ -62,6 +63,7 @@ class Table(object):
                         url_for(
                             'tables.page',
                             cls=cls,
+                            obj=self.obj,
                             field=field,
                             dir=dir,
                             page=page,
@@ -80,6 +82,7 @@ class Table(object):
                 url_for(
                     'tables.page',
                     cls=cls,
+                    obj=self.obj,
                     field=field,
                     dir=dir,
                     page=pagination.page+1,
@@ -119,7 +122,7 @@ class Table(object):
             self.__class__.__name__
         ).split(".")[3:])
         id = u"{}{}".format("table", random.randint(9999, 99999999))
-        th = [c.th(me, id, sort, q=json.dumps(q), from_=0, size=size, pagination=pagination) for c in self.columns]
+        th = [c.th(me, id, sort, obj=self.obj, q=json.dumps(q), from_=0, size=size, pagination=pagination) for c in self.columns]
         tr = self.build_rows(records)
         table =  u" <table class=\"table table-striped table-hover\"><thead><tr>{}</tr></thead><tbody>{}</tbody></table>".format(
             u"".join(th),

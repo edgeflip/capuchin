@@ -20,18 +20,18 @@ tables = Blueprint(
 table_module = "capuchin.views.tables"
 
 def get_table(cls):
-        parts = "{}.{}".format(table_module, cls).split(".")
-        logging.info(parts)
-        mod = __import__(".".join(parts[:-1]), globals(), locals(), fromlist=[parts[-1]])
-        table = getattr(mod, parts[-1])
-        t = table(current_user.client)
-        return t
+    parts = "{}.{}".format(table_module, cls).split(".")
+    logging.info(parts)
+    mod = __import__(".".join(parts[:-1]), globals(), locals(), fromlist=[parts[-1]])
+    table = getattr(mod, parts[-1])
+    return table
 
 class Sort(MethodView):
 
     def get(self, cls, field, dir):
         try:
-            t = get_table(cls)
+            table = get_table(cls)
+            t = table(current_user.client, request.args.get('obj'))
             try:
                 q = json.loads(request.args['q'])
             except Exception as e:
@@ -56,7 +56,8 @@ class Page(MethodView):
         size = int(request.args.get('size'))
         from_ = size*(int(page)-1)
         try:
-            t = get_table(cls)
+            table = get_table(cls)
+            t = table(current_user.client, request.args.get('obj'))
             try:
                 q = json.loads(request.args['q'])
             except Exception as e:

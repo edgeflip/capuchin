@@ -24,22 +24,13 @@
                 }
                 filters[$(el).data("field")] = vals;
             });
-            var name=$("#segment-name").val();
+            var name=$("#title").html();
+            console.log(filters, name);
             $.pjax({
                 container:"#records",
                 url: "{{ url_for('.filter_update', id=id, page=0) }}",
                 type:"POST",
                 data:{"filters":JSON.stringify(filters), "name":name},
-                push:false,
-            });
-        });
-
-        $("#segment-name-save").click(function(e){
-            $.pjax({
-                container:"#notifications",
-                url:"{{ url_for('.save', id=id) }}",
-                type:"POST",
-                data:{'name':$("#segment-name").val()},
                 push:false,
             });
         });

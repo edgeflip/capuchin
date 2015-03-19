@@ -1,4 +1,4 @@
-<h3>{{name}}</h3>
+<h3><div contenteditable='true' id="title">{{name}}</div></h3>
 <div class="col-md-6 form-horizontal">
 {% for filter in filters[:5] %}
     <div class="form-group">
@@ -19,7 +19,7 @@
     </div>
 {% endfor %}
     <div>
-        <button class="btn btn-primary">Refresh</button>
+        <button id="filter-submit" class="btn btn-primary">Refresh</button>
         <button class="btn btn-danger">Save Segment</button>
     </div>
 </div>

@@ -31,6 +31,15 @@ class Users(Table):
     columns = user_columns
 
 
+class SegmentUsers(Users):
+
+    def get_records(self, q, from_, size, sort):
+        segment = Segment(id=self.obj)
+        records = segment.records(from_)
+        total = records.total
+        return records, total
+
+
 def segment_count(v, r):
     return "{:,}".format(r.count)
 

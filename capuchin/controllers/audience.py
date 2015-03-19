@@ -6,7 +6,7 @@ from capuchin import filters
 from capuchin.models.segment import Segment
 from capuchin.models.interest import Interest
 from capuchin.models.user import User
-from capuchin.views.tables.audience import Users, Segments
+from capuchin.views.tables.audience import Users, Segments, SegmentUsers
 import logging
 import slugify
 import math
@@ -101,8 +101,7 @@ class Create(MethodView):
     def get(self, id=None, page=0, template=None):
         segment, _id = get_segment(id)
         if not id: return redirect(url_for(".id", id=_id))
-        records = segment.records(from_=page*config.RECORDS_PER_PAGE)
-        users = Users(current_user.client, records=records)
+        users = SegmentUsers(current_user.client, str(_id))
         tmpl = template if template else "audience/create.html"
         lists = segment.get_lists()
         interests = Interest.find()
@@ -120,13 +119,13 @@ class Create(MethodView):
             lists=lists,
             users=users,
             id=id,
-            pagination=create_pagination(records.total, page),
             name=segment.name if segment.name else "New Segment",
             page=page
         )
 
     def post(self, id, page=0):
         filters = json.loads(request.form.get('filters', '{}'))
+        logging.info(filters)
         name = request.form.get('name')
         if id!='all': q = update_segment(id, filters, name)
         return self.get(id=id, page=page, template="audience/records.html")
