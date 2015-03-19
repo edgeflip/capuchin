@@ -1,13 +1,13 @@
 <div class="col-md-4">
-    <select name="joined_filter" class="form-control">
+    <select name="joined_qualifier" class="form-control joined">
         <option value="lte">Before</option>
         <option value="gte">After</option>
-        <option value="on">On</option>
+        <option value="eq">On</option>
     </select>
 </div>
 <div class="col-md-8">
     <div class="input-group">
-         <input type="text" id="joined" class="form-control" placeholder="Joined...">
+         <input type="text" id="joined" class="form-control joined" name='joined_value' placeholder="Joined...">
          <span class="input-group-btn">
              <button class="btn btn-default" type="button"><span class="icon-calendar"></span></button>
          </span>
@@ -15,7 +15,15 @@
 </div>
 
 <script>
-$(document).ready(function(){
-    $("#joined").datepicker();
-});
+    $(document).ready(function(){
+        $("#joined").datepicker();
+    });
+
+    $(".joined").change(function(e){
+        filters["{{filter['field']}}"] = {
+            qualifier: $("select[name='joined_qualifier']").val(),
+            value: $("input[name='joined_value']").val(),
+        }
+        console.log(filters);
+    });
 </script>

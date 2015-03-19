@@ -12,7 +12,7 @@
     </div>
 </div>
 <script>
-var {{filter['field']|string|slugify}} = [13, 65];
+var {{filter['field']|string|slugify}} = [{{values.get(filter['field'], 13)}}, {{values.get(filter['field'], 65)}}];
 $("#range{{filter['field']|string|slugify}}").slider({
     animate:"fast",
     max:65,
@@ -27,6 +27,7 @@ $("#range{{filter['field']|string|slugify}}").slider({
         if(ui.values[1] == 65) val = "65+";
         $("#range-{{filter['field']|string|slugify}}-max").html(val);
         filters["{{filter['field']}}"] = ui.values;
+        console.log(filters);
     }
 });
 </script>

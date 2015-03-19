@@ -2,7 +2,7 @@
 <div class="col-md-6 form-horizontal">
 {% for filter in filters[:5] %}
     <div class="form-group">
-        <label for="location" class="col-md-3 control-label"><span class="{{filter['icon']}}"></span> {{filter['display']}}</label>
+        <label class="col-md-3 control-label"><span class="{{filter['icon']}}"></span> {{filter['display']}}</label>
         <div class="col-md-9">
             {% include "widgets/{}_filter.html".format(filter['type']) %}
         </div>

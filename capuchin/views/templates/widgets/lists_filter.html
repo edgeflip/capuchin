@@ -1,4 +1,4 @@
-<select class="form-control" name="lists_filter">
+<select id="lists{{filter['field']|string|slugify}}" class="form-control" name="lists_filter">
     <option value=""></option>
     <option value="salesforce">Salesforce</option>
     <option value="nationbuilder">NationBuilder</option>
@@ -7,3 +7,9 @@
     <option value="wealthengine">WealthEngine</option>
     <option value="csv">Excel/CSV</option>
 </select>
+<script>
+    $("#lists{{filter['field']|string|slugify}}").change(function(e){
+        filters["{{filter['field']}}"] = e.target.value;
+        console.log(filters);
+    });
+</script>

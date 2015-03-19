@@ -1,6 +1,12 @@
-<select name="interests" class="form-control">
+<select id="interest{{filter['field']|string|slugify}}" name="interests" class="form-control">
     <option value=""></option>
     {% for i in interests %}
-    <option value="{{i}}">{{i.name}}</option>
+    <option value="{{i.name}}">{{i.name}}</option>
     {% endfor %}
 </select>
+<script>
+    $("#interest{{filter['field']|string|slugify}}").change(function(e){
+        filters["{{filter['field']}}"] = e.target.value;
+        console.log(filters);
+    });
+</script>

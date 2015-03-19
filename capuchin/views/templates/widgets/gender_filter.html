@@ -1,5 +1,12 @@
-<div class="btn-group btn-group-xs" role="group" aria-label="...">
-    <button type="button" class="btn btn-default">All</button>
-    <button type="button" class="btn btn-default">Male</button>
-    <button type="button" class="btn btn-default">Female</button>
+<div id="gender{{filter['field']|string|slugify}}" class="btn-group btn-group-xs" role="group" data-toggle="buttons" aria-label="...">
+    <label type="button" class="btn btn-default"><input type='radio' name='gender' value='all' />All</label>
+    <label type="button" class="btn btn-default"><input type='radio' name='gender' value='female' />Female</label>
+    <label type="button" class="btn btn-default"><input type='radio' name='gender' value='male' />Male</label>
 </div>
+<script>
+    $("input[value='"+filters["{{filter['field']}}"]+"']").attr("selected", true);
+    $("input[name='gender']").change(function(e){
+        filters["{{filter['field']}}"] = e.target.value;
+        console.log(filters);
+    });
+</script>

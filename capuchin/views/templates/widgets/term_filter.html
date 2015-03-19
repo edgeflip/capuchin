@@ -11,8 +11,8 @@
         values:eval({{val|to_json}}),
 
         change: function(e, ui){
-            console.log(ui.item.value);
             filters["{{filter['field']}}"] = ui.item.value;
+            console.log(filters);
         }
     });
 
