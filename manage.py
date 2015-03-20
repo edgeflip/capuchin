@@ -8,6 +8,7 @@ from capuchin.models.user import UserImport
 from capuchin.app import Capuchin
 from capuchin.models.client import Client
 from capuchin.models.interest import Interest
+from capuchin.models.imports import ImportOrigin
 from capuchin.models.city import City
 from capuchin.workers.client.insights import Insights
 from capuchin.workers.client.posts import ClientPosts
@@ -62,20 +63,31 @@ class SyncUsers(Command):
         cur = con.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         return cur
 
-    def get_total(self):
+    def get_total(self, client='edf'):
         cur = self.get_cursor()
-        cur.execute("SELECT COUNT(*) FROM v2_users")
+        cur.execute("SELECT COUNT(*) from v2_users \
+            JOIN \"magnus\".fb_app_users using (efid) \
+            JOIN \"magnus\".client_app_users using (app_user_id) \
+            JOIN \"magnus\".clients using (client_id) \
+            WHERE codename = %s", (client,))
         count = cur.fetchmany()
         return count[0]['count']
 
-    def worker(self, offset, total):
+    def worker(self, offset, total, client='edf'):
         limit = 1000
         rows_loaded = 0
         cur = self.get_cursor()
         ES = db.init_elasticsearch()
 
         def execute():
-            cur.execute("SELECT * FROM v2_users u LIMIT %s OFFSET %s", (limit, offset))
+            cur.execute("SELECT v2_users.* from v2_users \
+                JOIN \"magnus\".fb_app_users using (efid) \
+                JOIN \"magnus\".client_app_users using (app_user_id) \
+                JOIN \"magnus\".clients using (client_id) \
+                WHERE codename = %s \
+                LIMIT %s OFFSET %s",
+                (client, limit, offset)
+            )
             rows = cur.fetchmany(size=100)
             while rows:
                 for row in rows:
@@ -140,6 +152,14 @@ class LoadInterests(Command):
                 i = Interest(data={'name':l.strip()})
                 i.save()
 
+class LoadImportOrigins(Command):
+
+    def run(self):
+        with open("./data/import_origins.txt") as imports:
+            for l in imports:
+                i = ImportOrigin(data={'name':l.strip()})
+                i.save()
+
 class InitApp(Command):
 
     def  run(self):
@@ -154,6 +174,7 @@ manager.add_command('insights', PageInsights())
 manager.add_command('feeds', PageFeed())
 manager.add_command('load_cities', LoadCities())
 manager.add_command('load_interests', LoadInterests())
+manager.add_command('load_imports', LoadImportOrigins())
 manager.add_command('init', InitApp())
 
 if __name__ == "__main__":

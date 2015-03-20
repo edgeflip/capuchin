@@ -46,12 +46,15 @@ USER = {
             "asid":{"type":"string", "index":"not_analyzed"},
             "id":{"type":"string", "index":"not_analyzed"},
             "source":{"type":"string", "index":"not_analyzed"},
+            "import_origins":{"type":"string", "index":"not_analyzed"},
+            "engagement": {"type": "integer"},
             "authed":{"type":"date"},
         }
     },
     # from v2_users
     "first_name": {"type": "string",},
     "last_name": {"type": "string",},
+    "interests": {"type":"string", "index":"not_analyzed"},
     "location_name":{
         "properties":{
             "location":{

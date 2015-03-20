@@ -1,0 +1,6 @@
+Salesforce
+NationBuilder
+MailChimp
+HighRise
+WealthEngine
+Excel/CSV

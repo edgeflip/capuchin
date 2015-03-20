@@ -1,10 +1,13 @@
 import logging
 from capuchin import config
 from capuchin.models.client import Client
+from capuchin.models.interest import Interest
+from capuchin.models.imports import ImportOrigin
 from capuchin.models import ESObject
 import psycopg2
 import psycopg2.extras
 from flask import url_for
+import random
 
 class User(ESObject):
     TYPE = config.USER_RECORD_TYPE
@@ -23,6 +26,12 @@ class User(ESObject):
 
     def url(self):
         return url_for('audience.view', id=self.efid)
+
+    def get_client(self, client):
+        for c in self.clients:
+            if c['id'] == str(client._id): return c
+
+        return {}
 
 
 def parse_email(val):
@@ -98,6 +107,8 @@ class UserImport(dict):
 
     def __init__(self, obj):
         super(UserImport, self).__init__()
+        interests = [i.name for i in Interest.find()]
+        imports = [i.name for i in ImportOrigin.find()]
         self.parse(obj)
         try:
             self.con = psycopg2.connect(
@@ -136,16 +147,21 @@ class UserImport(dict):
         """
         self.cur.execute(query, (efid,))
         rows = self.cur.fetchall()
-        #TODO lookup capuchin client based on codename aka slug
+        #FIXME demo hack, users should be imported based on the client, we are just grabbing everyone and assigning them to all clients.
+        user_client = rows[0]
+        interest = interests[random.randint(0, len(interests)-1)]
+        imp = imports[random.randint(0, len(imports)-1)]
+        self['interests'] = [interest]
+
         self['clients'] = [
-            {'asid':1234564563434, 'id':str(c._id)}
+            {
+                'asid':user_client['fbid'],
+                'id':str(c._id),
+                'engagement':random.randint(1, 5),
+                'import_origins': [imp],
+            }
             for c in Client.find()
         ]
-
-        #self['clients'] = [
-        #    {'asid': r['fbid'], 'id': r['client_id']}
-        #    for r in rows
-        #]
 
     def parse(self, obj):
         for k,v in obj.iteritems():

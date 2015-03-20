@@ -12,12 +12,13 @@
 </script>
 {% endblock %}
 
+{% set user_client = person.get_client(current_user.client) %}
 
 {% block content %}
 <div class="row person-details">
     <div class="col-md-2">
         <div class="thumbnail">
-            <img src="https://graph.facebook.com/v2.2/{{person.clients[0].asid}}/picture?type=square" />
+            <img src="https://graph.facebook.com/v2.2/{{user_client.asid}}/picture?type=large" />
         </div>
     </div>
     <div class="col-md-4">
@@ -30,7 +31,7 @@
             <dt>Joined</dt>
             <dd>{{person.first_activity}}</dd>
             <dt>Engagement</dt>
-            <dd>{{person.engagement}}</dd>
+            <dd>{{user_client.engagement}}</dd>
             <dt>Influence Score</dt>
             <dd>77/100</dd>
             <dt>Affiliations</dt>
@@ -49,7 +50,7 @@
         <h4><span class="icon-flag"></span> Interests</h4>
         <ul>
         {% for i in person.interests %}
-            <li>i</li>
+            <li>{{i}}</li>
         {% endfor %}
         </ul>
     </div>
