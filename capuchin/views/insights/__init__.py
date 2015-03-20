@@ -121,8 +121,8 @@ def generate_points(daily_values):
 
 def growth_over_time(start, end):
 
-    audience_dataset = generate_points([240, 242, 245, 250, 248, 254, 255, 250])
-    pagelike_dataset = generate_points([450, 458, 475, 492, 502, 528, 530, 545])
+    audience_dataset = generate_points([200, 202, 210, 211, 212, 212, 214, 216, 220, 221, 222, 224, 227, 230, 232, 234, 236, 238, 240, 242, 245, 250, 248, 254, 255, 250])
+    pagelike_dataset = generate_points([390, 392, 395, 400, 402, 405, 407, 408, 410, 413, 416, 418, 420, 425, 430, 435, 440, 445, 450, 458, 475, 492, 502, 528, 530, 545])
 
     comparables = {
         'Audience': {
@@ -131,7 +131,7 @@ def growth_over_time(start, end):
             'type': 'line',
             'color': "#CC3A17",
         },
-        'Page Likes': {
+        'Page Fans': {
             'data': pagelike_dataset,
             'yAxis': 2,
             'type': 'area',
@@ -157,7 +157,7 @@ def net_growth_per_day(start, end):
             'type': 'line',
             'color': "#CC3A17",
         },
-        'Page Likes': {
+        'Page Fans': {
             'data': pagelike_dataset,
             'yAxis': 1,
             'type': 'line',

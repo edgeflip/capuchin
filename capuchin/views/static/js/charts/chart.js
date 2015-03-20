@@ -644,8 +644,17 @@ function DumpObjectIndented(obj, indent)
                         return data.data.messages[x];
                     });
 
-                chart.yAxis
-                .tickFormat(d3.format(',.1f'));
+                if( settings.yformat ) {
+                    chart.yAxis.tickFormat(d3.format(settings.yformat));
+                } else {
+                    chart.yAxis.tickFormat(d3.format(',.1f'));
+                }
+
+                if( settings.yShowMaxMin ) {
+                    chart.yAxis.showMaxMin(true);
+                } else {
+                    chart.yAxis.showMaxMin(false);
+                }
                 d3.select("#chart"+settings.id+" svg")
                 .datum(data.data.points)
                 .transition().duration(500)
@@ -823,8 +832,14 @@ function DumpObjectIndented(obj, indent)
                         chart.legend.dispatch[property] = function() { };
                 }
 
+                if (!settings.pie_x) {
+                    settings.pie_x = 0;
+                }
+                if (!settings.pie_y) {
+                    settings.pie_y = 0;
+                }
                 d3.select(chartSelector + ' .nv-pie')
-                  .attr("transform", "translate(-140,0)");
+                  .attr("transform", "translate(" + settings.pie_x + "," + settings.pie_y + ")");
                 d3.selectAll(chartSelector + ' .nv-series')[0].forEach(function(d,i) {
                   // select the individual group element
                   var group = d3.select(d);
@@ -869,8 +884,7 @@ function DumpObjectIndented(obj, indent)
                 .tickFormat(function(d) {
                     return d3.time.format(data.date_format)(new Date(d))
                 })
-                .showMaxMin(false)
-                .tickValues(data.data.points[0].values.map(function(d) { return d.x }));
+                .showMaxMin(false);
 
                 if(options['height']) {
                     chart.height(options['height']);
@@ -957,6 +971,7 @@ function DumpObjectIndented(obj, indent)
                 d3.selectAll(chartSelector + " .nv-axisMaxMin")[0].forEach(function(d,i) {
                     d3.select(d).style('display', 'none');
                 });
+
                 // All of our manual tweaks will be for naught if they click the legend
                 for (var property in chart.legend.dispatch) {
                         chart.legend.dispatch[property] = function() { };
@@ -988,10 +1003,10 @@ function DumpObjectIndented(obj, indent)
                 //Format x-axis labels with custom function.
                 chart.xAxis
                 .tickFormat(function(d) {
-                    return d3.time.format(data.date_format)(new Date(d))
+                    return d3.time.format(settings.date_format)(new Date(d))
                 })
-                .showMaxMin(false)
-                .tickValues(data.data.points[0].values.map(function(d) { return d.x }));
+                .showMaxMin(false);
+                //.tickValues(data.data.points[2].values.map(function(d) { return d.x }));
 
                 chart.yAxis1.showMaxMin(false);
 
@@ -1027,6 +1042,16 @@ function DumpObjectIndented(obj, indent)
                 // All of our manual tweaks will be for naught if they click the legend
                 for (var property in chart.legend.dispatch) {
                         chart.legend.dispatch[property] = function() { };
+                }
+                if(settings.has_circles) {
+                    d3.selectAll(chartSelector + " circle.nv-point")[0].forEach(function(d,i) {
+                        d3.select(d).style('stroke-opacity', '1');
+                        d3.select(d).style('stroke-width', '4px');
+                    });
+                } else {
+                    d3.selectAll(chartSelector + " circle.nv-point")[0].forEach(function(d,i) {
+                        d3.select(d).style('display', 'none');
+                    });
                 }
                 nv.utils.windowResize(chart.update);
                 return chart
