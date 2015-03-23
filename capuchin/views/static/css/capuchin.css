@@ -339,11 +339,6 @@ text.word-bubble{
 .nvd3.nv-pie path {
     stroke-width: 0px;
 }
-circle.nv-point
-{
-    stroke-opacity: 1!important;
-    stroke-width: 4px;
-}
 
 .nvd3 g.nv-groups path.nv-line {
     stroke-width: 2px;
@@ -443,10 +438,10 @@ circle.nv-point
 }
 
 .ui-tabs .ui-state-default a {
-    color: #F1F2F2;
+    color: white;
 }
 .ui-tabs .ui-state-active a {
-    color: #F1F2F2;
+    color: white;
 }
 #tabpicker li.ui-tabs-active {
     background: #4785AB;

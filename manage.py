@@ -12,6 +12,7 @@ from capuchin.models.imports import ImportOrigin
 from capuchin.models.city import City
 from capuchin.workers.client.insights import Insights
 from capuchin.workers.client.posts import ClientPosts
+from capuchin.workers.pull_nonclient_posts import PullNonClientPosts
 from capuchin import user_mapping
 from capuchin import db
 from gevent import monkey
@@ -168,6 +169,16 @@ class InitApp(Command):
         influx = db.init_influxdb()
         db.create_shards(influx)
 
+class LoadEDFPosts(Command):
+
+    def run(self):
+        client = Client.find()[0]
+        edf = 8492293163
+        last = datetime.datetime.utcnow() - datetime.timedelta(days=14)
+
+        logging.info("pulling nonclient posts")
+        PullNonClientPosts(client, edf, last)
+
 manager.add_command('sync', SyncUsers())
 manager.add_command('update', UpdateMapping())
 manager.add_command('insights', PageInsights())
@@ -176,6 +187,7 @@ manager.add_command('load_cities', LoadCities())
 manager.add_command('load_interests', LoadInterests())
 manager.add_command('load_imports', LoadImportOrigins())
 manager.add_command('init', InitApp())
+manager.add_command('load_edf_posts', LoadEDFPosts())
 
 if __name__ == "__main__":
     manager.run()

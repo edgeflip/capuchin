@@ -4,13 +4,15 @@ from flask.ext.login import current_user
 from capuchin import config
 from capuchin import filters
 from capuchin.models.post import Post
-from capuchin.views.insights.charts import HistogramChart
+from capuchin.views.insights.charts import HistogramChart, DualAxisTimeChart, DummyHorizontalBarChart, DummyPieChart, DummyBarChart
 from capuchin.views.tables.dashboard import Posts, Notifications
 import logging
 import slugify
+from collections import OrderedDict
 import math
 import json
 import time
+import datetime
 
 engagement = Blueprint(
     'engagement',
@@ -58,31 +60,95 @@ class View(MethodView):
             notifications=notifications,
         )
 
+
+def post_url_prefix(post):
+    return "insights.{}.post." + post.id + "."
+
 def engagement_graph(post):
     date_format = "%Y-%m-%dT%H:%M:%S+0000"
-    tm = time.mktime(
-        time.strptime(
-            post.created_time,
-            date_format
-        )
+    post_time = datetime.datetime.strptime(
+        post.created_time,
+        date_format
     )
-    return HistogramChart(
+    start = time.mktime(post_time.timetuple())
+    end = time.mktime((post_time + datetime.timedelta(days=3)).timetuple())
+    comparables = OrderedDict()
+    comparables['Post Likes'] = {
+        'series': post_url_prefix(post) + "likes",
+        'yAxis': 1,
+        'type': 'line',
+        'fill_color': "#CC3A17",
+    }
+    comparables['Post Shares'] = {
+        'series': post_url_prefix(post) + "shares",
+        'yAxis': 1,
+        'type': 'line',
+        'fill_color': "#8561A9",
+    }
+    comparables['Post Comments'] = {
+        'series': post_url_prefix(post) + "comments",
+        'yAxis': 1,
+        'type': 'line',
+        'fill_color': "#4785AB",
+    }
+    return DualAxisTimeChart(
         current_user.client,
-        [
-            {"type":"post.{}.likes".format(post.id), "display":"Likes"},
-            {"type":"post.{}.comments".format(post.id), "display":"Comments"},
-            {"type":"post.{}.shares".format(post.id), "display":"Shares"},
-        ],
+        comparables,
         prefix="insights",
-        where="WHERE time > {}s".format(tm),
-        buckets="1d",
-        date_format="%m/%d"
+        start=start,
+        end=end,
+        buckets='1h',
+        date_format="%-m-%d %-I %p",
     )
 
+def age_graph(post):
+    def age_formatter(x, y):
+        return "<div class='overhead-popover'>Ages " + str(x) + ": " + str(y) + " engaged users</div>"
+
+    return DummyBarChart(
+        'Age',
+        [
+            ('18-24', 22),
+            ('25-34', 34),
+            ('35-44', 30),
+            ('45-54', 22),
+            ('55-64', 30),
+            ('65+', 20),
+        ],
+        tooltip_formatter=age_formatter,
+    )
+
+
+def gender_graph(post):
+    return DummyPieChart(
+        'Gender',
+        {
+            'Males': 100,
+            'Females': 70,
+        }
+    )
+
+def interests_graph(post):
+    return DummyHorizontalBarChart('Interests', {
+        'Environmental Issues': .23,
+        'Major League Baseball': .46,
+        'Current Events': .35,
+    })
+
+def actions_graph(post):
+    return DummyHorizontalBarChart('Interests', {
+        'Donated to Charity': .42,
+        'Attended a Concert': .12,
+        'Went on a Vacation': .35,
+    })
 
 class Chart(MethodView):
     charts = {
-        "engagement":engagement_graph
+        "engagement":engagement_graph,
+        "age":age_graph,
+        "gender":gender_graph,
+        "interests":interests_graph,
+        "actions":actions_graph,
     }
 
     def get(self, chart_id):

@@ -6,10 +6,37 @@
 <script src="/static/js/charts/chart.js"></script>
 <script>
 $(document).ready(function(){
-    $("#charts").multibar({
-        name:"Performance",
-        data_url:"{{url_for('.chart', chart_id='engagement', post_id=post.id)}}"
+    $("#charts").manylines({
+        name:"2-Day Performance",
+        data_url:"{{url_for('.chart', chart_id='engagement', post_id=post.id)}}",
+        date_format:"%-m-%d %-I %p",
+        height:250,
+        legend_x:-20,
+        legend_y:190,
+        has_circles:false,
     }).render(8);
+    $("#audience_charts").bar({
+        name:"Age",
+        data_url:"{{url_for('.chart', chart_id='age', post_id=post.id)}}",
+        height: 200,
+        yShowMaxMin: false,
+        yformat: ',.0f',
+    }).render(4);
+    $("#audience_charts").pie({
+        name: "Gender",
+        data_url:"{{url_for('.chart', chart_id='gender', post_id=post.id)}}",
+        height: 200,
+    }).render(4);
+    $("#audience_charts").horizontal_percent_multibar({
+        name:"Interests",
+        data_url:"{{url_for('.chart', chart_id='interests', post_id=post.id)}}",
+        height:200,
+    }).render(4);
+    $("#audience_charts").horizontal_percent_multibar({
+        name:"Actions",
+        data_url:"{{url_for('.chart', chart_id='actions', post_id=post.id)}}",
+        height:200,
+    }).render(4);
 });
 </script>
 {% endblock %}
@@ -40,6 +67,11 @@ $(document).ready(function(){
         </div>
     </div>
     <div id="charts"></div>
+</div>
+<div class="row">
+    <div id="audience_charts">
+        <h3>Audience Profiles</h3>
+    </div>
 </div>
 <div class="row">
     <h3>Activity</h3>

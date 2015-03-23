@@ -173,9 +173,10 @@ class DummySparklineChart(InfluxChart):
 
 class DualAxisTimeChart(InfluxChart):
 
-    def __init__(self, client, typ, start, end, **kwargs):
+    def __init__(self, client, typ, start=None, end=None, buckets='1d', **kwargs):
         self.start = start or int(time.time()) - 86400*30
-        self.end = end or int(time.time())
+        self.end = min(end, int(time.time()))
+        self.buckets = buckets
         where = "time > {}s and time < {}s".format(self.start, self.end)
         super(DualAxisTimeChart, self).__init__(client, typ, where, **kwargs)
 
@@ -192,9 +193,8 @@ class DualAxisTimeChart(InfluxChart):
         for v, d in data.iteritems():
             key = "{} (right axis)".format(v) if self.typ[v]['yAxis'] == 2 else v
             tooltips[key] = {}
-            scale = 1 if "Page Likes" in key else 0
             vals = [
-                {"x":a[0], "y":a[1] + random.randint(250, 300) + scale * int(str(a[0])[3:-3])/100}
+                {"x":a[0], "y":a[1]}
                 for a in data[v][0]['points']
                 if a[0] >= highest_min_x
             ]
@@ -208,7 +208,7 @@ class DualAxisTimeChart(InfluxChart):
                 "yAxis": self.typ[v]['yAxis'],
                 "type": self.typ[v]['type'],
                 "color": self.typ[v]['fill_color'],
-                "stroke_color": self.typ[v]['stroke_color'],
+                "stroke_color": self.typ[v].get('stroke_color', ''),
             })
         logging.info(tooltips)
         return {"points": ar, "messages": tooltips}
@@ -217,7 +217,7 @@ class DualAxisTimeChart(InfluxChart):
         res = {}
         for display_name, info in self.typ.iteritems():
             series = info['series'].format(self.client._id)
-            query = "select time, max(value) from {} where {} group by time(1d)".format(series, self.where)
+            query = "select time, max(value) from {} where {} group by time({})".format(series, self.where, self.buckets)
             logging.info(query)
 
             data = self.INFLUX.request(
@@ -425,8 +425,9 @@ class WordBubble(object):
 
 
 class DummyPieChart(object):
-    def __init__(self, title, data):
+    def __init__(self, title, data, date_format=None):
         self.title = title
+        self.date_format = date_format
         mean = sum(data.values())
         self.data = [{"label": k, "value": v, "percent": "{0:.0f}%".format(100*(float(v)/mean))} for k, v in data.iteritems()]
 
@@ -434,8 +435,33 @@ class DummyPieChart(object):
         return json.dumps(self.data)
 
 
+class DummyBarChart(object):
+    def __init__(self, title, data, date_format=None, tooltip_formatter=None):
+        self.title = title
+        self.date_format = date_format
+        self.tooltip_formatter = tooltip_formatter
+        tooltips = {}
+        values = []
+        for x, y in data:
+            tooltips[x] = self.tooltip_formatter(x, y)
+            values.append({
+                "label":x,
+                "value":y
+            })
+
+        data = [{
+            "key": "Stuff",
+            "values": values
+        }]
+        self.data = {"points": data, "messages": tooltips}
+
+    def dump(self):
+        return json.dumps(self.data)
+
+
 class DummyHorizontalBarChart(object):
-    def __init__(self, title, data):
+    def __init__(self, title, data, date_format=None):
+        self.date_format=date_format
         self.title = title
         self.data = [{
             "key": self.title,
@@ -445,6 +471,8 @@ class DummyHorizontalBarChart(object):
     def dump(self):
         return json.dumps(self.data)
 
+
+#class DummyBarChart(object):
 
 class HorizontalBarChart(object):
 
