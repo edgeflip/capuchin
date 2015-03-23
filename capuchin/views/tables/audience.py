@@ -35,7 +35,7 @@ class SegmentUsers(Users):
 
     def get_records(self, q, from_, size, sort):
         segment = Segment(id=self.obj)
-        records = segment.records(from_)
+        records = segment.records(q, from_, size, sort)
         total = records.total
         return records, total
 
