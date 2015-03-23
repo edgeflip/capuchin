@@ -43,6 +43,7 @@ class Table(object):
         self.client = client
         self.records = records
         self.obj = obj
+        self.total = len(self.records) if self.records else 0
 
     def build_pagination(self, cls, id, sort, from_, size, total, **kwargs):
         if not self.pagination: return ""
@@ -123,7 +124,13 @@ class Table(object):
         id = u"{}{}".format("table", random.randint(9999, 99999999))
         th = [c.th(me, id, sort, obj=self.obj, q=json.dumps(q), from_=0, size=size, pagination=pagination) for c in self.columns]
         tr = self.build_rows(records)
-        table =  u" <table class=\"table table-striped table-hover\"><thead><tr>{}</tr></thead><tbody>{}</tbody></table>".format(
+        info = "<div class='table-info'><span class='total'><span class='pagination-info'>{} - {} of {}</span></div>".format(
+            from_+1,
+            from_+size,
+            total
+        )
+        table =  u"{} <table class=\"table table-striped table-hover\"><thead><tr>{}</tr></thead><tbody>{}</tbody></table>".format(
+            info,
             u"".join(th),
             u"".join(tr)
         )
