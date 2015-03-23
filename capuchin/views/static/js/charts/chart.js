@@ -1188,6 +1188,82 @@ function DumpObjectIndented(obj, indent)
     };
 })(jQuery);
 
+(function($){
+    $.fn.choropleth = function(options){
+        options.build_chart = function(settings, data){
+            var width = $("#chart"+settings.id).width();
+            var height = $("#chart"+settings.id).height();
+            var projection = d3.geo.albersUsa()
+            .scale(1080)
+            .translate([width / 2, height / 1.5]);
+
+            var path = d3.geo.path()
+            .projection(projection);
+
+            var svg = d3.select("#chart"+settings.id+" svg")
+            .attr("width", width)
+            .attr("height", height);
+
+            var usersById = d3.map();
+            var namesById = d3.map();
+
+            var quantize = d3.scale.quantize()
+                .domain([0, 40])
+                .range(d3.range(9).map(function(i) { return "q" + i + "-9"; }));
+
+            data.data.forEach(function(d) {
+                usersById.set(d.id, d.users);
+                namesById.set(d.id, d.name);
+            });
+
+
+            d3.json("/static/json/us.json", function(error, us) {
+                svg.insert("path", ".graticule")
+                .datum(topojson.feature(us, us.objects.land))
+                .attr("class", "land")
+                .attr("d", path);
+
+                svg.insert("path", ".graticule")
+                .datum(topojson.mesh(us, us.objects.counties, function(a, b) { return a !== b && !(a.id / 1000 ^ b.id / 1000); }))
+                .attr("class", "county-boundary")
+                .attr("d", path);
+
+                svg.insert("path", ".graticule")
+                .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
+                .attr("class", "state-boundary")
+                .attr("d", path);
+
+                svg.append("g")
+                      .attr("class", "counties")
+                        .selectAll("path")
+                        .data(topojson.feature(us, us.objects.counties).features)
+                        .enter().append("path")
+                        .attr("class", function(d) { return quantize(usersById.get(d.id)); })
+                        .attr("d", path)
+                        .on("mouseover", function(d) {
+                            var xPosition = d3.mouse(this)[0];
+                            var yPosition = d3.mouse(this)[1] - 30;
+                            svg.append("text")
+                                .attr("id", "map_tooltip")
+                                .attr("x", xPosition)
+                                .attr("y", yPosition)
+                                .attr("class", "overhead-popover")
+                                .text(namesById.get(d.id) + " Audience: " + usersById.get(d.id));
+                            d3.select(this)
+                            .style("stroke", "#363738");
+                        })
+                        .on("mouseout", function(d) {
+                            d3.select("#map_tooltip").remove();
+                            d3.select(this)
+                            .style("stroke", "none");
+                        })
+                    ;
+            });
+        };
+
+        return $(this).chart(options);
+    };
+})(jQuery);
 
 (function($){
     $.fn.vertical_circle = function(options){

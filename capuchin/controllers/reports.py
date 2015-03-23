@@ -7,7 +7,6 @@ from capuchin.models.list import List
 from capuchin.models.post import Post
 from capuchin.models.segment import Segment
 from capuchin.views.tables.dashboard import Posts
-from capuchin.views.insights.geo import CityPopulation
 from capuchin.views.insights import *
 from capuchin.views.insights.charts import \
     FBInsightsPieChart,\
@@ -17,8 +16,6 @@ from capuchin.views.insights.charts import \
     SeriesGrowthComparisonChart,\
     WordBubble, \
     HorizontalBarChart
-
-from capuchin.views.insights.geo import CityPopulation
 
 import logging
 import json
@@ -52,6 +49,8 @@ class Chart(MethodView):
         "interests": interests,
         "actions": actions,
         "hours_active": hours_active,
+        "audience_location": audience_location,
+        "share_like_ratios": share_like_ratios,
     }
 
 
