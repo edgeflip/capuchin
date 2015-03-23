@@ -13,6 +13,12 @@
         change: function(e, ui){
             filters["{{filter['field']}}"] = ui.item.value;
             console.log(filters);
+        },
+        delete: function(e, ui){
+            var val = $(e).data('value');
+            delete ui.selectedItems[val];
+            delete filters["{{filter['field']}}"];
+            console.log("REMOVED", filters);
         }
     });
 

@@ -5,6 +5,7 @@ from capuchin import config
 from capuchin import filters
 from capuchin.models.segment import Segment
 from capuchin.models.interest import Interest
+from capuchin.models.imports import ImportOrigin
 from capuchin.models.user import User
 from capuchin.views.tables.audience import Users, Segments, SegmentUsers
 import logging
@@ -105,6 +106,7 @@ class Create(MethodView):
         tmpl = template if template else "audience/create.html"
         lists = segment.get_lists()
         interests = Interest.find()
+        import_origins = ImportOrigin.find()
         fs = {}
         for k,v in segment.filters.iteritems():
             k = k.replace("___", ".")
@@ -112,6 +114,7 @@ class Create(MethodView):
         return render_template(
             tmpl,
             interests=interests,
+            import_origins=import_origins,
             filters=filters.FILTERS,
             filters_json=json.dumps(fs),
             values=segment.filters,

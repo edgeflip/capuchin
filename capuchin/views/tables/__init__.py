@@ -102,7 +102,6 @@ class Table(object):
     def build_rows(self, records):
         tr = []
         for r in records.hits:
-            logging.info(type(r))
             td = [u"<tr data-url=\"{}\">".format(r.url())]
             for c in self.columns:
                 levels = c.field.split(".")

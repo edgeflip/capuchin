@@ -30,4 +30,6 @@ $("#range{{filter['field']|string|slugify}}").slider({
         console.log(filters);
     }
 });
+var val = parseInt($("#range-{{filter['field']|string|slugify}}-max").html());
+if(val == 65) $("#range-{{filter['field']|string|slugify}}-max").html("65+")
 </script>

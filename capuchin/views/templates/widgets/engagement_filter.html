@@ -1,11 +1,13 @@
+{% set qualifier = values.get(filter['field'].replace(".", "___"), {}).get('qualifier') %}
+{% set val = values.get(filter['field'].replace(".", "___"), {}).get('value') %}
 <div class="col-md-6">
     <select name="engagement_qualifier" class="form-control engagement">
-        <option value="eq">Exactly</option>
-        <option value="gte">At Least</option>
+        <option value="eq" {% if qualifier == 'eq' %}selected{%endif%}>Exactly</option>
+        <option value="gte" {% if qualifier == 'gte' %}selected{%endif%}>At Least</option>
     </select>
 </div>
 <div class="col-md-6">
-    <input type="number" max=5 min=1 step=1 value=1 name='engagement_value' class='engagement'/>
+    <input type="number" max=5 min=1 step=1 value={{val}} name='engagement_value' class='engagement'/>
     {#
     <span class="glyphicon glyphicon-star"></span>
     <span class="glyphicon glyphicon-star"></span>

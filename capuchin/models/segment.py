@@ -39,8 +39,10 @@ class Segment(orm.Document):
             filt = filters.get_filter(filters.FILTERS, k)
             if v:
                 try:
-                    and_.append(filters.FILTER_TYPES[filt['type']](k,v))
-                except:pass
+                    f = filters.FILTER_TYPES[filt['type']](k,v,client=str(self.client._id))
+                    if f: and_.append(f)
+                except Exception as e:
+                    self.logger.exception(e)
 
         query = {"filtered":{"filter":{"and":and_}}}
         self.logger.info(query)

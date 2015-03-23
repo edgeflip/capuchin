@@ -17,7 +17,6 @@ class ESObject(Bunch):
                 self.TYPE,
             )
             data = data['_source']
-        logging.info(data)
 
         super(ESObject, self).__init__(**data)
 

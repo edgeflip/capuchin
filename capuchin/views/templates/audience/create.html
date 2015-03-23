@@ -6,8 +6,9 @@
 <script>
     var id = "{{id}}";
     var filters = eval({{filters_json|safe}});
-
+    var values = {{values|to_json}};
     console.log(filters);
+    console.log(values);
 
     function notify(text){
         $("#notification").html(text);
