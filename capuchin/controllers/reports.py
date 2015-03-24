@@ -43,6 +43,7 @@ class Chart(MethodView):
         "net_growth_per_day": net_growth_per_day,
         "audience_by_source": audience_by_source,
         "post_performance": post_performance,
+        "top_cities": top_cities,
     }
     regular_charts = {
         "city_population": city_population,

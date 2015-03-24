@@ -172,12 +172,18 @@ class InitApp(Command):
 class LoadEDFPosts(Command):
 
     def run(self):
-        client = Client.find()[0]
-        edf = 8492293163
+        edf_client = None
+        for client in Client.find():
+            if client.slug and client.slug == 'edf':
+                edf_client = client
+                break
+        if not edf_client:
+            logging.error("No EDF client found")
+            return
+        edf_page_id = 8492293163
         last = datetime.datetime.utcnow() - datetime.timedelta(days=14)
 
-        logging.info("pulling nonclient posts")
-        PullNonClientPosts(client, edf, last)
+        PullNonClientPosts(edf_client, edf_page_id, last)
 
 manager.add_command('sync', SyncUsers())
 manager.add_command('update', UpdateMapping())

@@ -688,7 +688,12 @@ function DumpObjectIndented(obj, indent)
                 .transitionDuration(350)
                 .showControls(false);        //Allow user to switch between "Grouped" and "Stacked" mode.
                 chart.showYAxis(false);
-
+                if( settings.hideLegend ) {
+                    chart.showLegend(false);
+                }
+                if( settings.valueFormat ) {
+                    chart.valueFormat(d3.format(settings.valueFormat));
+                }
                 var chartSelector = '#chart'+settings.id;
                 d3.select('#chart'+settings.id+' svg')
                 .datum(data.data)
@@ -696,25 +701,27 @@ function DumpObjectIndented(obj, indent)
                 .call(chart);
                 d3.selectAll(chartSelector + ' .tick line').style('display', 'none');
 
-                d3.selectAll(chartSelector + ' .nv-series')[0].forEach(function(d,i) {
-                  // select the individual group element
-                  var group = d3.select(d);
-                  // create another selection for the circle within the group
-                  var circle = group.select('circle');
-                  // grab the color used for the circle
-                  var color = circle.style('fill');
-                  // remove the circle
-                  circle.remove();
-                  // replace the circle with a path
-                  group.append('path')
-                    // match the path data to the appropriate symbol
-                    .attr('d', d3.svg.symbol().type('square').size(160))
-                    .attr('class', 'nv-legend-symbol')
-                    // make sure the fill color matches the original circle
-                    .style('fill', color);
-                });
-                d3.select(chartSelector + " .nv-legend")
-                  .attr("transform", "translate(" + settings.legend_x + "," + settings.legend_y + ")");
+                if (!settings.hideLegend) {
+                    d3.selectAll(chartSelector + ' .nv-series')[0].forEach(function(d,i) {
+                      // select the individual group element
+                      var group = d3.select(d);
+                      // create another selection for the circle within the group
+                      var circle = group.select('circle');
+                      // grab the color used for the circle
+                      var color = circle.style('fill');
+                      // remove the circle
+                      circle.remove();
+                      // replace the circle with a path
+                      group.append('path')
+                        // match the path data to the appropriate symbol
+                        .attr('d', d3.svg.symbol().type('square').size(160))
+                        .attr('class', 'nv-legend-symbol')
+                        // make sure the fill color matches the original circle
+                        .style('fill', color);
+                    });
+                    d3.select(chartSelector + " .nv-legend")
+                      .attr("transform", "translate(" + settings.legend_x + "," + settings.legend_y + ")");
+                }
 
                 nv.utils.windowResize(chart.update);
 
@@ -1194,7 +1201,7 @@ function DumpObjectIndented(obj, indent)
             var width = $("#chart"+settings.id).width();
             var height = $("#chart"+settings.id).height();
             var projection = d3.geo.albersUsa()
-            .scale(1080)
+            .scale(width)
             .translate([width / 2, height / 1.5]);
 
             var path = d3.geo.path()
@@ -1208,7 +1215,7 @@ function DumpObjectIndented(obj, indent)
             var namesById = d3.map();
 
             var quantize = d3.scale.quantize()
-                .domain([0, 40])
+                .domain([0, 10])
                 .range(d3.range(9).map(function(i) { return "q" + i + "-9"; }));
 
             data.data.forEach(function(d) {

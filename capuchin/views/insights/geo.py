@@ -8,7 +8,7 @@ from collections import Counter
 
 class CityPopulation(object):
 
-    def __init__(self, client):
+    def __init__(self, client, top_n):
         and_ = [{
             "term": {
                 "clients.id": str(client._id)
@@ -22,7 +22,7 @@ class CityPopulation(object):
                 "cities":{
                     "terms":{
                         "script":"doc['location_name.city.facet'].value+','+doc['location_name.state.facet'].value",
-                        "size":200,
+                        "size":top_n,
                     }
                 }
             }
@@ -94,6 +94,9 @@ class AudienceLocation(object):
             rows = csv.DictReader(states, delimiter=",")
             state_lookup = {r['State']:r['Abbreviation'] for r in rows}
 
+        with open("./data/county_pop.json") as pop_file:
+            pop_lookup = json.load(pop_file)
+
         self.data = Counter()
         counties = Counter()
         for i in res['aggregations']['cities']['buckets']:
@@ -104,8 +107,11 @@ class AudienceLocation(object):
                     key = state_code.lower() + "_" + city.lower()
                     county = county_lookup.get(key, None)
                     if county:
+                        logging.info(county + key)
+                        pop = pop_lookup[county]
                         mangled_county = county.lstrip('0')
-                        counties[mangled_county] += int(i['doc_count'])
+                        if i['doc_count'] > 1:
+                            counties[mangled_county] += i['doc_count'] * 100000 / float(pop)
 
         self.data = [{
             "id": k,

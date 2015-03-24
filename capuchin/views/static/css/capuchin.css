@@ -515,13 +515,13 @@ select {
 
 .states {
   fill: none;
-  stroke: #fff;
+  stroke: #F1F2F2;
   stroke-linejoin: round;
 }
 
-.q0-9 { fill:rgb(247,251,255); }
+.q0-9 { fill:rgb(222,235,247); }
 .q1-9 { fill:rgb(222,235,247); }
-.q2-9 { fill:rgb(198,219,239); }
+.q2-9 { fill:rgb(158,202,225); }
 .q3-9 { fill:rgb(158,202,225); }
 .q4-9 { fill:rgb(107,174,214); }
 .q5-9 { fill:rgb(66,146,198); }

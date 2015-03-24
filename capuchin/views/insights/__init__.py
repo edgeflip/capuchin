@@ -16,7 +16,10 @@ def top_likes():
     )
 
 def city_population(start, end):
-    return CityPopulation(client=current_user.client)
+    return CityPopulation(client=current_user.client, top_n=200)
+
+def top_cities(start, end):
+    return TopCities(client=current_user.client, top_n=11)
 
 def audience_location():
     return AudienceLocation(client=current_user.client)
