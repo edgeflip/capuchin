@@ -1,0 +1,12 @@
+<select id="import_origins{{filter['field']|string|slugify}}" class="form-control" name="import_origins_filter">
+    <option value=""></option>
+    {% for i in import_origins %}
+        <option value="{{i.name}}" {% if values.get(filter['field'].replace(".", "___")) == i.name %}selected{%endif%}>{{i.name}}</option>
+    {% endfor %}
+</select>
+<script>
+    $("#import_origins{{filter['field']|string|slugify}}").change(function(e){
+        filters["{{filter['field']}}"] = e.target.value;
+        console.log(filters);
+    });
+</script>

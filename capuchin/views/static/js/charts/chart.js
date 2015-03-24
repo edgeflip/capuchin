@@ -688,7 +688,12 @@ function DumpObjectIndented(obj, indent)
                 .transitionDuration(350)
                 .showControls(false);        //Allow user to switch between "Grouped" and "Stacked" mode.
                 chart.showYAxis(false);
-
+                if( settings.hideLegend ) {
+                    chart.showLegend(false);
+                }
+                if( settings.valueFormat ) {
+                    chart.valueFormat(d3.format(settings.valueFormat));
+                }
                 var chartSelector = '#chart'+settings.id;
                 d3.select('#chart'+settings.id+' svg')
                 .datum(data.data)
@@ -696,25 +701,27 @@ function DumpObjectIndented(obj, indent)
                 .call(chart);
                 d3.selectAll(chartSelector + ' .tick line').style('display', 'none');
 
-                d3.selectAll(chartSelector + ' .nv-series')[0].forEach(function(d,i) {
-                  // select the individual group element
-                  var group = d3.select(d);
-                  // create another selection for the circle within the group
-                  var circle = group.select('circle');
-                  // grab the color used for the circle
-                  var color = circle.style('fill');
-                  // remove the circle
-                  circle.remove();
-                  // replace the circle with a path
-                  group.append('path')
-                    // match the path data to the appropriate symbol
-                    .attr('d', d3.svg.symbol().type('square').size(160))
-                    .attr('class', 'nv-legend-symbol')
-                    // make sure the fill color matches the original circle
-                    .style('fill', color);
-                });
-                d3.select(chartSelector + " .nv-legend")
-                  .attr("transform", "translate(" + settings.legend_x + "," + settings.legend_y + ")");
+                if (!settings.hideLegend) {
+                    d3.selectAll(chartSelector + ' .nv-series')[0].forEach(function(d,i) {
+                      // select the individual group element
+                      var group = d3.select(d);
+                      // create another selection for the circle within the group
+                      var circle = group.select('circle');
+                      // grab the color used for the circle
+                      var color = circle.style('fill');
+                      // remove the circle
+                      circle.remove();
+                      // replace the circle with a path
+                      group.append('path')
+                        // match the path data to the appropriate symbol
+                        .attr('d', d3.svg.symbol().type('square').size(160))
+                        .attr('class', 'nv-legend-symbol')
+                        // make sure the fill color matches the original circle
+                        .style('fill', color);
+                    });
+                    d3.select(chartSelector + " .nv-legend")
+                      .attr("transform", "translate(" + settings.legend_x + "," + settings.legend_y + ")");
+                }
 
                 nv.utils.windowResize(chart.update);
 
@@ -1000,6 +1007,10 @@ function DumpObjectIndented(obj, indent)
                         }
                     });
 
+                if(!data.data) {
+                    return chart;
+                }
+
                 //Format x-axis labels with custom function.
                 chart.xAxis
                 .tickFormat(function(d) {
@@ -1188,6 +1199,82 @@ function DumpObjectIndented(obj, indent)
     };
 })(jQuery);
 
+(function($){
+    $.fn.choropleth = function(options){
+        options.build_chart = function(settings, data){
+            var width = $("#chart"+settings.id).width();
+            var height = $("#chart"+settings.id).height();
+            var projection = d3.geo.albersUsa()
+            .scale(width)
+            .translate([width / 2, height / 1.5]);
+
+            var path = d3.geo.path()
+            .projection(projection);
+
+            var svg = d3.select("#chart"+settings.id+" svg")
+            .attr("width", width)
+            .attr("height", height);
+
+            var usersById = d3.map();
+            var namesById = d3.map();
+
+            var quantize = d3.scale.quantize()
+                .domain([0, 10])
+                .range(d3.range(9).map(function(i) { return "q" + i + "-9"; }));
+
+            data.data.forEach(function(d) {
+                usersById.set(d.id, d.users);
+                namesById.set(d.id, d.name);
+            });
+
+
+            d3.json("/static/json/us.json", function(error, us) {
+                svg.insert("path", ".graticule")
+                .datum(topojson.feature(us, us.objects.land))
+                .attr("class", "land")
+                .attr("d", path);
+
+                svg.insert("path", ".graticule")
+                .datum(topojson.mesh(us, us.objects.counties, function(a, b) { return a !== b && !(a.id / 1000 ^ b.id / 1000); }))
+                .attr("class", "county-boundary")
+                .attr("d", path);
+
+                svg.insert("path", ".graticule")
+                .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
+                .attr("class", "state-boundary")
+                .attr("d", path);
+
+                svg.append("g")
+                      .attr("class", "counties")
+                        .selectAll("path")
+                        .data(topojson.feature(us, us.objects.counties).features)
+                        .enter().append("path")
+                        .attr("class", function(d) { return quantize(usersById.get(d.id)); })
+                        .attr("d", path)
+                        .on("mouseover", function(d) {
+                            var xPosition = d3.mouse(this)[0];
+                            var yPosition = d3.mouse(this)[1] - 30;
+                            svg.append("text")
+                                .attr("id", "map_tooltip")
+                                .attr("x", xPosition)
+                                .attr("y", yPosition)
+                                .attr("class", "overhead-popover")
+                                .text(namesById.get(d.id) + " Audience: " + d3.round(usersById.get(d.id), 1) + " per 100,000");
+                            d3.select(this)
+                            .style("stroke", "#363738");
+                        })
+                        .on("mouseout", function(d) {
+                            d3.select("#map_tooltip").remove();
+                            d3.select(this)
+                            .style("stroke", "none");
+                        })
+                    ;
+            });
+        };
+
+        return $(this).chart(options);
+    };
+})(jQuery);
 
 (function($){
     $.fn.vertical_circle = function(options){

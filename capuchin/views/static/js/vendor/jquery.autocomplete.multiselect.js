@@ -48,14 +48,17 @@ $.widget("ui.autocomplete", $.ui.autocomplete, {
             if(o.values){
                 for(var v in o.values){
                     var val = o.values[v];
-                    var item = $("<div></div>")
+                    var item = $("<div data-value='"+val+"'></div>")
                         .addClass("ui-autocomplete-multiselect-item")
                         .text(val)
                         .append(
                             $(" <span aria-hidden='true'> &times;</span>")
                                 .click(function(){
                                     var item = $(this).parent();
+                                    console.log(item);
                                     delete self.selectedItems[item.text()];
+                                    console.log(self.selectedItems);
+                                    o.delete(item, self);
                                     item.remove();
                                 })
                         )
@@ -67,14 +70,16 @@ $.widget("ui.autocomplete", $.ui.autocomplete, {
 
             // TODO: There's a better way?
             o.select = o.select || function(e, ui) {
-                $("<div></div>")
+                $("<div data-value='"+ui.item.label+"'></div>")
                     .addClass("ui-autocomplete-multiselect-item")
                     .text(ui.item.label)
                     .append(
                         $(" <span aria-hidden='true'> &times;</span>")
                             .click(function(){
                                 var item = $(this).parent();
+                                console.log(item);
                                 delete self.selectedItems[item.text()];
+                                o.delete(item, self);
                                 item.remove();
                             })
                     )

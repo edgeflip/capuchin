@@ -8,7 +8,9 @@ import datetime
 #TODO move all the html into templates and/or macros
 
 def user_name(val, record):
-    return u"{} {}".format(record.first_name, record.last_name)
+    user_client = record.get_client(current_user.client)
+    img = u"<img src=\"https://graph.facebook.com/v2.2/{}/picture?type=normal\" />".format(user_client.asid)
+    return "<a data-toggle='tooltip' title='{}'>{} {}</a>".format(img, record.first_name, record.last_name)
 
 def user_notification(val, record):
     return date_format(record.get("last_notification", "NA"))
@@ -23,7 +25,7 @@ user_columns = [
     Column('location_name.city', "Location", formatter=user_location),
     Column('', "Source", formatter=lambda v, r: "Facebook Ad"),
     Column('last_notification', "Last Notification", formatter=user_notification, sortable=True),
-    Column('', 'Link', formatter=lambda v,r: "Action", cls="actions"),
+    #Column('', 'Link', formatter=lambda v,r: "Action", cls="actions"),
 ]
 
 class Users(Table):
@@ -35,7 +37,7 @@ class SegmentUsers(Users):
 
     def get_records(self, q, from_, size, sort):
         segment = Segment(id=self.obj)
-        records = segment.records(from_)
+        records = segment.records(q, from_, size, sort)
         total = records.total
         return records, total
 

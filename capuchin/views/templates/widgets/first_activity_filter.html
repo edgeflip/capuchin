@@ -1,13 +1,15 @@
+{% set qualifier = values.get(filter['field'].replace(".", "___"), {}).get('qualifier') %}
+{% set val = values.get(filter['field'].replace(".", "___"), {}).get('value') %}
 <div class="col-md-4">
     <select name="joined_qualifier" class="form-control joined">
-        <option value="lte">Before</option>
-        <option value="gte">After</option>
-        <option value="eq">On</option>
+        <option value="lte" {% if qualifier == 'lte' %}selected{%endif%}>Before</option>
+        <option value="gte" {% if qualifier == 'gte' %}selected{%endif%}>After</option>
+        <option value="eq" {% if qualifier == 'eq' %}selected{%endif%}>On</option>
     </select>
 </div>
 <div class="col-md-8">
     <div class="input-group">
-         <input type="text" id="joined" class="form-control joined" name='joined_value' placeholder="Joined...">
+         <input type="text" id="joined" value="{{val}}" class="form-control joined" name='joined_value' placeholder="Joined...">
          <span class="input-group-btn">
              <button class="btn btn-default" type="button"><span class="icon-calendar"></span></button>
          </span>

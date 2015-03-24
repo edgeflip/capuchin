@@ -50,10 +50,7 @@
     <div class="col-md-3">
         {% from "widgets/bucket.html" import bucket %}
         <div class="thumbnail">
-            {{ bucket("Smart Segment", "members", 123123, 2, "#", "Create") }}
-        </div>
-        <div class="thumbnail">
-            {{ bucket("Smart Segment #2", "members", 4996, 4.78, "#", "Create") }}
+            {{ bucket("Smart Segment", "members", smart_segment.count, 2, url_for('audience.id', id=smart_segment._id|string), "Create") }}
         </div>
     </div>
 </div>

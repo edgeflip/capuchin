@@ -15,8 +15,14 @@ def top_likes():
         facet="likes.name"
     )
 
-def city_population():
-    return CityPopulation(client=current_user.client)
+def city_population(start, end):
+    return CityPopulation(client=current_user.client, top_n=200)
+
+def top_cities(start, end):
+    return TopCities(client=current_user.client, top_n=11)
+
+def audience_location():
+    return AudienceLocation(client=current_user.client)
 
 def top_words():
     return WordBubble(client=current_user.client)
@@ -93,9 +99,9 @@ def likes():
 def growth_vs_competitors(start, end):
     return DummyHorizontalBarChart('Growth vs Competitors (last week)', {
         'You': 0.03,
-        'Divvy Bikes': 0.01,
-        'The White House': 0.07,
-        'United Nations': 0.04,
+        'Greenpeace': 0.01,
+        'WWF': 0.07,
+        'NRDC': 0.04,
     })
     comparables = \
         [{ 'series': 'insights.{}.page_fans.lifetime', 'display': 'You'}] +\
@@ -333,6 +339,16 @@ def post_performance(start, end):
         current_user.client,
         comparables,
     )
+
+
+
+def share_like_ratios():
+    return DummyHorizontalBarChart('Share-Like Ratios (last five posts)', {
+        'You': 0.06,
+        'Greenpeace': 0.04,
+        'WWF': 0.07,
+        'NRDC': 0.04,
+    })
 
 
 def page_by_type():

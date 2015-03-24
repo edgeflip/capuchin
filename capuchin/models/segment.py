@@ -28,7 +28,7 @@ class Segment(orm.Document):
         self.filters[key] = value
         self._get('filters')._dirty = None
 
-    def build_query_filters(self):
+    def build_query_filters(self, sort=None):
         and_ = [{
             "term": {
                 "clients.id": str(self.client._id)
@@ -39,15 +39,18 @@ class Segment(orm.Document):
             filt = filters.get_filter(filters.FILTERS, k)
             if v:
                 try:
-                    and_.append(filters.FILTER_TYPES[filt['type']](k,v))
-                except:pass
+                    f = filters.FILTER_TYPES[filt['type']](k,v,client=str(self.client._id))
+                    if f: and_.append(f)
+                except Exception as e:
+                    self.logger.exception(e)
 
         query = {"filtered":{"filter":{"and":and_}}}
         self.logger.info(query)
         return query
 
-    def get_records(self, filters, from_=0):
+    def get_records(self, filters, from_=0, sort=None):
         q = {}
+        if sort: q['sort'] = sort
         if len(filters['filtered']['filter']['and']): q["query"] = filters
         return User.get_records(q, from_)
 
@@ -71,6 +74,14 @@ class Segment(orm.Document):
         )
         return res.get("aggregations", {})
 
+    def sort(self, sort):
+        if sort:
+            return {
+                sort[0]:{
+                    "order":sort[1]
+                }
+            }
+
     def get_lists(self):
         q = {"aggregations":{}}
         for f in filters.FILTERS:
@@ -90,9 +101,10 @@ class Segment(orm.Document):
         )
         return res["aggregations"]
 
-    def records(self, from_=0):
+    def records(self, q="*", from_=0, size=config.RECORDS_PER_PAGE, sort=None):
+        sort = self.sort(sort)
         filters = self.build_query_filters()
-        return self.get_records(filters, from_)
+        return self.get_records(filters, from_, sort)
 
     @property
     def count(self):

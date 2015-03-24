@@ -1,7 +1,8 @@
+{% set val = values.get('gender') %}
 <div id="gender{{filter['field']|string|slugify}}" class="btn-group btn-group-xs" role="group" data-toggle="buttons" aria-label="...">
-    <label type="button" class="btn btn-default"><input type='radio' name='gender' value='all' />All</label>
-    <label type="button" class="btn btn-default"><input type='radio' name='gender' value='female' />Female</label>
-    <label type="button" class="btn btn-default"><input type='radio' name='gender' value='male' />Male</label>
+    <label type="button" class="btn btn-default {% if val == 'all' %}active{% endif %}"><input type='radio' name='gender' value='all' {% if val == 'all' %}selected{% endif %}/>All</label>
+    <label type="button" class="btn btn-default {% if val == 'female' %}active{% endif %}"><input type='radio' name='gender' value='female' {% if val == 'female' %}selected{% endif %}/>Female</label>
+    <label type="button" class="btn btn-default {% if val == 'male' %}active{% endif %}"><input type='radio' name='gender' value='male' {% if val == 'male' %}selected{% endif %}/>Male</label>
 </div>
 <script>
     $("input[value='"+filters["{{filter['field']}}"]+"']").attr("selected", true);

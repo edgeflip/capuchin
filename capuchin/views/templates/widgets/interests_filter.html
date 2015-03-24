@@ -1,7 +1,7 @@
 <select id="interest{{filter['field']|string|slugify}}" name="interests" class="form-control">
     <option value=""></option>
     {% for i in interests %}
-    <option value="{{i.name}}">{{i.name}}</option>
+    <option value="{{i.name}}" {% if values.get(filter['field']) == i.name %}selected{%endif%}>{{i.name}}</option>
     {% endfor %}
 </select>
 <script>

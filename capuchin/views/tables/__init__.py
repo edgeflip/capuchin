@@ -1,5 +1,6 @@
 from flask import url_for
 from capuchin.util.pagination import Pagination
+from capuchin.util.jsontools import JavascriptEncoder
 import random
 import json
 import logging
@@ -43,6 +44,7 @@ class Table(object):
         self.client = client
         self.records = records
         self.obj = obj
+        self.total = len(self.records) if self.records else 0
 
     def build_pagination(self, cls, id, sort, from_, size, total, **kwargs):
         if not self.pagination: return ""
@@ -102,7 +104,6 @@ class Table(object):
     def build_rows(self, records):
         tr = []
         for r in records.hits:
-            logging.info(type(r))
             td = [u"<tr data-url=\"{}\">".format(r.url())]
             for c in self.columns:
                 levels = c.field.split(".")
@@ -122,19 +123,28 @@ class Table(object):
             self.__class__.__name__
         ).split(".")[3:])
         id = u"{}{}".format("table", random.randint(9999, 99999999))
-        th = [c.th(me, id, sort, obj=self.obj, q=json.dumps(q), from_=0, size=size, pagination=pagination) for c in self.columns]
+        th = [c.th(me, id, sort, obj=self.obj, q=json.dumps(q, cls=JavascriptEncoder), from_=0, size=size, pagination=pagination) for c in self.columns]
         tr = self.build_rows(records)
-        table =  u" <table class=\"table table-striped table-hover\"><thead><tr>{}</tr></thead><tbody>{}</tbody></table>".format(
+        to = from_+size if total >= from_+size else total
+        info = "<div class='table-info'><span class='total'><span class='pagination-info'>{} - {} of {}</span></div>".format(
+            from_+1,
+            to,
+            total
+        )
+        table =  u"{} <table class=\"table table-striped table-hover\"><thead><tr>{}</tr></thead><tbody>{}</tbody></table>".format(
+            info,
             u"".join(th),
             u"".join(tr)
         )
-        pagination = self.build_pagination(me, id, sort, from_=from_, size=size, total=total, q=json.dumps(q))
+        pagination = self.build_pagination(me, id, sort, from_=from_, size=size, total=total, q=json.dumps(q, cls=JavascriptEncoder))
         return u"<div id=\"{}\">{}{}</div>".format(id, table, pagination)
 
 class MongoTable(Table):
 
     def get_records(self, q, from_, size, sort):
         q = q if q and q!="*" else {}
+        q.update({'client':self.client._id})
+        logging.info("MONGO QUERY: {}".format(q))
         if sort:
             d = 1 if sort[1]=='asc' else -1
             sort = [(sort[0], d)]
