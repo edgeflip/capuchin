@@ -1,5 +1,6 @@
 from capuchin import db
 from capuchin import config
+from capuchin.models.city import City
 import logging
 import json
 import random
@@ -183,11 +184,6 @@ class DualAxisTimeChart(InfluxChart):
     def massage(self, data):
         logging.info(data)
         ar = []
-        highest_min_x = 0
-        for v in data:
-            min_x = min(a[0] for a in data[v][0]['points'])
-            if min_x > highest_min_x:
-                highest_min_x = min_x
 
         tooltips = {}
         for v, d in data.iteritems():
@@ -196,7 +192,6 @@ class DualAxisTimeChart(InfluxChart):
             vals = [
                 {"x":a[0], "y":a[1]}
                 for a in data[v][0]['points']
-                if a[0] >= highest_min_x
             ]
             vals.reverse()
             for i, val in enumerate(vals):
@@ -512,6 +507,55 @@ class HorizontalBarChart(object):
             })
 
         self.data = [self.data]
+
+    def dump(self):
+        return json.dumps(self.data)
+
+class TopCities(object):
+
+    def __init__(self, client, top_n):
+        and_ = [{
+            "term": {
+                "clients.id": str(client._id)
+            }
+        }]
+        query = {
+            "query":{
+                "filtered":{"filter":{"and":and_}},
+            },
+            "aggregations":{
+                "cities":{
+                    "terms":{
+                        "script":"doc['location_name.city.facet'].value+','+doc['location_name.state.facet'].value",
+                        "size":top_n,
+                    }
+                }
+            }
+        }
+        ES = db.init_elasticsearch()
+        res = ES.search(
+            config.ES_INDEX,
+            config.USER_RECORD_TYPE,
+            size=0,
+            _source=False,
+            body=query
+        )
+        logging.info(res)
+        values = []
+        for i in res['aggregations']['cities']['buckets']:
+            logging.debug(i)
+            city, state = i['key'].split(",")
+            if city:
+                c = City.find_one({"full_state": state, "city": city})
+                if c:
+                    values.append({
+                        "label":"{}, {}".format(c.city, c.state),
+                        "value": i['doc_count']
+                    })
+        self.data = [{
+            'key': 'Top 5 Cities',
+            'values':values
+        }]
 
     def dump(self):
         return json.dumps(self.data)
