@@ -101,9 +101,10 @@
                     </div>
 
                     {% set nav_links = [
+                        {'href': url_for('dashboard.index'), 'title': 'Dashboard', 'id': 'dashboard'},
                         {'href': url_for('audience.index'), 'title':'Audience', 'id':'audience'},
                         {'href': url_for('engagement.index'), 'title':'Engagement', 'id':'engagement'},
-                        {'href': url_for('reports.index'), 'title':'Insights', 'id':'insights'},
+                        {'href': url_for('reports.index'), 'title':'Reports', 'id':'insights'},
                     ] %}
                     <!-- Collect the nav links, forms, and other content for toggling -->
                     <div class="collapse navbar-collapse" id="navbar-1">
