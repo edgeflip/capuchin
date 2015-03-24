@@ -56,19 +56,7 @@ var enable_graph = function(event, ui) {
                 height:300,
             }).render(6);
             $("#audience_charts").horizontal_multibar({
-                name:"Top Cities",
-                data_url:"{{url_for('.chart', chart_id='top_cities')}}",
-                valueFormat: ',.0f',
-                hideLegend: true,
-            }).render(6);
-            $("#audience_charts").choropleth({
-                name:"Audience Location",
-                data_url:"{{url_for('.chart', chart_id='audience_location')}}",
-                width: 1080,
-                height: 800,
-            }).render(12);
-            $("#audience_charts").horizontal_multibar({
-                name:"Growth vs Competitors",
+                name:"Your Growth vs Similar Pages",
                 data_url:"{{url_for('.chart', chart_id='growth_vs_competitors')}}",
                 height:300,
                 legend_x:-112,
@@ -103,7 +91,7 @@ var enable_graph = function(event, ui) {
                 }
             });
             $("#psycho_charts").bar({
-                name:"Hours Active",
+                name:"Hours Active on Facebook",
                 data_url:"{{url_for('.chart', chart_id='hours_active')}}",
                 height:250,
             }).render(12);
@@ -112,11 +100,18 @@ var enable_graph = function(event, ui) {
                 data_url:"{{url_for('.chart', chart_id='interests')}}",
                 height:250,
             }).render(6);
-            $("#psycho_charts").horizontal_percent_multibar({
-                name:"Actions",
-                data_url:"{{url_for('.chart', chart_id='actions')}}",
-                height:250,
+            $("#psycho_charts").horizontal_multibar({
+                name:"Top Cities",
+                data_url:"{{url_for('.chart', chart_id='top_cities')}}",
+                valueFormat: ',.0f',
+                hideLegend: true,
             }).render(6);
+            $("#psycho_charts").choropleth({
+                name:"Audience Location",
+                data_url:"{{url_for('.chart', chart_id='audience_location')}}",
+                width: 1080,
+                height: 800,
+            }).render(12);
         }
         else {
             $( "#performance_range" ).selectmenu();
@@ -183,7 +178,6 @@ $(document).ready(function(){
                 <label for="growth_to">To:</label>
                 <input id="growth_to"></input>
             </span>
-            <h3>Audience Growth</h3>
             <div class="col-md-12" id="audience_charts"></div>
         </div>
         <div class="row" id="two">
@@ -209,7 +203,6 @@ $(document).ready(function(){
                 <label for="audience_to">To:</label>
                 <input id="audience_to"></input>
             </span>
-            <h3>Audience Profile</h3>
             <div class="col-md-12" id="psycho_charts"></div>
         </div>
         <div class="row" id="three">
@@ -229,7 +222,6 @@ $(document).ready(function(){
                 <label for="performance_to">To:</label>
                 <input id="performance_to"></input>
             </span>
-            <h3>Page Performance</h3>
             <div class="col-md-12" id="page_charts"></div>
         </div>
     </div>
