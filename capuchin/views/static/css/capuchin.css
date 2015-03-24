@@ -132,7 +132,9 @@ div.filters{
     margin-right: 0;
 }
 
-#navbar-1 li > a:hover {
+#navbar-1 li > a:hover, #navbar-1 li > a.active {
+    color: #155982;
+    background-color: #EEC03C;
     background-image: none;
 }
 
