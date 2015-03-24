@@ -95,6 +95,7 @@ class Default(MethodView):
         if not smart:
             smart = Segment()
             smart.name = "Example"
+            smart.client = current_user.client
             smart.save()
         return render_template(
             "audience/index.html",
