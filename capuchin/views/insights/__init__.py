@@ -15,7 +15,7 @@ def top_likes():
         facet="likes.name"
     )
 
-def city_population():
+def city_population(start, end):
     return CityPopulation(client=current_user.client)
 
 def top_words():

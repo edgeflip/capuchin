@@ -8,15 +8,9 @@
     var filters = eval({{filters_json|safe}});
     var values = {{values|to_json}};
 
-    function notify(text){
-        $("#notification").html(text);
-        $(".alert").removeClass("hidden");
-    }
-
     $(document).ready(function(){
-        $("#filter-submit").click(function(e){
+        $("#segment-refresh, #segment-save").click(function(e){
             $(".term-input").each(function(i, el){
-                console.log($(el).autocomplete("instance").selectedItems);
                 var vals = [];
                 for(v in $(el).autocomplete("instance").selectedItems){
                     vals.push(v);
@@ -35,6 +29,11 @@
                     register_table_sorting();
                     register_paging();
                     init_table_rows();
+                    notify(
+                        "success",
+                        "Segment created! \
+                        <a href='#'' class='btn btn-default' data-toggle='modal' data-target='#boost-modal'>Create</a> a Notification."
+                    );
                 }
             });
             return false;
@@ -45,6 +44,21 @@
 {% endblock %}
 
 {% block content %}
+<div class="modal fade" id="boost-modal" tabindex="-1" role="dialog" aria-labelledby="New Notification" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modal-title">New Notification</h4>
+            </div>
+            <div class="modal-body" id="modal-body">
+                {% set engage=True %}
+                {% set segment_id=id %}
+                {% include "notifications/form.html" %}
+            </div>
+        </div>
+    </div>
+</div>
 <div class="row" id="filtered">
     {% include "audience/filtered.html" %}
 </div>

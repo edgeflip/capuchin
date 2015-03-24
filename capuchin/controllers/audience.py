@@ -6,6 +6,7 @@ from capuchin import filters
 from capuchin.models.segment import Segment
 from capuchin.models.interest import Interest
 from capuchin.models.imports import ImportOrigin
+from capuchin.models.post import Post
 from capuchin.models.user import User
 from capuchin.views.tables.audience import Users, Segments, SegmentUsers
 import logging
@@ -19,6 +20,14 @@ audience = Blueprint(
     template_folder=config.TEMPLATES,
     url_prefix="/audience",
 )
+
+@audience.context_processor
+def notification_creation():
+    return {'notification':{
+        'posts':Post.records(client=current_user.client),
+        'messages':config.MESSAGES
+    }
+}
 
 def create_pagination(total_records, current_page=0):
     tp = math.ceil(total_records/config.RECORDS_PER_PAGE)
@@ -84,6 +93,7 @@ class Default(MethodView):
     def get(self):
         return render_template(
             "audience/index.html",
+            smart_segment=Segment.find_one({'name':{'$ne':None}}),
             segments=Segments(current_user.client),
             users=Users(current_user.client),
         )
