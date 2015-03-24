@@ -50,6 +50,12 @@ var enable_graph = function(event, ui) {
                 legend_x:-240,
                 legend_y:240,
             }).render(12);
+            $("#audience_charts").choropleth({
+                name:"Audience Location",
+                data_url:"{{url_for('.chart', chart_id='audience_location')}}",
+                width: 1080,
+                height: 700,
+            }).render(12);
             $("#audience_charts").pie({
                 name:"Audience by Source",
                 data_url:"{{url_for('.chart', chart_id='audience_by_source')}}",
@@ -58,6 +64,13 @@ var enable_graph = function(event, ui) {
             $("#audience_charts").horizontal_multibar({
                 name:"Growth vs Competitors",
                 data_url:"{{url_for('.chart', chart_id='growth_vs_competitors')}}",
+                height:300,
+                legend_x:-112,
+                legend_y:255,
+            }).render(6);
+            $("#audience_charts").horizontal_multibar({
+                name:"Share-Like Ratios",
+                data_url:"{{url_for('.chart', chart_id='share_like_ratios')}}",
                 height:300,
                 legend_x:-112,
                 legend_y:255,
@@ -184,7 +197,7 @@ $(document).ready(function(){
                 <label for="audience_to">To:</label>
                 <input id="audience_to"></input>
             </span>
-            <h3>Psychometrics</h3>
+            <h3>Audience Profile</h3>
             <div class="col-md-12" id="psycho_charts"></div>
         </div>
         <div class="row" id="three">
