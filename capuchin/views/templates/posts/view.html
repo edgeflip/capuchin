@@ -32,11 +32,6 @@ $(document).ready(function(){
         data_url:"{{url_for('.chart', chart_id='interests', post_id=post.id)}}",
         height:200,
     }).render(4);
-    $("#audience_charts").horizontal_percent_multibar({
-        name:"Actions",
-        data_url:"{{url_for('.chart', chart_id='actions', post_id=post.id)}}",
-        height:200,
-    }).render(4);
 });
 </script>
 {% endblock %}

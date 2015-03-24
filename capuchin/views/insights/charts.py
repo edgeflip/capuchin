@@ -184,11 +184,6 @@ class DualAxisTimeChart(InfluxChart):
     def massage(self, data):
         logging.info(data)
         ar = []
-        highest_min_x = 0
-        for v in data:
-            min_x = min(a[0] for a in data[v][0]['points'])
-            if min_x > highest_min_x:
-                highest_min_x = min_x
 
         tooltips = {}
         for v, d in data.iteritems():
@@ -197,7 +192,6 @@ class DualAxisTimeChart(InfluxChart):
             vals = [
                 {"x":a[0], "y":a[1]}
                 for a in data[v][0]['points']
-                if a[0] >= highest_min_x
             ]
             vals.reverse()
             for i, val in enumerate(vals):

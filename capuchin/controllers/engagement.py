@@ -135,12 +135,6 @@ def interests_graph(post):
         'Current Events': .35,
     })
 
-def actions_graph(post):
-    return DummyHorizontalBarChart('Interests', {
-        'Donated to Charity': .42,
-        'Attended a Concert': .12,
-        'Went on a Vacation': .35,
-    })
 
 class Chart(MethodView):
     charts = {
@@ -148,7 +142,6 @@ class Chart(MethodView):
         "age":age_graph,
         "gender":gender_graph,
         "interests":interests_graph,
-        "actions":actions_graph,
     }
 
     def get(self, chart_id):

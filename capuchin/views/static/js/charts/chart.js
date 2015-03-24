@@ -1007,6 +1007,10 @@ function DumpObjectIndented(obj, indent)
                         }
                     });
 
+                if(!data.data) {
+                    return chart;
+                }
+
                 //Format x-axis labels with custom function.
                 chart.xAxis
                 .tickFormat(function(d) {
