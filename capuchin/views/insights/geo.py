@@ -107,7 +107,6 @@ class AudienceLocation(object):
                     key = state_code.lower() + "_" + city.lower()
                     county = county_lookup.get(key, None)
                     if county:
-                        logging.info(county + key)
                         pop = pop_lookup[county]
                         mangled_county = county.lstrip('0')
                         if i['doc_count'] > 1:

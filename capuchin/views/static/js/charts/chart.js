@@ -1255,7 +1255,7 @@ function DumpObjectIndented(obj, indent)
                                 .attr("x", xPosition)
                                 .attr("y", yPosition)
                                 .attr("class", "overhead-popover")
-                                .text(namesById.get(d.id) + " Audience: " + usersById.get(d.id));
+                                .text(namesById.get(d.id) + " Audience: " + d3.round(usersById.get(d.id), 1) + " per 100,000");
                             d3.select(this)
                             .style("stroke", "#363738");
                         })
