@@ -91,9 +91,14 @@ def update_segment(id, filters, name):
 class Default(MethodView):
 
     def get(self):
+        smart = Segment.find_one({'name':{'$ne':None}})
+        if not smart:
+            smart = Segment()
+            smart.name = "Example"
+            smart.save()
         return render_template(
             "audience/index.html",
-            smart_segment=Segment.find_one({'name':{'$ne':None}}),
+            smart_segment=smart,
             segments=Segments(current_user.client),
             users=Users(current_user.client),
         )
