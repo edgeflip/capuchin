@@ -10,12 +10,24 @@ $(document).ready(function(){
     })
 });
 
+function notify(cls, message){
+    $("#notifications").append("<div class=\"alert alert-"+cls+" alert-dismissible\" role=\"alert\"> \
+        <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button> \
+        <p id=\"notification\">"+message+"</p> \
+    </div>");
+}
+
 function init_table_rows(){
     $(".table > tbody > tr").click(function(e){
         console.log(e);
         var url = $(e.currentTarget).data("url");
         console.log(url);
         window.location.href = url;
+    });
+    $('[data-toggle="tooltip"]').tooltip({
+        html:'true',
+        container:'body',
+        placement:'bottom',
     });
 };
 
