@@ -189,9 +189,11 @@ class DualAxisTimeChart(InfluxChart):
         for v, d in data.iteritems():
             key = "{} (right axis)".format(v) if self.typ[v]['yAxis'] == 2 else v
             tooltips[key] = {}
+            if len(d) == 0 or 'points' not in d[0]:
+                continue
             vals = [
                 {"x":a[0], "y":a[1]}
-                for a in data[v][0]['points']
+                for a in d[0]['points']
             ]
             vals.reverse()
             for i, val in enumerate(vals):
