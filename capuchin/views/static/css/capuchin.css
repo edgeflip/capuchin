@@ -1,15 +1,16 @@
+html {
+  position: relative;
+  min-height: 100%;
+}
+
 body {
-    padding-top: 70px;
+    padding-top: 145px;
     margin-bottom: 140px;
     font-size: 12px;
 }
 
 .footer{
     font-size: 11px;
-}
-
-.btn{
-    background-image: none;
 }
 
 .person-details{
@@ -31,15 +32,6 @@ h3{
 
 h4{
     color: #4785AB;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
-img.brand{
-    height: 100%;
 }
 
 td.actions{
@@ -98,8 +90,21 @@ div.filters{
 
 /* Bootstrap overrides */
 
+.btn{
+    background-image: none;
+    border: 0;
+}
+
 .popover{
     max-width: 500px;
+}
+
+.navbar-fixed-top {
+    min-height: 145px;
+}
+
+.navbar-default {
+    background-image: none;
 }
 
 .navbar-default .nav .dropdown .dropdown-menu {
@@ -108,14 +113,27 @@ div.filters{
     border-radius: 5px 5px 5px 5px ;
 }
 
-.navbar-nav>li>a {
-    margin-top: 20px;
-    padding-top: 4px;
-    padding-bottom: 4px;
-    margin-right: 7px;
+.navbar-brand {
+    height: 90px;
+    padding: 0 0 10px;
+    margin-right: 20px;
+}
+.navbar-brand img {
+    height: 100%;
 }
 
-.navbar-nav>li>a:hover{
+#navbar-1 li > a {
+    font-size: large;
+    margin-top: 35px;
+    margin-right: 20px;
+    padding: 6px 20px;
+    min-width: 160px;
+}
+#navbar-1 li:last-child > a {
+    margin-right: 0;
+}
+
+#navbar-1 li > a:hover {
     background-image: none;
 }
 
@@ -123,7 +141,35 @@ div.filters{
     margin-top: 20px;
 }
 
-.navbar-nav>li>.dropdown-menu{
+.navbar-form {
+    margin-bottom: 5px;
+    padding: 0 10px;
+}
+.navbar-form input {
+    background-color: #155982;
+    border: 0;
+}
+ul.navbar-right.dropdown {
+    margin-left: 5px;
+}
+.navbar-default .navbar-nav a.dropdown-toggle {
+    font-size: 23px;
+    margin: 17px 0 0;
+    padding: 8px;
+    color: #155982;
+    min-width: 55px;
+    text-align: center;
+}
+.dropdown-toggle .label-danger {
+    font-size: 75%;
+    font-weight: normal;
+    margin-right: -25px;
+    padding: .1em .4em;
+    position: relative;
+    top: -16px;
+    left: -15px;
+}
+.navbar-nav > li > .dropdown-menu {
     margin-top:20px;
 }
 
