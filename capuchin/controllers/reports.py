@@ -34,6 +34,7 @@ class Index(MethodView):
     def get(self):
         return render_template(
             "reports/index.html",
+            segments=current_user.client.segments(query={"name":{"$ne":None}}),
         )
 
 class Chart(MethodView):
