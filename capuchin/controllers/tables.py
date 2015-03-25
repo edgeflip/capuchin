@@ -28,9 +28,9 @@ def get_table(cls):
     return table
 
 def get_args(cls_name):
-    other = request.base_url.split("/")[-1]
-    if not other: other = request.base_url.split("/")[-2]
-    obj = request.args.get('obj', other)
+    obj = request.args.get('url', request.base_url)
+    obj = obj.replace(":", "__")
+    obj = obj.replace("/", "__")
     session_key = "{}{}".format(obj, cls_name.replace(".", "___"))
     if not request.args.get('field'):
         logging.info("KEY: {}".format(session_key))

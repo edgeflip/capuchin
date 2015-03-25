@@ -1,4 +1,4 @@
-from flask import url_for
+from flask import url_for, request
 from capuchin.util.pagination import Pagination
 from capuchin.util.jsontools import JavascriptEncoder
 import random
@@ -117,13 +117,14 @@ class Table(object):
 
     def render(self, q="*", from_=0, size=10, sort=None, pagination=True):
         self.pagination = pagination
+        url = request.base_url
         records, total = self.get_records(q, from_, size, sort)
         me = ".".join("{}.{}".format(
             self.__module__,
             self.__class__.__name__
         ).split(".")[3:])
         id = u"{}{}".format("table", random.randint(9999, 99999999))
-        th = [c.th(me, id, sort, obj=self.obj, q=json.dumps(q, cls=JavascriptEncoder), from_=0, size=size, pagination=pagination) for c in self.columns]
+        th = [c.th(me, id, sort, obj=self.obj, q=json.dumps(q, cls=JavascriptEncoder), from_=0, size=size, pagination=pagination, url=url) for c in self.columns]
         tr = self.build_rows(records)
         to = from_+size if total >= from_+size else total
         info = "<div class='table-info'><span class='total'><span class='pagination-info'>{} - {} of {}</span></div>".format(
@@ -136,7 +137,7 @@ class Table(object):
             u"".join(th),
             u"".join(tr)
         )
-        pagination = self.build_pagination(me, id, sort, from_=from_, size=size, total=total, q=json.dumps(q, cls=JavascriptEncoder), pagination=self.pagination)
+        pagination = self.build_pagination(me, id, sort, from_=from_, size=size, total=total, q=json.dumps(q, cls=JavascriptEncoder), pagination=self.pagination, url=url)
         return u"<div id=\"{}\">{}{}</div>".format(id, table, pagination)
 
 class MongoTable(Table):

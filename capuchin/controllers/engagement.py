@@ -6,6 +6,7 @@ from capuchin import filters
 from capuchin.models.post import Post
 from capuchin.views.insights.charts import HistogramChart, DualAxisTimeChart, DummyHorizontalBarChart, DummyPieChart, DummyBarChart
 from capuchin.views.tables.dashboard import Posts, Notifications
+from capuchin.controllers.tables import render_table
 import logging
 import slugify
 from collections import OrderedDict
@@ -36,7 +37,8 @@ class Index(MethodView):
     def get(self, page=0, template=None):
         q = request.args.get("q", "*")
         q = "*" if not q else q
-        posts = Posts(current_user.client)
+        posts = render_table(Posts)
+        if not posts: posts = Posts(current_user.client).render(q=q)
         tmpl = template if template else "posts/index.html"
         return render_template(
             tmpl,
