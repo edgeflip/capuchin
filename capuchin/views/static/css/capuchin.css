@@ -300,6 +300,9 @@ table td img.table-image{
 .dash-chart svg {
     height: 400px;
 }
+.dash-chart {
+    padding-bottom: 20px;
+}
 
 .form-signin {
     max-width: 330px;
