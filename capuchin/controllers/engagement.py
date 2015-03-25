@@ -105,17 +105,22 @@ def engagement_graph(post):
     )
 
 class Chart(MethodView):
-    charts = {
+    post_charts = {
         "engagement":engagement_graph,
+    }
+    fake_charts = {
         "age":age,
         "gender":gender,
         "interests":interests,
     }
 
     def get(self, chart_id):
-        post_id = request.args.get("post_id")
-        post = Post(id=post_id)
-        res = self.charts[chart_id](post)
+        if chart_id in self.post_charts:
+            post_id = request.args.get("post_id")
+            post = Post(id=post_id)
+            res = self.post_charts[chart_id](post)
+        else:
+            res = self.fake_charts[chart_id]()
         return jsonify(**dict(data=res.data, date_format=res.date_format))
 
 
