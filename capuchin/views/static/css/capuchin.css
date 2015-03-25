@@ -553,6 +553,10 @@ select {
     position: relative;
 }
 
+.trending {
+    margin-left: 10px;
+}
+
 .counties {
   fill: none;
 }

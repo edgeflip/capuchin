@@ -1465,16 +1465,16 @@ function DumpObjectIndented(obj, indent)
     $.fn.list = function(settings){
         $(this).append("<div class=\"col-md-"+settings.columns+" dash-chart\"> \
             <h3>"+settings.name+"</h3> \
-            <p><a href=\"https://www.facebook.com/topic/Jon-Hamm/112468628768413\">Jon Hamm</a></p> \
-            <p><a href=\"https://www.facebook.com/topic/Germanwings/108639032494132\">Germanwings</a></p> \
-            <p><a href=\"https://www.facebook.com/topic/Big-Crunch/104023519633436\">Big Crunch</a></p> \
-            <p><a href=\"https://www.facebook.com/topic/Jesse-Eisenberg/104376719599635\">Jesse Eisenberg</a></p> \
-            <p><a href=\"https://www.facebook.com/topic/Triassic/109285719089300\">Triassic</a></p> \
-            <p><a href=\"https://www.facebook.com/topic/J-K-Rowling/112585118757481/\">J.K. Rowling</a></p> \
-            <p><a href=\"https://www.facebook.com/topic/New-York-Yankees/113063165374299\">New York Yankees</a></p> \
-            <p><a href=\"https://www.facebook.com/topic/Tataouine/107750969247738\">Tataouine</a></p> \
-            <p><a href=\"https://www.facebook.com/topic/Vietnam-Womens-Memorial/102916926429233\">Vietnam Women&#39;s Memorial</a></p> \
-            <p><a href=\"https://www.facebook.com/topic/Phil-Robertson/107609529268893\">Phil Robertson</a></p> \
+            <p><a href=\"https://www.facebook.com/topic/Jon-Hamm/112468628768413\"><img class=\"trending\" src=\"/static/img/fb-trending.png\"></img>Jon Hamm</a></p> \
+            <p><a href=\"https://www.facebook.com/topic/Germanwings/108639032494132\"><img class=\"trending\" src=\"/static/img/fb-trending.png\"></img>Germanwings</a></p> \
+            <p><a href=\"https://www.facebook.com/topic/Big-Crunch/104023519633436\"><img class=\"trending\" src=\"/static/img/fb-trending.png\"></img>Big Crunch</a></p> \
+            <p><a href=\"https://www.facebook.com/topic/Jesse-Eisenberg/104376719599635\"><img class=\"trending\" src=\"/static/img/fb-trending.png\"></img>Jesse Eisenberg</a></p> \
+            <p><a href=\"https://www.facebook.com/topic/Triassic/109285719089300\"><img class=\"trending\" src=\"/static/img/fb-trending.png\"></img>Triassic</a></p> \
+            <p><a href=\"https://www.facebook.com/topic/J-K-Rowling/112585118757481/\"><img class=\"trending\" src=\"/static/img/fb-trending.png\"></img>J.K. Rowling</a></p> \
+            <p><a href=\"https://www.facebook.com/topic/New-York-Yankees/113063165374299\"><img class=\"trending\" src=\"/static/img/fb-trending.png\"></img>New York Yankees</a></p> \
+            <p><a href=\"https://www.facebook.com/topic/Tataouine/107750969247738\"><img class=\"trending\" src=\"/static/img/fb-trending.png\"></img>Tataouine</a></p> \
+            <p><a href=\"https://www.facebook.com/topic/Vietnam-Womens-Memorial/102916926429233\"><img class=\"trending\" src=\"/static/img/fb-trending.png\"></img>Vietnam Women&#39;s Memorial</a></p> \
+            <p><a href=\"https://www.facebook.com/topic/Phil-Robertson/107609529268893\"><img class=\"trending\" src=\"/static/img/fb-trending.png\"></img>Phil Robertson</a></p> \
         </div>");
     };
 })(jQuery);
