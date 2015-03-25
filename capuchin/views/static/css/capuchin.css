@@ -9,10 +9,6 @@ body {
     font-size: 12px;
 }
 
-.footer{
-    font-size: 11px;
-}
-
 .person-details{
     margin-top: 35px;
 }
@@ -86,6 +82,13 @@ div.filters{
     margin-bottom: 20px;
     padding: 20px;
     padding-top: 0px;
+}
+
+.pipe {
+    padding: 0 0.5em;
+}
+.pipe:after {
+    content: "|";
 }
 
 /* Bootstrap overrides */
@@ -221,6 +224,7 @@ div.caption p.details{
 }
 
 .footer{
+    font-size: 11px;
     position: absolute;
     bottom: 0;
     width: 100%;
@@ -233,22 +237,31 @@ div.caption p.details{
     color: #FFFFFF;
 }
 
-.footer h3{
-    margin-top: 0;
-}
-
 .footer .info{
     border-right: 3px solid #FFF;
     text-align: right;
 }
 
-.footer p{
+.footer .links {
+    margin-top: 8px;
+}
+
+.footer .social {
+    font-size: 15px;
+    margin-bottom: 0.5em;
+}
+.footer .social a {
+    margin-right: 0.2em;
+    text-decoration: none;
+}
+
+.footer p {
     margin-top: 3px;
     margin-bottom: 3px;
 }
 
 .footer img{
-    max-height: 45px
+    max-height: 55px
 }
 
 .buckets{

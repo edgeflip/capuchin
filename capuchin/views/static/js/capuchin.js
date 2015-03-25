@@ -8,6 +8,13 @@ $(document).ready(function(){
         $(e.currentTarget).popover('toggle');
         return false;
     })
+}).ready(function () {
+    /* Anchors with rel="external" open their href in a new window.
+     */
+    $('a[rel]').click(function (event) {
+        event.preventDefault();
+        window.open(this.href);
+    });
 });
 
 function notify(cls, message){
