@@ -304,6 +304,10 @@ table td img.table-image{
     padding-bottom: 20px;
 }
 
+.heading-embedded {
+    padding-top: 20px;
+}
+
 .form-signin {
     max-width: 330px;
     padding: 15px;
