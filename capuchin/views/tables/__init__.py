@@ -23,7 +23,7 @@ class Column(object):
             else:
                 s_dir = 'asc'
             link = url_for(
-                'tables.sort',
+                'tables.index',
                 cls=cls,
                 field=self.field,
                 dir=s_dir,
@@ -63,7 +63,7 @@ class Table(object):
                     pages.append("<li><a class=\"pager\" data-id=\"{}\"href=\"{}\">{}</a></li>".format(
                         id,
                         url_for(
-                            'tables.page',
+                            'tables.index',
                             cls=cls,
                             obj=self.obj,
                             field=field,
@@ -82,7 +82,7 @@ class Table(object):
             pages.append("<li><a class=\"pager\" data-id=\"{}\" href=\"{}\">{}</a></li>".format(
                 id,
                 url_for(
-                    'tables.page',
+                    'tables.index',
                     cls=cls,
                     obj=self.obj,
                     field=field,
@@ -136,7 +136,7 @@ class Table(object):
             u"".join(th),
             u"".join(tr)
         )
-        pagination = self.build_pagination(me, id, sort, from_=from_, size=size, total=total, q=json.dumps(q, cls=JavascriptEncoder))
+        pagination = self.build_pagination(me, id, sort, from_=from_, size=size, total=total, q=json.dumps(q, cls=JavascriptEncoder), pagination=self.pagination)
         return u"<div id=\"{}\">{}{}</div>".format(id, table, pagination)
 
 class MongoTable(Table):

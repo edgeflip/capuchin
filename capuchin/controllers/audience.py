@@ -9,6 +9,7 @@ from capuchin.models.imports import ImportOrigin
 from capuchin.models.post import Post
 from capuchin.models.user import User
 from capuchin.views.tables.audience import Users, Segments, SegmentUsers
+from capuchin.controllers.tables import render_table
 import logging
 import slugify
 import math
@@ -92,6 +93,9 @@ class Default(MethodView):
 
     def get(self):
         smart = Segment.find_one({'name':{'$ne':None}})
+        users = render_table(Users)
+        if not users: users = Users(current_user.client).render()
+        logging.info(users)
         if not smart:
             smart = Segment()
             smart.name = "Example"
@@ -101,7 +105,7 @@ class Default(MethodView):
             "audience/index.html",
             smart_segment=smart,
             segments=Segments(current_user.client),
-            users=Users(current_user.client),
+            users=users,
         )
 
 class View(MethodView):
@@ -118,7 +122,8 @@ class Create(MethodView):
     def get(self, id=None, page=0, template=None):
         segment, _id = get_segment(id)
         if not id: return redirect(url_for(".id", id=_id))
-        users = SegmentUsers(current_user.client, str(_id))
+        users = render_table(SegmentUsers)
+        if not users: users = SegmentUsers(current_user.client, str(_id)).render()
         tmpl = template if template else "audience/create.html"
         lists = segment.get_lists()
         interests = Interest.find()

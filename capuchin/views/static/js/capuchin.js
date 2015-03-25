@@ -3,11 +3,6 @@ $(document).ready(function(){
     init_create_button();
     register_paging();
     init_table_rows();
-    $('[data-toggle="popover"]').click(function(e){
-        e.preventDefault();
-        $(e.currentTarget).popover('toggle');
-        return false;
-    })
 });
 
 function notify(cls, message){

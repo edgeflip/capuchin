@@ -1,9 +1,10 @@
-from flask import Blueprint, render_template, current_app, redirect, url_for, request, Response, g
+from flask import Blueprint, render_template, current_app, redirect, url_for, request, Response, g, session
 from flask.views import MethodView
 from flask.ext.login import current_user
 from capuchin import config
 from capuchin import filters
 from capuchin.models.segment import Segment
+from capuchin.views.tables import Table
 import urllib
 import logging
 import slugify
@@ -26,53 +27,62 @@ def get_table(cls):
     table = getattr(mod, parts[-1])
     return table
 
-class Sort(MethodView):
-
-    def get(self, cls, field, dir):
+def get_args(cls_name):
+    other = request.base_url.split("/")[-1]
+    if not other: other = request.base_url.split("/")[-2]
+    obj = request.args.get('obj', other)
+    session_key = "{}{}".format(obj, cls_name.replace(".", "___"))
+    if not request.args.get('field'):
+        logging.info("KEY: {}".format(session_key))
+        logging.info("SESSION: {}".format(session))
+        args = session.get(session_key)
+        logging.info("ARGS: {}".format(args))
+    else:
+        args = {}
+        args['field'] = request.args.get('field')
+        args['dir'] = request.args.get('dir')
+        args['page'] = int(request.args.get('page', 1))
+        args['size'] = int(request.args.get('size', 10))
+        args['obj'] = request.args.get('obj')
         try:
-            table = get_table(cls)
-            t = table(current_user.client, request.args.get('obj'))
-            try:
-                q = json.loads(request.args['q'])
-            except Exception as e:
-                logging.exception(e)
-                q = request.args['q']
+            args['q'] = json.loads(request.args['q'])
+        except:
+            args['q'] = request.args['q']
+        args['from_'] = args['size']*(args['page']-1)
+        args['pagination'] = bool(request.args['pagination'])
+        session[session_key] = args
+    return args
 
-            ret = t.render(
-                sort=(field, dir),
-                q=q,
-                size=int(request.args['size']),
-                from_=int(request.args['from_']),
-                pagination=bool(request.args['pagination'])
-            )
-            logging.info(t)
-            return Response(ret)
-        except ImportError as e:
-            logging.exception(e)
+def render_table(cls):
+    if not isinstance(cls, basestring):
+        cls_name = ".".join("{}.{}".format(
+            cls.__module__,
+            cls.__name__
+        ).split(".")[3:])
+        table = cls
+    else:
+        table = get_table(cls)
+        cls_name = cls
 
-class Page(MethodView):
+    args = get_args(cls_name)
+    if not args: return None
 
-    def get(self, cls, field, dir, page):
-        size = int(request.args.get('size'))
-        from_ = size*(int(page)-1)
-        try:
-            table = get_table(cls)
-            t = table(current_user.client, request.args.get('obj'))
-            try:
-                q = json.loads(request.args['q'])
-            except Exception as e:
-                logging.exception(e)
-                q = request.args['q']
+    try:
+        t = table(current_user.client, args['obj'])
+        ret = t.render(
+            sort=(args['field'], args['dir']),
+            q=args['q'],
+            size=args['size'],
+            from_=args['from_'],
+            pagination=args['pagination']
+        )
+        return ret
+    except ImportError as e:
+        logging.exception(e)
 
-            ret = t.render(
-                sort=(field, dir),
-                q=q,
-                size=size,
-                from_=from_
-            )
-            return Response(ret)
-        except ImportError as e:
-            logging.exception(e)
+class TableOrder(MethodView):
 
-tables.add_url_rule("/sort/<cls>/<field>/<dir>", view_func=Sort.as_view('sort'))
-tables.add_url_rule("/page/<cls>/<field>/<dir>/<page>", view_func=Page.as_view('page'))
+    def get(self, cls):
+        return Response(render_table(cls))
+
+tables.add_url_rule("/<cls>", view_func=TableOrder.as_view('index'))
