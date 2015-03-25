@@ -90,6 +90,19 @@ var enable_graph = function(event, ui) {
                     $( "#audience_from" ).datepicker( "option", "maxDate", selectedDate );
                 }
             });
+            $("#psycho_charts").pie({
+                name:"Gender",
+                data_url:"{{url_for('.chart', chart_id='gender')}}",
+                height:300,
+            }).render(6);
+            $("#psycho_charts").bar({
+                name:"Age",
+                data_url:"{{url_for('.chart', chart_id='age')}}",
+                height: 300,
+                yShowMaxMin: false,
+                showTooltip: true,
+                yformat: ',.0f',
+            }).render(6);
             $("#psycho_charts").bar({
                 name:"Hours Active on Facebook",
                 data_url:"{{url_for('.chart', chart_id='hours_active')}}",

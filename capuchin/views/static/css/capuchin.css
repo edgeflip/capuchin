@@ -486,7 +486,13 @@ text.word-bubble{
 .bubble .checkbox {
     font-weight: normal;
 }
+
 .ui-tabs .ui-widget-header {
+    background: white;
+    border: none;
+}
+
+.ui-tabs.ui-widget-content {
     background: white;
     border: none;
 }

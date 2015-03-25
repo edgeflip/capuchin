@@ -561,3 +561,103 @@ class TopCities(object):
 
     def dump(self):
         return json.dumps(self.data)
+
+
+class AudienceRangeBar(object):
+    def __init__(self,
+        client,
+        field,
+        ranges,
+        tooltip_formatter,
+        key_formatter,
+    ):
+        and_ = [{
+            "term": {
+                "clients.id": str(client._id)
+            }
+        }]
+        query = {
+            "query":{
+                "filtered":{"filter":{"and":and_}},
+            },
+            "aggregations":{
+                "agg":{
+                    "range":{
+                        "field":field,
+                        "ranges":ranges,
+                    }
+                }
+            }
+        }
+        ES = db.init_elasticsearch()
+        res = ES.search(
+            config.ES_INDEX,
+            config.USER_RECORD_TYPE,
+            size=0,
+            _source=False,
+            body=query
+        )
+        logging.info(res)
+        self.tooltip_formatter = tooltip_formatter
+        self.key_formatter = key_formatter
+        tooltips = {}
+        values = []
+        for i in res['aggregations']['agg']['buckets']:
+            x = self.key_formatter(i['key'])
+            y = i['doc_count']
+            tooltips[x] = self.tooltip_formatter(x, y)
+            values.append({
+                'label': x,
+                'value': y,
+            })
+
+        data = [{
+            "key": "",
+            "values": values
+        }]
+        self.data = {"points": data, "messages": tooltips}
+
+    def dump(self):
+        return json.dumps(self.data)
+
+
+class AudiencePie(object):
+
+    def __init__(self, client, field):
+        and_ = [{
+            "term": {
+                "clients.id": str(client._id)
+            }
+        }]
+        query = {
+            "query":{
+                "filtered":{"filter":{"and":and_}},
+            },
+            "aggregations":{
+                "agg":{
+                    "terms":{
+                        "field":field,
+                    }
+                }
+            }
+        }
+        ES = db.init_elasticsearch()
+        res = ES.search(
+            config.ES_INDEX,
+            config.USER_RECORD_TYPE,
+            size=0,
+            _source=False,
+            body=query
+        )
+        logging.info(res)
+        raw_data = res['aggregations']['agg']['buckets']
+        total = sum(i['doc_count'] for i in raw_data)
+        self.data = [{
+            'label': i['key'],
+            'value': i['doc_count'],
+            'percent': "{0:.0f}%".format(100*(float(i['doc_count'])/total))
+        } for i in raw_data]
+
+
+    def dump(self):
+        return json.dumps(self.data)

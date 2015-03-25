@@ -53,6 +53,8 @@ class Chart(MethodView):
         "hours_active": hours_active,
         "audience_location": audience_location,
         "share_like_ratios": share_like_ratios,
+        "age": age,
+        "gender": gender,
     }
 
 
