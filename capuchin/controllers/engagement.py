@@ -119,9 +119,10 @@ class Chart(MethodView):
             post_id = request.args.get("post_id")
             post = Post(id=post_id)
             res = self.post_charts[chart_id](post)
+            return jsonify(**dict(data=res.data, date_format=res.date_format))
         else:
             res = self.fake_charts[chart_id]()
-        return jsonify(**dict(data=res.data, date_format=res.date_format))
+            return jsonify(**dict(data=res.data))
 
 
 engagement.add_url_rule("/", view_func=Index.as_view('index'))
