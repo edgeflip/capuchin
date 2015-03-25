@@ -460,9 +460,11 @@ class DummyHorizontalBarChart(object):
     def __init__(self, title, data, date_format=None):
         self.date_format=date_format
         self.title = title
+        values = [{"label": k, "value": v} for k, v in data.iteritems()]
+        values = sorted(values, key=lambda row: -row['value'])
         self.data = [{
             "key": self.title,
-            "values": [{"label": k, "value": v} for k, v in data.iteritems()]
+            "values": values
         }]
 
     def dump(self):
