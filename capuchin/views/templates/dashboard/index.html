@@ -118,7 +118,7 @@ $(document).ready(function(){
         <div class="col-md-12">
             <div class="row">
                 <h2>Recent Activity <a class="btn btn-primary" href="{{ url_for('engagement.index') }}">See more</a></h2>
-                {{ posts.render(size=5, pagination=False)|safe }}
+                {{ posts|safe }}
             </div>
             <div class="row" id="charts"></div>
         </div>
