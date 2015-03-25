@@ -94,7 +94,7 @@ var enable_graph = function(event, ui) {
                 name:"Gender",
                 data_url:"{{url_for('.chart', chart_id='gender')}}",
                 height:300,
-            }).render(6);
+            }).render(4);
             $("#psycho_charts").bar({
                 name:"Age",
                 data_url:"{{url_for('.chart', chart_id='age')}}",
@@ -102,7 +102,12 @@ var enable_graph = function(event, ui) {
                 yShowMaxMin: false,
                 showTooltip: true,
                 yformat: ',.0f',
-            }).render(6);
+            }).render(4);
+            $("#psycho_charts").list({
+                name:"Trending",
+                columns: 4,
+                data_url:"{{url_for('.chart', chart_id='trending')}}",
+            });
             $("#psycho_charts").bar({
                 name:"Hours Active on Facebook",
                 data_url:"{{url_for('.chart', chart_id='hours_active')}}",

@@ -525,7 +525,7 @@ text.word-bubble{
     position: relative;
     border: none;
     padding-right: 0px;
-    margin-right: 20px;
+    margin-right: 3px;
 }
 
 .daterangepicker {
@@ -534,6 +534,7 @@ text.word-bubble{
 
 select {
     width: 150px;
+    margin-right: 20px;
 }
 
 .daterangepicker input {
