@@ -111,12 +111,14 @@ var enable_graph = function(event, ui) {
             $("#psycho_charts").horizontal_percent_multibar({
                 name:"Interests",
                 data_url:"{{url_for('.chart', chart_id='interests')}}",
+                height:300,
             }).render(6);
             $("#psycho_charts").horizontal_multibar({
                 name:"Top Cities",
                 data_url:"{{url_for('.chart', chart_id='top_cities')}}",
                 valueFormat: ',.0f',
                 hideLegend: true,
+                height:300,
             }).render(6);
             $("#psycho_charts").choropleth({
                 name:"Audience Location",
