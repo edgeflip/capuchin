@@ -253,9 +253,16 @@ def age():
 
 def interests():
     return DummyHorizontalBarChart('Interests', {
-        'Environmental Issues': .23,
-        'Major League Baseball': .46,
-        'Current Events': .35,
+        'Education': .09,
+        'Gender and sexuality': .09,
+        'Charitable donations': .12,
+        'Food and drink': .18,
+        'Volunteering': .24,
+        'Travel': .30,
+        'Politics (all)': .75,
+        'Politics (left-leaning)': .72,
+        'Nonprofits and advocacy': .85,
+        'Environmental issues': .97,
     })
 
 def actions():
