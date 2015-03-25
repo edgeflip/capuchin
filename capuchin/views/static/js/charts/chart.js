@@ -639,10 +639,15 @@ function DumpObjectIndented(obj, indent)
                 var chart = nv.models.discreteBarChart()
                     .x(function(d) { return d.label })
                     .y(function(d) { return d.value })
-                    .color(function(d) { return '#4785AB'; })
-                    .tooltipContent(function (key, x, val, graph) {
+                    .color(function(d) { return '#4785AB'; });
+
+                if( settings.showTooltip ) {
+                    chart.tooltipContent(function (key, x, val, graph) {
                         return data.data.messages[x];
                     });
+                } else {
+                    chart.tooltips(false);
+                }
 
                 if( settings.yformat ) {
                     chart.yAxis.tickFormat(d3.format(settings.yformat));
