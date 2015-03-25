@@ -111,7 +111,6 @@ var enable_graph = function(event, ui) {
             $("#psycho_charts").horizontal_percent_multibar({
                 name:"Interests",
                 data_url:"{{url_for('.chart', chart_id='interests')}}",
-                height:250,
             }).render(6);
             $("#psycho_charts").horizontal_multibar({
                 name:"Top Cities",
