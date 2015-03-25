@@ -3,6 +3,11 @@ $(document).ready(function(){
     init_create_button();
     register_paging();
     init_table_rows();
+    // Anchors with rel="external" open their href in a new window.
+    $('a[rel="external"]').click(function (event) {
+        event.preventDefault();
+        window.open(this.href);
+    });
 });
 
 function notify(cls, message){

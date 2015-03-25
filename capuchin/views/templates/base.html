@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>{% block title %}{% endblock %} | Capuchin (The smartest, most social little monkey around)</title>
+        <title>{% block title %}{% endblock %} | SociallyMinded</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -51,47 +51,21 @@
             {% block menu %}
             <nav class="navbar navbar-default navbar-fixed-top">
                 {% block menu_items %}
-                <div class="container-fluid">
-                    <div class="navbar-header">
-                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                            <span class="sr-only">Toggle navigation</span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                        </button>
-                        <a class="navbar-brand" href="{{url_for('dashboard.index')}}">
-                            <p>SociallyMinded</p>
-                        </a>
-                    </div>
-                    {% set nav_links = [
-                        {'href': url_for('audience.index'), 'title':'Audience', 'id':'audience'},
-                        {'href': url_for('engagement.index'), 'title':'Engagement', 'id':'engagement'},
-                        {'href': url_for('reports.index'), 'title':'Insights', 'id':'insights'},
-                    ] %}
-
-                    <!-- Collect the nav links, forms, and other content for toggling -->
-                    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                        {% set active_page = active_page|default('dashboard') -%}
-                        <ul class="nav navbar-nav">
-                            {% for nav in nav_links %}
-                                <li><a class="btn btn-default {% if active_page == nav['id'] %}active{% endif %}" href="{{nav['href']}}">{{nav['title']}}</a></li>
-                            {% endfor %}
-                            <li><a class="btn btn-default create" href="#">Create</a></li>
-                        </ul>
+                <div class="container">
+                    <div class="navbar-right">
                         <form class="navbar-form navbar-left" role="search">
                             <div class="input-group">
-                                <input name="q" type="text" class="form-control" placeholder="Search for..." value="">
+                                <input name="q" type="text" class="form-control" value="">
                                 <span class="input-group-btn">
-                                    <button class="btn btn-default " type="button">Search</button>
+                                    <button class="btn btn-default" type="button">Search</button>
                                 </span>
                             </div>
                         </form>
-                        <ul class="nav navbar-nav navbar-right">
+                        <ul class="nav navbar-nav navbar-right dropdown">
                             <li class="dropdown">
-                                <a href='#' class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                                     <span class="icon-envelope-open" aria-hidden="true"></span>
-                                    <span class="label label-danger">4</span>
-                                    <span class="caret"></span>
+                                    <span class="label label-danger">2</span>
                                 </a>
                                 <ul class="dropdown-menu" role="menu">
                                     <li><a href="{{url_for('facebook.index')}}">Connect a Facebook page to get started</a></li>
@@ -101,7 +75,6 @@
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                                     <span class="icon-settings" aria-hidden="true"></span>
-                                    <span class="caret"></span>
                                 </a>
                                 <ul class="dropdown-menu" role="menu">
                                     <li><a href="{{ url_for('facebook.index') }}">Profile</a></li>
@@ -113,11 +86,43 @@
                                 </ul>
                             </li>
                         </ul>
-                    </div><!-- /.navbar-collapse -->
-                    {% endblock %}
-                </div><!-- /.container-fluid -->
+                    </div><!-- /.navbar-right -->
+                    <div class="clearfix"></div>
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-1">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="{{url_for('dashboard.index')}}">
+                            <img alt="SociallyMinded" src="/static/img/bug_white.svg">
+                        </a>
+                    </div>
+
+                    {% set nav_links = [
+                        {'href': url_for('dashboard.index'), 'title': 'Dashboard', 'id': 'dashboard'},
+                        {'href': url_for('audience.index'), 'title':'Audience', 'id':'audience'},
+                        {'href': url_for('engagement.index'), 'title':'Engagement', 'id':'engagement'},
+                        {'href': url_for('reports.index'), 'title':'Reports', 'id':'insights'},
+                    ] %}
+                    <!-- Collect the nav links, forms, and other content for toggling -->
+                    <div class="collapse navbar-collapse" id="navbar-1">
+                        {% set active_page = active_page|default('dashboard') -%}
+                        <ul class="nav navbar-nav">
+                            {% for nav in nav_links %}
+                                <li><a class="btn btn-default {% if active_page == nav['id'] %}active{% endif %}" href="{{nav['href']}}">{{nav['title']}}</a></li>
+                            {% endfor %}
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+                            <li><a class="btn btn-default create" href="#">Create</a></li>
+                        </ul>
+                    </div><!-- /#navbar-1 -->
+                </div><!-- /.container -->
                 {% endblock %}
             </nav>
+            {% endblock %}
+
             <div class='content'>
                 <div id="notifications">
                     {% with messages = get_flashed_messages(with_categories=True) %}
@@ -134,21 +139,24 @@
         {% endblock %}
         <footer class="footer">
             {% block footer %}
-            <div class="row">
-                <div class="col-md-8"></div>
-                <div class="col-md-2 info">
-                    <h3>SociallyMinded</h3>
-                    <p>© 2015. All rights reserved.</p>
-                    <p>A product by Edgeflip&#8482;</p>
-                    <p>Chicago, IL</p>
-                </div>
-                <div class="col-md-2">
-                    <span data-icon="&#xe009;"></span>
-                    <span data-icon="&#xe00b;"></span>
-                    <span data-icon="&#xe00a;"></span>
-                    <p><a href="#">About</a> | <a href="#">FAQ</a></p>
-                    <p><a href="#">Support</a> | <a href="#">Contact</a></p>
-                    <p><a href="#">Terms</a> | <a href="#">Privacy</a></p>
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-9"></div>
+                    <div class="col-md-2 info">
+                        <img alt="SociallyMinded" src="/static/img/logo_full.svg">
+                        <p>&copy; 2015. All rights reserved.</p>
+                        <p>An Edgeflip&#8482; product</p>
+                    </div>
+                    <div class="col-md-1 links">
+                        <p class="social">
+                            <a rel="external" href="http://www.twitter.com/edgeflip"><span data-icon="&#xe009;"></span></a>
+                            <a rel="external" href="http://www.facebook.com/edgeflip"><span data-icon="&#xe00b;"></span></a>
+                            <a rel="external" href="http://www.edgeflip.com/"><span data-icon="&#xe037;"></span></a>
+                        </p>
+                        <p><a href="#">About</a><span class="pipe"></span><a href="#">FAQ</a></p>
+                        <p><a href="#">Support</a><span class="pipe"></span><a href="#">Contact</a></p>
+                        <p><a href="#">Terms</a><span class="pipe"></span><a href="#">Privacy</a></p>
+                    </div>
                 </div>
             </div>
             {% endblock %}

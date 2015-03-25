@@ -1,15 +1,12 @@
+html {
+  position: relative;
+  min-height: 100%;
+}
+
 body {
-    padding-top: 70px;
+    padding-top: 135px;
     margin-bottom: 140px;
     font-size: 12px;
-}
-
-.footer{
-    font-size: 11px;
-}
-
-.btn{
-    background-image: none;
 }
 
 .person-details{
@@ -31,15 +28,6 @@ h3{
 
 h4{
     color: #4785AB;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
-img.brand{
-    height: 100%;
 }
 
 td.actions{
@@ -96,10 +84,30 @@ div.filters{
     padding-top: 0px;
 }
 
+.pipe {
+    padding: 0 0.5em;
+}
+.pipe:after {
+    content: "|";
+}
+
 /* Bootstrap overrides */
+
+.btn{
+    background-image: none;
+    border: 0;
+}
 
 .popover{
     max-width: 500px;
+}
+
+.navbar-fixed-top {
+    min-height: 135px;
+}
+
+.navbar-default {
+    background-image: none;
 }
 
 .navbar-default .nav .dropdown .dropdown-menu {
@@ -108,14 +116,28 @@ div.filters{
     border-radius: 5px 5px 5px 5px ;
 }
 
-.navbar-nav>li>a {
-    margin-top: 20px;
-    padding-top: 4px;
-    padding-bottom: 4px;
-    margin-right: 7px;
+.navbar-brand {
+    padding: 0 0 5px;
+    margin: -20px 25px inherit -15px;
+}
+.navbar-brand img {
+    height: 80px;
 }
 
-.navbar-nav>li>a:hover{
+#navbar-1 li > a {
+    font-size: 1.4em;
+    margin-top: 20px;
+    margin-right: 20px;
+    padding: 5px 15px;
+    min-width: 140px;
+}
+#navbar-1 li:last-child > a {
+    margin-right: 0;
+}
+
+#navbar-1 li > a:hover, #navbar-1 li > a.active {
+    color: #155982;
+    background-color: #EEC03C;
     background-image: none;
 }
 
@@ -123,7 +145,35 @@ div.filters{
     margin-top: 20px;
 }
 
-.navbar-nav>li>.dropdown-menu{
+.navbar-form {
+    margin-bottom: 5px;
+    padding: 0 10px;
+}
+.navbar-form input {
+    background-color: #155982;
+    border: 0;
+}
+ul.navbar-right.dropdown {
+    margin-left: 5px;
+}
+.navbar-default .navbar-nav a.dropdown-toggle {
+    font-size: 23px;
+    margin: 17px 0 0;
+    padding: 8px;
+    color: #155982;
+    min-width: 55px;
+    text-align: center;
+}
+.dropdown-toggle .label-danger {
+    font-size: 75%;
+    font-weight: normal;
+    margin-right: -25px;
+    padding: .1em .4em;
+    position: relative;
+    top: -16px;
+    left: -15px;
+}
+.navbar-nav > li > .dropdown-menu {
     margin-top:20px;
 }
 
@@ -174,6 +224,7 @@ div.caption p.details{
 }
 
 .footer{
+    font-size: 11px;
     position: absolute;
     bottom: 0;
     width: 100%;
@@ -186,22 +237,31 @@ div.caption p.details{
     color: #FFFFFF;
 }
 
-.footer h3{
-    margin-top: 0;
-}
-
 .footer .info{
     border-right: 3px solid #FFF;
     text-align: right;
 }
 
-.footer p{
+.footer .links {
+    margin-top: 8px;
+}
+
+.footer .social {
+    font-size: 15px;
+    margin-bottom: 0.5em;
+}
+.footer .social a {
+    margin-right: 0.2em;
+    text-decoration: none;
+}
+
+.footer p {
     margin-top: 3px;
     margin-bottom: 3px;
 }
 
 .footer img{
-    max-height: 45px
+    max-height: 55px
 }
 
 .buckets{
@@ -239,6 +299,9 @@ table td img.table-image{
 
 .dash-chart svg {
     height: 400px;
+}
+.dash-chart {
+    padding-bottom: 20px;
 }
 
 .form-signin {
@@ -426,7 +489,13 @@ text.word-bubble{
 .bubble .checkbox {
     font-weight: normal;
 }
+
 .ui-tabs .ui-widget-header {
+    background: white;
+    border: none;
+}
+
+.ui-tabs.ui-widget-content {
     background: white;
     border: none;
 }
@@ -457,32 +526,6 @@ text.word-bubble{
     border: none;
     padding-right: 0px;
     margin-right: 20px;
-}
-
-.ui-tabs li.ui-state-default ::before {
-    position: absolute;
-    width: 0;
-    height: 0;
-    bottom: 0px;
-    right: -50px;
-    display: block;
-    border-right: 15px dotted rgba(255,255,255,0);
-    border-top: 31px dotted rgba(255,255,255,0);
-    border-left: 42px solid #A0CAE2;
-    content: '';
-}
-
-.ui-tabs li.ui-state-active ::after {
-    position: absolute;
-    width: 0;
-    height: 0;
-    bottom: 0px;
-    right: -50px;
-    display: block;
-    border-right: 15px dotted rgba(255,255,255,0);
-    border-top: 32px dotted rgba(255,255,255,0);
-    border-left: 42px solid #4785AB;
-    content: '';
 }
 
 .daterangepicker {

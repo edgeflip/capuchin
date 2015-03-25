@@ -62,3 +62,4 @@ terraform/.ssh
 node_modules
 
 celerybeat-schedule
+celerybeat.pid

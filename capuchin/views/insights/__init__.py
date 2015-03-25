@@ -193,11 +193,76 @@ def age_and_gender():
         {'13-17': 21, '18-24': 22},
     ]
 
+def gender():
+    return AudiencePie(
+        current_user.client,
+        'gender'
+    )
+
+
+def age():
+    def age_formatter(x, y):
+        return "<div class='overhead-popover'>Ages " + str(x) + ": " + str(y) + " users</div>"
+
+    def key_formatter(key):
+        minimum, maximum = (age.rstrip('.0') for age in key.split('-'))
+        if maximum == "*":
+            return "{}+".format(minimum)
+        elif minimum == "*":
+            return "{}-".format(maximum)
+        else:
+            return "-".join((minimum, maximum))
+
+    ranges = [
+          {
+            "from": 13,
+            "to": 17
+          },
+          {
+            "from": 18,
+            "to": 24
+          },
+          {
+            "from": 25,
+            "to": 34
+          },
+          {
+            "from": 35,
+            "to": 44
+          },
+          {
+            "from": 45,
+            "to": 54
+          },
+          {
+            "from": 55,
+            "to": 64
+          },
+          {
+            "from": 65
+          }
+    ]
+    return AudienceRangeBar(
+        current_user.client,
+        field="age",
+        ranges=ranges,
+        tooltip_formatter=age_formatter,
+        key_formatter=key_formatter,
+    )
+
+
 def interests():
     return DummyHorizontalBarChart('Interests', {
-        'Environmental Issues': .23,
-        'Major League Baseball': .46,
-        'Current Events': .35,
+        'Education': .09,
+        'Gender and sexuality': .09,
+        'Charitable donations': .12,
+        'Food and drink': .18,
+        'Volunteering': .24,
+        'Travel': .30,
+        'Politics (all)': .75,
+        'Politics (left-leaning)': .72,
+        'Nonprofits and advocacy': .85,
+        'Environmental issues': .97,
     })
 
 def actions():
