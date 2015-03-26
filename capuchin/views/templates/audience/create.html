@@ -8,37 +8,57 @@
     var filters = eval({{filters_json|safe}});
     var values = {{values|to_json}};
 
-    $(document).ready(function(){
-        $("#segment-refresh, #segment-save").click(function(e){
-            $(".term-input").each(function(i, el){
-                var vals = [];
-                for(v in $(el).autocomplete("instance").selectedItems){
-                    vals.push(v);
-                }
-                filters[$(el).data("field")] = vals;
-            });
-            var name=$("#title").html();
-            var url = "{{ url_for('.filter_update', id=id, page=0) }}";
-            var id = "records";
-            $.ajax({
-                url: url,
-                type:"POST",
-                data:{"filters":JSON.stringify(filters), "name":name},
-                success: function(data){
-                    $("#"+id).html(data);
-                    register_table_sorting();
-                    register_paging();
-                    init_table_rows();
+    function collect_filters(){
+        $(".term-input").each(function(i, el){
+            var vals = [];
+            for(v in $(el).autocomplete("instance").selectedItems){
+                vals.push(v);
+            }
+            filters[$(el).data("field")] = vals;
+        });
+    }
+
+    function update_filters(refresh){
+        var name=$("#title").html();
+        var url = "{{ url_for('.filter_update', id=id, page=0) }}";
+        var id = "records";
+        var data = {"filters":JSON.stringify(filters), "name":name}
+        if(refresh) data.refresh = 1;
+        $.ajax({
+            url: url,
+            type:"POST",
+            data:data,
+            success: function(data){
+                $("#"+id).html(data);
+                register_table_sorting();
+                register_paging();
+                init_table_rows();
+                if(!refresh){
                     notify(
                         "info",
-                        "Segment created! \
+                        "Segment Saved. \
                         <a href='#'' class='btn btn-default' data-toggle='modal' data-target='#boost-modal'>Create</a> a Notification."
                     );
                 }
-            });
+            }
+        });
+    }
+
+    $(document).ready(function(){
+        $("#segment-refresh").click(function(e){
+            collect_filters();
+            update_filters(true);
             return false;
         });
+
+        $("#segment-save").click(function(e){
+            collect_filters();
+            update_filters();
+            return false;
+        });
+
     });
+
 
 </script>
 {% endblock %}

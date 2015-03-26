@@ -82,12 +82,12 @@ def get_suggestions(field, text):
     )
     return res['aggregations']
 
-def update_segment(id, filters, name):
+def update_segment(id, filters, name, refresh=False):
     s = Segment(id=id)
     s.name = name
     for k,v in filters.iteritems():
         s.add_filter(k,v)
-    s.save()
+    if not refresh: s.save()
     return s
 
 class Default(MethodView):
@@ -120,8 +120,8 @@ class View(MethodView):
 
 class Create(MethodView):
 
-    def get(self, id=None, page=0, template=None):
-        segment, _id = get_segment(id)
+    def get(self, id=None, page=0, template=None, segment=None):
+        if not segment: segment, _id = get_segment(id)
         if not id: return redirect(url_for(".id", id=_id))
         users = render_table(SegmentUsers)
         if not users: users = SegmentUsers(current_user.client, str(_id)).render()
@@ -152,8 +152,12 @@ class Create(MethodView):
         filters = json.loads(request.form.get('filters', '{}'))
         logging.info(filters)
         name = request.form.get('name')
-        if id!='all': q = update_segment(id, filters, name)
-        return self.get(id=id, page=page, template="audience/records.html")
+        refresh = bool(request.form.get('refresh'))
+        logging.info("REFRESH: {}".format(refresh))
+        #if refreshing, don't save the filters
+        if id!='all': segment = update_segment(id, filters, name, refresh=refresh)
+        segment = segment if refresh else None
+        return self.get(id=id, page=page, template="audience/records.html", segment=segment)
 
 class Autocomplete(MethodView):
 
