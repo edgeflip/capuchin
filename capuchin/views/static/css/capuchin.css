@@ -26,10 +26,6 @@ h3{
     color: #4785AB;
 }
 
-h4{
-    color: #4785AB;
-}
-
 td.actions{
     width:150px;
 }
@@ -210,19 +206,6 @@ ul.navbar-right.dropdown {
     cursor: pointer;
 }
 
-div.caption p{
-    color: #A0CAE2;
-    margin-bottom: 0px;
-    line-height: 1;
-}
-
-div.caption p.details{
-    color: #363738;
-    margin-top: 10px;
-    line-height: 1.7;
-    margin-bottom: 10px;
-}
-
 .footer{
     font-size: 11px;
     position: absolute;
@@ -264,28 +247,90 @@ div.caption p.details{
     max-height: 55px
 }
 
-.buckets{
+.buckets {
     background-color: #eeeeee;
-    padding:20px;
-    margin-bottom: 20px;
+    font-size: 14px;
+    padding: 25px 20px 5px;
+    margin-bottom: 10px;
+}
+
+.buckets .thumbnail {
+    float: left;
+    border: none;
+    box-shadow: none;
+}
+@media (min-width: 1200px) {
+    .buckets .right-carot:after {
+        content: "";
+        position: relative;
+        left: 80%;
+        top: -116px;
+        height: 0;
+        width: 0;
+        border-top: 75px solid transparent;
+        border-bottom: 75px solid transparent;
+        border-left: 55px solid white;
+        border-radius: 3px;
+    }
+}
+@media (min-width: 992px) {
+    .buckets .bottom-speech {
+        position: relative;
+        top: -20px;
+    }
+    .buckets .bottom-speech:before {
+        content: "";
+        position: relative;
+        left: 12%;
+        top: 174px;
+        border-width: 0 0 25px 40px;
+        border-style: solid;
+        border-color: transparent #EEC03C;
+    }
+}
+
+.buckets .caption {
+    min-height: 165px;
+}
+
+.buckets .caption p {
+    line-height: 1;
+}
+.buckets .caption .bigger {
+    font-size: 16px;
+}
+.buckets .caption p.info {
+    color: #4785AB;
+}
+.buckets .caption p.details {
+    line-height: 1.7;
+}
+.buckets .caption a {
+    text-shadow: none;
+    font-size: 13px;
 }
 
 div.buzz{
     background-color: #EEC03C;
     color: #FFFFFF;
 }
-
 div.buzz div.caption p{
     color: #FFFFFF;
 }
-
-div.buzz div.caption p{
-    color: #FFFFFF;
-}
-
 div.buzz .btn-default{
     background-color: #CC3A17;
     background-image: none;
+}
+div.buzz .sub-header {
+    margin-top: 1em;
+}
+div.buzz svg {
+    height: 68px;
+    width: 65px;
+    float: left;
+}
+div.buzz svg .nv-legendWrap {
+    display: none;
 }
 
 ul.nav li a.create{
@@ -302,6 +347,10 @@ table td img.table-image{
 }
 .dash-chart {
     padding-bottom: 20px;
+}
+
+.heading-embedded {
+    padding-top: 20px;
 }
 
 .form-signin {
@@ -525,7 +574,7 @@ text.word-bubble{
     position: relative;
     border: none;
     padding-right: 0px;
-    margin-right: 20px;
+    margin-right: 3px;
 }
 
 .daterangepicker {
@@ -534,6 +583,7 @@ text.word-bubble{
 
 select {
     width: 150px;
+    margin-right: 20px;
 }
 
 .daterangepicker input {
@@ -550,6 +600,10 @@ select {
     overflow: visible;
     top: 50%;
     position: relative;
+}
+
+.trending {
+    margin-left: 20px;
 }
 
 .counties {

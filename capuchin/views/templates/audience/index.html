@@ -15,29 +15,6 @@
 
 
 {% block content %}
-{% from "widgets/bucket.html" import bucket %}
-<div class="row buckets">
-    <div class="col-md-3">
-        <div class="thumbnail">
-            {{ bucket("Audience", "Supporters", 234234, 234, "#", "Grow") }}
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="thumbnail">
-            {{ bucket("Engagement", "Engaged Supporters", 23423, 232, "#", "Boost") }}
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="thumbnail">
-            {{ bucket("Impact", "Actions this week", 19898, 5, "#", "Discover") }}
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="thumbnail buzz">
-            {{ bucket("Buzz", "Actions this week", 19898, 5, "#", "Discover") }}
-        </div>
-    </div>
-</div>
 <div class="row">
     <div class="col-md-9">
         <h3>Segments <a href="{{ url_for('.create') }}" class="btn btn-primary">Create</a></h3>
@@ -47,7 +24,7 @@
             {% include "audience/records.html" %}
         </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-3 heading-embedded">
         {% from "widgets/bucket.html" import bucket %}
         <div class="thumbnail">
             {{ bucket("Smart Segment", "members", smart_segment.count, 2, url_for('audience.id', id=smart_segment._id|string), "Create") }}

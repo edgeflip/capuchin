@@ -1,6 +1,5 @@
 from flask import Flask
-from flask.ext.script import Manager
-from flask.ext.script import Command
+from flask.ext.script import Command, Manager, Option
 import psycopg2
 import psycopg2.extras
 import capuchin.config as config
@@ -169,21 +168,26 @@ class InitApp(Command):
         influx = db.init_influxdb()
         db.create_shards(influx)
 
-class LoadEDFPosts(Command):
+class LoadNonClientPosts(Command):
 
-    def run(self):
-        edf_client = None
+    option_list = (
+        Option('--page-id', '-p', dest='page_id'),
+        Option('--client_name', '-c', dest='client_name'),
+    )
+
+    def run(self, page_id, client_name):
+        our_client = None
         for client in Client.find():
-            if client.slug and client.slug == 'edf':
-                edf_client = client
+            if client.slug and client.name == client_name:
+                our_client = client
                 break
-        if not edf_client:
-            logging.error("No EDF client found")
+        if not our_client:
+            logging.error("No matching client found")
             return
-        edf_page_id = 8492293163
+        our_page_id = page_id
         last = datetime.datetime.utcnow() - datetime.timedelta(days=14)
 
-        PullNonClientPosts(edf_client, edf_page_id, last)
+        PullNonClientPosts(our_client, our_page_id, last)
 
 manager.add_command('sync', SyncUsers())
 manager.add_command('update', UpdateMapping())
@@ -193,7 +197,7 @@ manager.add_command('load_cities', LoadCities())
 manager.add_command('load_interests', LoadInterests())
 manager.add_command('load_imports', LoadImportOrigins())
 manager.add_command('init', InitApp())
-manager.add_command('load_edf_posts', LoadEDFPosts())
+manager.add_command('load_nonclient_posts', LoadNonClientPosts())
 
 if __name__ == "__main__":
     manager.run()

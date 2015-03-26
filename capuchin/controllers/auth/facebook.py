@@ -106,25 +106,14 @@ class Index(MethodView):
         if fb.app_id and not fb.token:
             return redirect(url_for('.login'))
         elif not fb.app_id:
-            fields = [
-                ["app_id","ID"],
-                ["secret", "Secret"],
-            ]
-            return render_template("auth/social_account.html", type="Facebook", fields=fields)
+            current_user.social.facebook(data={
+                "app_id":config.FACEBOOK_APP_ID,
+                "secret":config.FACEBOOK_APP_SECRET,
+            })
+            current_user.save()
+            return redirect(url_for('.index'))
         elif current_user.facebook_pages:
             return render_template("auth/facebook/view_pages.html")
-
-class Configure(MethodView):
-    decorators = [ login_required, ]
-    def post(self):
-        logging.info(request.form)
-        current_user.social.facebook(data={
-            "app_id":request.form.get("app_id"),
-            "secret":request.form.get("secret"),
-        })
-        current_user.save()
-        return redirect(url_for('.index'))
-
 
 class Verify(MethodView):
     decorators = [ login_required, ]
@@ -199,4 +188,3 @@ facebook.add_url_rule("/", view_func=Index.as_view('index'))
 facebook.add_url_rule("/verify", view_func=Verify.as_view('verify'))
 facebook.add_url_rule("/loadpages", view_func=LoadPages.as_view('load_pages'))
 facebook.add_url_rule("/save_page", view_func=SavePage.as_view('save_page'))
-facebook.add_url_rule("/configure", view_func=Configure.as_view('configure'))
