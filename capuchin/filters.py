@@ -81,6 +81,12 @@ def range_filter(field, value, **kwargs):
     }
 
 def term_filter(field, value, **kwargs):
+    if isinstance(value, list):
+        return {
+            "bool":{
+                "should":[{'term':{'{}.facet'.format(field): v}} for v in value]
+            }
+        }
     return {
         "term":{
             "{}.facet".format(field):value
