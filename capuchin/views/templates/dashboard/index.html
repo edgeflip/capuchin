@@ -16,11 +16,11 @@ $(document).ready(function(){
         legend_y:240,
     }).render(12);
 
+    /*
     $("#charts").usa({
         name:"Users by City",
         data_url:"{{url_for('.chart', chart_id='city_population')}}"
     }).render(12);
-    /*
     $("#charts").vertical_circle({
         name:"Top Referrers",
         data_url:"{{url_for('.chart', chart_id='referrers')}}"
@@ -135,7 +135,7 @@ $(document).ready(function(){
         <div class="col-md-12">
             <div class="row">
                 <h3>Recent Activity <a class="btn btn-primary" href="{{ url_for('engagement.index') }}">See more</a></h3>
-                {{ posts.render(size=5, pagination=False)|safe }}
+                {{ posts|safe }}
             </div>
             <div class="row" id="charts"></div>
         </div>

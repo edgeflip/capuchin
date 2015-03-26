@@ -5,7 +5,9 @@ from capuchin import config
 from capuchin import filters
 from capuchin.models.post import Post
 from capuchin.views.insights.charts import HistogramChart, DualAxisTimeChart, DummyHorizontalBarChart, DummyPieChart, DummyBarChart
+from capuchin.views.insights import age, gender, interests
 from capuchin.views.tables.dashboard import Posts, Notifications
+from capuchin.controllers.tables import render_table
 import logging
 import slugify
 from collections import OrderedDict
@@ -36,7 +38,8 @@ class Index(MethodView):
     def get(self, page=0, template=None):
         q = request.args.get("q", "*")
         q = "*" if not q else q
-        posts = Posts(current_user.client)
+        posts = render_table(Posts)
+        if not posts: posts = Posts(current_user.client).render(q=q)
         tmpl = template if template else "posts/index.html"
         return render_template(
             tmpl,
@@ -101,54 +104,25 @@ def engagement_graph(post):
         date_format="%-m-%d %-I %p",
     )
 
-def age_graph(post):
-    def age_formatter(x, y):
-        return "<div class='overhead-popover'>Ages " + str(x) + ": " + str(y) + " engaged users</div>"
-
-    return DummyBarChart(
-        'Age',
-        [
-            ('18-24', 22),
-            ('25-34', 34),
-            ('35-44', 30),
-            ('45-54', 22),
-            ('55-64', 30),
-            ('65+', 20),
-        ],
-        tooltip_formatter=age_formatter,
-    )
-
-
-def gender_graph(post):
-    return DummyPieChart(
-        'Gender',
-        {
-            'Males': 100,
-            'Females': 70,
-        }
-    )
-
-def interests_graph(post):
-    return DummyHorizontalBarChart('Interests', {
-        'Environmental Issues': .23,
-        'Major League Baseball': .46,
-        'Current Events': .35,
-    })
-
-
 class Chart(MethodView):
-    charts = {
+    post_charts = {
         "engagement":engagement_graph,
-        "age":age_graph,
-        "gender":gender_graph,
-        "interests":interests_graph,
+    }
+    fake_charts = {
+        "age":age,
+        "gender":gender,
+        "interests":interests,
     }
 
     def get(self, chart_id):
-        post_id = request.args.get("post_id")
-        post = Post(id=post_id)
-        res = self.charts[chart_id](post)
-        return jsonify(**dict(data=res.data, date_format=res.date_format))
+        if chart_id in self.post_charts:
+            post_id = request.args.get("post_id")
+            post = Post(id=post_id)
+            res = self.post_charts[chart_id](post)
+            return jsonify(**dict(data=res.data, date_format=res.date_format))
+        else:
+            res = self.fake_charts[chart_id]()
+            return jsonify(**dict(data=res.data))
 
 
 engagement.add_url_rule("/", view_func=Index.as_view('index'))

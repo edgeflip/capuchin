@@ -6,6 +6,7 @@ from capuchin import db as dbs
 from capuchin.models.list import List
 from capuchin.models.post import Post
 from capuchin.models.segment import Segment
+from capuchin.controllers.tables import render_table
 from capuchin.views.tables.dashboard import Posts
 from capuchin.views.insights.geo import CityPopulation
 from capuchin.views.insights import *
@@ -41,6 +42,8 @@ class DashboardDefault(MethodView):
         first = request.args.get("first")
         lists = current_user.client.lists()
         segments = current_user.client.segments(query={"name":{"$ne":None}})
+        posts = render_table(Posts)
+        if not posts: posts = Posts(current_user.client).render(size=5, pagination=False)
         try:
             like_change = like_weekly_change()
             engagement_change = engagement_weekly_change()
@@ -50,7 +53,7 @@ class DashboardDefault(MethodView):
 
         return render_template(
             "dashboard/index.html",
-            posts=Posts(current_user.client),
+            posts=posts,
             like_change=like_change,
             engagement_change=engagement_change,
             lists=lists,

@@ -22,6 +22,7 @@ class Capuchin(Flask):
         self.config.from_object('capuchin.config')
         logging.info("SERVER_NAME: {}".format(self.config['SERVER_NAME']))
         self.before_request(self.init_dbs)
+        self.after_request(self.force_refresh)
         humongolus.settings(logging, db.init_mongodb())
         try:
             self.init_session()
@@ -31,6 +32,14 @@ class Capuchin(Flask):
             self.init_templates()
         except Exception as e:
             logging.exception(e)
+
+    def force_refresh(self, resp):
+        resp.headers.extend({
+            "Cache-Control": "no-store, must-revalidate, max-age=0",
+            "Pragma": "no-cache",
+            "Expires": "Sat, 26 Jul 1997 05:00:00 GMT"
+        });
+        return resp
 
     def load_user(self, id):
         try:

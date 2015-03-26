@@ -10,7 +10,7 @@ import datetime
 def user_name(val, record):
     user_client = record.get_client(current_user.client)
     img = u"<img src=\"https://graph.facebook.com/v2.2/{}/picture?type=normal\" />".format(user_client.asid)
-    return "<a data-toggle='tooltip' title='{}'>{} {}</a>".format(img, record.first_name, record.last_name)
+    return u"<a data-toggle='tooltip' title='{}'>{} {}</a>".format(img, record.first_name, record.last_name)
 
 def user_notification(val, record):
     return date_format(record.get("last_notification", "NA"))
