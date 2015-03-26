@@ -336,12 +336,14 @@ div.buzz svg .nv-legendWrap {
 div.smart-segment{
     color: #363738;
 }
-div.smart-segment div.caption p{
+div.smart-segment span.caption{
     color: #4785AB;
+    font-size: 16px;
 }
 div.smart-segment .btn-default{
     background-color: #CC3A17;
     background-image: none;
+    text-shadow: none;
 }
 div.smart-segment .sub-header {
     margin-top: 1em;
