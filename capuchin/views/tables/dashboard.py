@@ -32,12 +32,12 @@ def post_actions(val, record):
 def post_message(val, record):
     logging.info(val)
     try:
-        img = "<div class=\"col-md-6\"><img class=\"table-image\" src=\"{}\" /></div>".format(record.picture)
+        img = "<div class=\"col-md-2\"><img class=\"table-image\" src=\"{}\" /></div>".format(record.picture)
     except:
-        img = "<div class=\"col-md-6\"></div>"
-    truncated_val = current_app.jinja_env.filters['truncate'](val, 30)
+        img = "<div class=\"col-md-2\"></div>"
+    truncated_val = current_app.jinja_env.filters['truncate'](val, 120)
     logging.info(truncated_val)
-    mes = u"<div class=\"col-md-6\">{}</div>".format(truncated_val)
+    mes = u"<div class=\"col-md-10\"><p>{}</p></div>".format(truncated_val)
     return u"{}{}".format(img, mes)
 
 def date_formatter(v, r):

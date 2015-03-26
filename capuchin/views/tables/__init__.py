@@ -132,7 +132,7 @@ class Table(object):
             to,
             total
         )
-        table =  u"{} <table class=\"table table-striped table-hover\"><thead><tr>{}</tr></thead><tbody>{}</tbody></table>".format(
+        table =  u"{} <table class=\"table table-striped table-hover table-compact\"><thead><tr>{}</tr></thead><tbody>{}</tbody></table>".format(
             info,
             u"".join(th),
             u"".join(tr)
