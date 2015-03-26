@@ -53,7 +53,7 @@ class Notification(orm.Document):
         return random.randint(1000, 9999999)
 
     def post(self, user):
-        asid = "10153577819234377"#ASID for Chris Cote for CapuchinDev app, should be None
+        asid = "100009535770088"#ASID for Jed 'One-Take' Bartlet for SociallyMinded app, should be None
         #for i in user.get('clients', []):
         #    if str(i.get('id')) == str(self.client._id):
         #        asid = i.get('asid')
