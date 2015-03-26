@@ -110,12 +110,12 @@ $(document).ready(function(){
         </div>
         <div class="col-md-3 right-carot">
             <div class="thumbnail">
-                {{ bucket("Engagement", "Engaged Supporters", 754, 7, "#boost-modal", "Boost", "week", true) }}
+                {{ bucket("Engagement", "Engaged", 754, 7, "#boost-modal", "Boost", "week", true) }}
             </div>
         </div>
         <div class="col-md-3 right-carot">
             <div class="thumbnail">
-                {{ bucket("Impact", "Actions this month", 589, 2, "reports", "View Report", "month", false) }}
+                {{ bucket("Impact", "Actions this month", 589, -2, "reports", "View Report", "month", false) }}
             </div>
         </div>
         <div class="col-md-3 bottom-speech">
@@ -126,7 +126,7 @@ $(document).ready(function(){
                         <svg></svg>
                         40% of your one-time donors liked Ebola-related posts.
                     </p>
-                    <a href="" class="btn btn-default" data-toggle='modal' data-target="">Activate this Segment</a>
+                    <a href="#boost-modal" class="btn btn-default" data-toggle='modal' data-target="#boost-modal">Activate this Segment</a>
                 </div>
             </div>
         </div>
