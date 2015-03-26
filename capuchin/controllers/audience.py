@@ -26,8 +26,9 @@ audience = Blueprint(
 def notification_creation():
     return {'notification':{
         'posts':Post.records(client=current_user.client),
-        'messages':config.MESSAGES
-    }
+        'messages':config.MESSAGES,
+    },
+    'segments':current_user.client.segments()
 }
 
 def create_pagination(total_records, current_page=0):

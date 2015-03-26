@@ -11,10 +11,13 @@ $(document).ready(function(){
 });
 
 function notify(cls, message){
-    $("#notifications").append("<div class=\"alert alert-"+cls+" alert-dismissible\" role=\"alert\"> \
+    $("#notifications").html("<div class=\"alert alert-"+cls+" alert-dismissible\" role=\"alert\"> \
         <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button> \
         <p id=\"notification\">"+message+"</p> \
     </div>");
+    setTimeout(function(){
+        $(".alert").remove();
+    }, 5000);
 }
 
 function init_table_rows(){
