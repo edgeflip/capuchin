@@ -333,6 +333,28 @@ div.buzz svg .nv-legendWrap {
     display: none;
 }
 
+div.smart-segment{
+    color: #363738;
+}
+div.smart-segment div.caption p{
+    color: #4785AB;
+}
+div.smart-segment .btn-default{
+    background-color: #CC3A17;
+    background-image: none;
+}
+div.smart-segment .sub-header {
+    margin-top: 1em;
+}
+div.smart-segment svg {
+    height: 68px;
+    width: 65px;
+    float: left;
+}
+div.smart-segment svg .nv-legendWrap {
+    display: none;
+}
+
 ul.nav li a.create{
     background-color: #CC3A17;
     background-image: none;
