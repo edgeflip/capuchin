@@ -1,4 +1,4 @@
-{% macro bucket(title, subheader, total, change, button_link, button_title) %}
+{% macro bucket(title, subheader, total, change, button_link, button_title, time, modal) %}
 
 <div class="caption">
     <h4>{{title}}</h4>
@@ -11,10 +11,14 @@
         {% else %}
             <span class="icon-arrow-up" aria-hidden="true"></span>
         {% endif %}
-        {{"{0:.2f}".format(change)}}%
-        </span> since last week
+        {{"{0:.0f}".format(change)}}%
+        </span> since last {{time}}
     </p>
-    <a href="{{button_link}}" class="btn btn-default" data-toggle='modal' data-target="{{button_link}}">{{button_title}}</a>
+    {% if modal %}
+        <a href="{{button_link}}" class="btn btn-default" data-toggle='modal' data-target="{{button_link}}">{{button_title}}</a>
+    {% else %}
+        <a href="{{button_link}}" class="btn btn-default" data-target="{{button_link}}">{{button_title}}</a>
+    {% endif %}
 </div>
 
 {% endmacro %}
