@@ -1,10 +1,10 @@
-from flask import current_app, url_for
+from flask import url_for
 from flask_login import current_user
 from capuchin.models.user import User
 from capuchin.models.segment import Segment
 from capuchin.views.tables import Column, Table, MongoTable
 from capuchin.util import date_format
-import datetime
+
 #TODO move all the html into templates and/or macros
 
 def user_name(val, record):
@@ -47,8 +47,8 @@ def segment_count(v, r):
 
 def segment_actions(v, r):
     return "<div class=\"btn-group btn-group-xs\">\
-        <a class='btn btn-primary' href=\"{}\" role=\"button\">Grow</a>\
-        <a class=\"btn btn-primary\" href=\"{}\" role=\"button\">Engage</a>\
+        <a class='btn btn-default' href=\"{}\" role=\"button\">Grow</a>\
+        <a class=\"btn btn-default\" href=\"{}\" role=\"button\">Engage</a>\
     </div>".format(
         url_for('notifications.create', segment=str(r._id)),
         url_for('notifications.create', segment=str(r._id), engage=1)

@@ -1,5 +1,4 @@
 from flask import current_app, url_for
-from flask_login import current_user
 from capuchin.models.post import Post
 from capuchin.models.notification import Notification
 from capuchin.util import date_format
@@ -23,8 +22,8 @@ def post_engagement(val, record):
 
 def post_actions(val, record):
     return """<div class="btn-group btn-group-xs" role="group" aria-label="...">
-            <a href="{}" class="btn btn-primary">View</button>
-            <a href="{}" class="btn btn-primary">Boost</button>
+            <a href="{}" class="btn btn-default">View</button>
+            <a href="{}" class="btn btn-default">Boost</button>
         </div>""".format(
             url_for('engagement.view', id=record.id),
             url_for('notifications.create', post=record.id, engage=1)
