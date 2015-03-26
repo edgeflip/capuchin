@@ -8,15 +8,15 @@
 <script type="text/javascript">
     $(document).ready(function(){
         $(document).pjax(".pager", "#records", {push:false, type:"POST"});
-    });
-    nv.addGraph(function () {
-        var chart = nv.models.pieChart().showLabels(false).tooltips(false)
-            .height(15).width(60).color(['white', '#155982']);
-        d3.select(".smart-segment svg")
-            .datum([{x: 'foo', y: 75}, {x: 'bar', y: 25}])
-            .transition().duration(350)
-            .call(chart);
-        return chart;
+        nv.addGraph(function () {
+            var chart = nv.models.pieChart().showLabels(false).tooltips(false)
+                .height(15).width(60).color(['#A0CAE2', '#155982']);
+            d3.select(".smart-segment svg")
+                .datum([{x: 'foo', y: 75}, {x: 'bar', y: 25}])
+                .transition().duration(350)
+                .call(chart);
+            return chart;
+        });
     });
 
 </script>
