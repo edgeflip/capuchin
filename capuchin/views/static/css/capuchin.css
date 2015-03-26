@@ -94,6 +94,10 @@ div.filters{
     border: 0;
 }
 
+.btn-default{
+    text-shadow: none;
+}
+
 .popover{
     max-width: 500px;
 }
@@ -340,7 +344,6 @@ div.smart-segment span.caption{
 div.smart-segment .btn-default{
     background-color: #CC3A17;
     background-image: none;
-    text-shadow: none;
 }
 div.smart-segment .sub-header {
     margin-top: 1em;
@@ -558,6 +561,10 @@ text.word-bubble{
 }
 .bubble .checkbox {
     font-weight: normal;
+}
+
+#tabs {
+    margin-top: 0.8em;
 }
 
 .ui-tabs .ui-widget-header {
