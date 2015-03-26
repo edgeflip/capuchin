@@ -260,17 +260,15 @@ ul.navbar-right.dropdown {
     box-shadow: none;
 }
 @media (min-width: 1200px) {
-    .buckets .right-carot:after {
+    .buckets .right-carot:before {
         content: "";
         position: relative;
-        left: 80%;
-        top: -116px;
-        height: 0;
-        width: 0;
-        border-top: 75px solid transparent;
-        border-bottom: 75px solid transparent;
-        border-left: 55px solid white;
-        border-radius: 3px;
+        left: -1px;
+        top: 78px;
+        border-width: 68px 0 68px 40px;
+        border-style: solid;
+        border-color: transparent transparent transparent white;
+        border-radius: 4px;
     }
 }
 @media (min-width: 992px) {
