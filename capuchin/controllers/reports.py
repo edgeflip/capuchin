@@ -61,7 +61,7 @@ class Chart(MethodView):
 
     def get(self, chart_id):
         start_ts = request.args.get("start_ts", time.time() - 86400*30)
-        end_ts = request.args.get("end_ts", time.time())
+        end_ts = request.args.get("end_ts", time.time() - 86400)
         if chart_id in self.time_based_charts:
             res = self.time_based_charts[chart_id](start=start_ts, end=end_ts)
         else:
