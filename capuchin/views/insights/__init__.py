@@ -315,6 +315,8 @@ def post_performance(start, end):
                 'comments': len(post.comments),
                 'shares': post.shares.count if hasattr(post, 'shares') else 0,
             })
+        else:
+            logging.info("Skipping {}: not between {} and {}".format(ts, start, end))
 
     views_dataset = []
     engagement_dataset = []
