@@ -26,12 +26,8 @@
 {% block content %}
 <div class="row">
     <div class="col-md-9">
-        <h3>Segments <a href="{{ url_for('.create') }}" class="btn btn-primary">Create</a></h3>
-        {{segments.render(q={"name":{"$ne":None}})|safe}}
-        <div id="records">
-            <h3>Your Audience</h3>
-            {% include "audience/records.html" %}
-        </div>
+        <h3>Segments <a href="{{ url_for('.create') }}" class="btn btn-primary btn-action">New Segment</a></h3>
+        {{segments.render(q={"name": {"$ne": None}}) | safe}}
     </div>
     <div class="col-md-3 heading-embedded">
         <div class="thumbnail smart-segment">
@@ -42,7 +38,7 @@
                     <svg></svg>
                     <span class="caption">25% Engaged</span>
                 </p>
-                <a href="{{ url_for('.create') }}" class="btn btn-default">Create Segment</a>
+                <a href="{{ url_for('.create') }}" class="btn btn-default btn-action">Create Segment</a>
             </div>
         </div>
     </div>

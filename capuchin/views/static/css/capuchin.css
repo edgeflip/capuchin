@@ -88,6 +88,18 @@ div.filters{
     content: "|";
 }
 
+h3 .btn {
+    margin: 0 0.5em;
+    vertical-align: top;
+}
+
+.btn-action {
+    background-color: #CC3A17;
+    background-image: none;
+    border: 0;
+    text-shadow: none;
+}
+
 /* Bootstrap overrides */
 
 .btn{
@@ -320,10 +332,6 @@ div.buzz{
 div.buzz div.caption p{
     color: #FFFFFF;
 }
-div.buzz .btn-default{
-    background-color: #CC3A17;
-    background-image: none;
-}
 div.buzz .sub-header {
     margin-top: 1em;
 }
@@ -343,10 +351,6 @@ div.smart-segment span.caption{
     color: #4785AB;
     font-size: 16px;
 }
-div.smart-segment .btn-default{
-    background-color: #CC3A17;
-    background-image: none;
-}
 div.smart-segment .sub-header {
     margin-top: 1em;
 }
@@ -357,11 +361,6 @@ div.smart-segment svg {
 }
 div.smart-segment svg .nv-legendWrap {
     display: none;
-}
-
-ul.nav li a.create{
-    background-color: #CC3A17;
-    background-image: none;
 }
 
 .table-compact td {
