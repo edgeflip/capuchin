@@ -1,18 +1,15 @@
-from capuchin.app import Capuchin
 from capuchin import config
 from capuchin import db
 from capuchin.views.insights import POST_INSIGHTS
 from capuchin.workers.client.insights import Insights
 from flask_oauth import OAuth
-import urlparse
 import logging
 import time
-import requests
 import datetime
-from pprint import pprint
-from slugify import slugify
+
 
 date_format = "%Y-%m-%dT%H:%M:%S+0000"
+
 
 class ClientPosts():
 
@@ -47,7 +44,6 @@ class ClientPosts():
             logging.warn(e)
             return None
 
-
     def write_data(self, post):
         p_id = post.get("id")
         post['client'] = str(self.client._id)
@@ -63,7 +59,7 @@ class ClientPosts():
         for i in POST_INSIGHTS:
             url = "{}.{}".format(p_id, i)
             count = self.get_count(url)
-            points = [(time.time(), 0, i)] if count == None else []
+            points = [(time.time(), 0, i)] if count is None else []
             data = post.get(i)
             for d in data[count:]:
                 ct = d.get("created_time")
@@ -87,6 +83,11 @@ class ClientPosts():
             data=data,
         )
         for p in res.data.get('data'):
+            # Ignore posts made *to* page (rather than *from*) page
+            # TODO: Record these separately and report on them somehow?
+            if p.get('from', {}).get('id') != str(self.page_id):
+                continue
+
             p_id = p.get("id")
             for i in POST_INSIGHTS:
                 p[i] = self.page(p_id, i, p.get(i, {}))
@@ -115,16 +116,14 @@ class ClientPosts():
         return res
 
     def write_influx(self, points, url):
-        data = [
-            dict(
-                name = "insights.{}.post.{}".format(self.client._id, url),
-                columns = ["time", "value", "type"],
-                points = points
-            )
-        ]
+        data = [{
+            'name': "insights.{}.post.{}".format(self.client._id, url),
+            'columns': ['time', 'value', 'type'],
+            'points': points,
+        }]
         logging.info("Writing: {}".format(data))
         try:
             res = self.INFLUX.write_points(data)
             logging.info(res)
         except Exception as e:
-            logging.warning(e)
+            logging.warning(e, exc_info=True)
