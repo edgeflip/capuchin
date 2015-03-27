@@ -1,18 +1,15 @@
-from flask import Blueprint, render_template, current_app, redirect, url_for, request, Response, g, jsonify
+from flask import Blueprint, render_template, request, jsonify
 from flask.views import MethodView
 from flask.ext.login import current_user
 from capuchin import config
-from capuchin import filters
 from capuchin.models.post import Post
-from capuchin.views.insights.charts import HistogramChart, DualAxisTimeChart, DummyHorizontalBarChart, DummyPieChart, DummyBarChart
+from capuchin.views.insights.charts import DualAxisTimeChart
 from capuchin.views.insights import age, gender, interests
 from capuchin.views.tables.dashboard import Posts, Notifications
 from capuchin.controllers.tables import render_table
 import logging
-import slugify
 from collections import OrderedDict
 import math
-import json
 import time
 import datetime
 
@@ -35,17 +32,21 @@ def create_pagination(total_records, current_page=0):
 
 class Index(MethodView):
 
-    def get(self, page=0, template=None):
-        q = request.args.get("q", "*")
-        q = "*" if not q else q
+    def get(self, page=0, template='posts/index.html'):
+        query = request.args.get('q') or '*'
+
         posts = render_table(Posts)
-        if not posts: posts = Posts(current_user.client).render(q=q)
-        tmpl = template if template else "posts/index.html"
+        if not posts:
+            posts = Posts(current_user.client).render(
+                q=query,
+                sort=('created_time', 'desc'),
+            )
+
         return render_template(
-            tmpl,
+            template,
             posts=posts,
             page=page,
-            q=q,
+            q=query,
         )
 
     def post(self, page=0):
