@@ -300,17 +300,21 @@ def hours_active():
 def post_performance(start, end):
     posts = Post.records(current_user.client, "*", 0, 10, ('created_time', 'asc'))
     logging.info(posts.hits)
+    base_dataset = []
     #INFLUX = init_influxdb()
-    base_dataset = [{
-        'post_id': post.id,
-        'ts': int(time.mktime(datetime.datetime.strptime(post.created_time, date_format).timetuple()))*1000,
-        'message': post.message,
-        #'reach': INFLUX.query("select max(value) from insights.{}.post.{}.post_impressions_unique.lifetime".format(current_user.client._id, post.id))[0]['points'][0][1],
-        #'engaged_users': INFLUX.query("select max(value) from insights.{}.post.{}.post_engaged_users.lifetime".format(current_user.client._id, post.id))[0]['points'][0][1],
-        'likes': len(post.likes),
-        'comments': len(post.comments),
-        'shares': post.shares.count if hasattr(post, 'shares') else 0,
-    } for post in posts.hits]
+    for post in posts.hits:
+        ts = time.mktime(datetime.datetime.strptime(post.created_time, date_format).timetuple())
+        if ts < end and ts > start:
+            base_dataset.append({
+                'post_id': post.id,
+                'ts': ts*1000,
+                'message': post.message,
+                #'reach': INFLUX.query("select max(value) from insights.{}.post.{}.post_impressions_unique.lifetime".format(current_user.client._id, post.id))[0]['points'][0][1],
+                #'engaged_users': INFLUX.query("select max(value) from insights.{}.post.{}.post_engaged_users.lifetime".format(current_user.client._id, post.id))[0]['points'][0][1],
+                'likes': len(post.likes),
+                'comments': len(post.comments),
+                'shares': post.shares.count if hasattr(post, 'shares') else 0,
+            })
 
     views_dataset = []
     engagement_dataset = []
