@@ -6,8 +6,12 @@ POST_INSIGHTS = [
 
 from capuchin.views.insights.charts import *
 from capuchin.views.insights.geo import *
+from capuchin.models.post import Post
+from capuchin.db import init_influxdb
 
 from flask_login import current_user
+
+date_format = "%Y-%m-%dT%H:%M:%S+0000"
 
 def top_likes():
     return HorizontalBarChart(
@@ -294,90 +298,43 @@ def hours_active():
 
 
 def post_performance(start, end):
-    #posts = Post.records(current_user.client, "*", 0, 10, None)
-    #for post in posts.hits:
-        #s = ",".join([post.id, str(len(post.comments)), str(len(post.likes)), post.created_time, post.message])
-        #logging.info(s)
-    views_dataset = [
-        {
-            'post_id': '123658315_2346352357',
-            'ts': 1425069150000,
-            'value': 145,
-            'views': 145,
-            'engagement': 32,
-            'message': "What we're up to at Edgeflip",
-        },
-        {
-            'post_id': '123658315_2346352359',
-            'ts': 1425241957000,
-            'value': 42,
-            'views': 42,
-            'engagement': 40,
-            'message': 'Edgeflip is proud to support HeForShe',
-        },
-        {
-            'post_id': '123658315_2346352358',
-            'ts': 1425501161000,
-            'value': 360,
-            'views': 360,
-            'engagement': 28,
-            'message': 'Redeeming the Humble Thank You Page',
-        },
-        {
-            'post_id': '123658315_2346352358',
-            'ts': 1425588670000,
-            'value': 98,
-            'views': 98,
-            'engagement': 26,
-            'message': "We're doing a webinar",
-        },
-    ]
-    engagement_dataset = [
-        {
-            'post_id': '123658315_2346352357',
-            'ts': 1425069150000,
-            'value': 32,
-            'views': 145,
-            'engagement': 32,
-            'message': "What we're up to at Edgeflip",
-        },
-        {
-            'post_id': '123658315_2346352359',
-            'ts': 1425241957000,
-            'value': 40,
-            'views': 42,
-            'engagement': 40,
-            'message': 'Edgeflip is proud to support HeForShe',
-        },
-        {
-            'post_id': '123658315_2346352358',
-            'ts': 1425501161000,
-            'value': 28,
-            'views': 360,
-            'engagement': 28,
-            'message': 'Redeeming the Humble Thank You Page',
-        },
-        {
-            'post_id': '123658315_2346352358',
-            'ts': 1425588670000,
-            'value': 26,
-            'views': 98,
-            'engagement': 26,
-            'message': "We're doing a webinar",
-        },
-    ]
-    benchmark_dataset = [
-        {
-            'ts': 1425069150000,
-            'value': 32,
-            'engagement': 32,
-        },
-        {
-            'ts': 1425588670000,
-            'value': 32,
-            'engagement': 32,
-        },
-    ]
+    posts = Post.records(current_user.client, "*", 0, 45, ('created_time', 'desc'))
+    base_dataset = []
+    #INFLUX = init_influxdb()
+    for post in reversed(posts.hits):
+        ts = time.mktime(datetime.datetime.strptime(post.created_time, date_format).timetuple())
+        if ts < end and ts > start:
+            base_dataset.append({
+                'post_id': post.id,
+                'ts': ts*1000,
+                'message': post.message,
+                #'reach': INFLUX.query("select max(value) from insights.{}.post.{}.post_impressions_unique.lifetime".format(current_user.client._id, post.id))[0]['points'][0][1],
+                #'engaged_users': INFLUX.query("select max(value) from insights.{}.post.{}.post_engaged_users.lifetime".format(current_user.client._id, post.id))[0]['points'][0][1],
+                'likes': len(post.likes),
+                'comments': len(post.comments),
+                'shares': post.shares.count if hasattr(post, 'shares') else 0,
+            })
+        else:
+            logging.info("Skipping {}: not between {} and {}".format(ts, start, end))
+
+    views_dataset = []
+    engagement_dataset = []
+    benchmark_dataset = []
+    for post in base_dataset:
+        view = post.copy()
+        view['value'] = post['likes']
+        views_dataset.append(view)
+
+        engage = post.copy()
+        engage['value'] = post['shares'] + post['comments']
+        #engage['value'] = post['likes'] + post['comments'] + post['shares']
+        engagement_dataset.append(engage)
+
+        benchmark_dataset.append({
+            'ts': post['ts'],
+            'value': 5,
+            'engagement': 5,
+        })
 
     comparables = {
         'Views': {
@@ -391,12 +348,6 @@ def post_performance(start, end):
             'yAxis': 2,
             'type': 'line',
             'color': "#CC3A17",
-        },
-        'Benchmark %': {
-            'data': benchmark_dataset,
-            'yAxis': 2,
-            'type': 'line',
-            'color': "#363738",
         },
     }
 

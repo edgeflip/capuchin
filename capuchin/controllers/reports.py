@@ -19,6 +19,7 @@ from capuchin.views.insights.charts import \
 
 import logging
 import json
+import time
 from bunch import Bunch
 
 reports = Blueprint(
@@ -59,8 +60,8 @@ class Chart(MethodView):
 
 
     def get(self, chart_id):
-        start_ts = request.args.get("start_ts", None)
-        end_ts = request.args.get("end_ts", None)
+        start_ts = request.args.get("start_ts", time.time() - 86400*30)
+        end_ts = request.args.get("end_ts", time.time())
         if chart_id in self.time_based_charts:
             res = self.time_based_charts[chart_id](start=start_ts, end=end_ts)
         else:
