@@ -365,14 +365,12 @@ ul.nav li a.create{
 
 .table-compact td {
     padding: 5px;
-    text-align: center;
 }
 .table-compact td div {
     padding: 0;
 }
 .table-compact td p {
     margin: 0 5px;
-    text-align: start;
 }
 
 table td img.table-image{
