@@ -7,10 +7,10 @@
 {% block head %}
 <script type="text/javascript">
     $(document).ready(function(){
-        $(document).pjax(".pager", "#records", {push:false, type:"POST"});
+        $(document).pjax(".pager", "#records", {push: false, type:"POST"});
         nv.addGraph(function () {
             var chart = nv.models.pieChart().showLabels(false).tooltips(false)
-                .height(15).width(60).color(['#A0CAE2', '#155982']);
+                .height(15).width(50).color(['#A0CAE2', '#155982']);
             d3.select(".smart-segment svg")
                 .datum([{x: 'foo', y: 75}, {x: 'bar', y: 25}])
                 .transition().duration(350)
@@ -30,16 +30,17 @@
         {{segments.render(q={"name": {"$ne": None}}) | safe}}
     </div>
     <div class="col-md-3 heading-embedded">
-        <div class="thumbnail smart-segment">
-            <div class="caption">
-                <h4><span data-icon="&#xe031;"></span> Smart Segments</h4>
-                <h5>Boost engagement among young urban professionals.</h5>
-                <p class="sub-header">
-                    <svg></svg>
-                    <span class="caption">25% Engaged</span>
-                </p>
-                <a href="{{ url_for('.create') }}" class="btn btn-default btn-action">Create Segment</a>
+        <div class="smart-segment">
+            <h4><span data-icon="&#xe031;"></span> Smart Segments</h4>
+            <h5>Boost engagement among young urban professionals.</h5>
+            <div class="content">
+                <div class="col-md-4 pull-left"><svg></svg></div>
+                <div class="col-md-6">
+                    <p class="caption">25% Engaged</p>
+                </div>
             </div>
+            <div class="clearfix"></div>
+            <p><a href="{{ url_for('.create') }}" class="btn btn-default btn-action">Create Segment</a></p>
         </div>
     </div>
 </div>
