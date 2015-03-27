@@ -17,8 +17,25 @@ def post_type(val, record):
 def post_targeting(val, record):
     return """<span class="icon-globe"></span>"""
 
+
+def pluralize(number, singular='', plural='s'):
+    return singular if number == 1 else plural
+
+
 def post_engagement(val, record):
-    return "<p>{}</p><p>{}</p>".format(len(record.comments), len(record.likes))
+    num_comments = len(record.comments)
+    num_likes = len(record.likes)
+    return (
+        "<p>{} like{}</p>"
+        "<p>{} comment{}</p>"
+        .format(
+            num_likes,
+            pluralize(num_likes),
+            num_comments,
+            pluralize(num_comments),
+        )
+    )
+
 
 def post_actions(val, record):
     return """<div class="btn-group btn-group-xs" role="group" aria-label="...">

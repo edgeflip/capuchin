@@ -27,6 +27,7 @@ h3{
 }
 
 td.actions{
+    text-align: center;
     width:150px;
 }
 
@@ -364,12 +365,15 @@ ul.nav li a.create{
 }
 
 .table-compact td {
-    padding: 5px;
+    padding: 5px !important;
+}
+.table-compact td p {
+    margin: 0 0 5px;
 }
 .table-compact td div {
     padding: 0;
 }
-.table-compact td p {
+.table-compact td div > p {
     margin: 0 5px;
 }
 
