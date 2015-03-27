@@ -151,7 +151,7 @@ div.filters{
     padding: 0 10px;
 }
 .navbar-form input {
-    background-color: #155982;
+    background-color: #155982 !important;
     border: 0;
 }
 ul.navbar-right.dropdown {
@@ -386,6 +386,14 @@ table td img.table-image{
 
 .heading-embedded {
     padding-top: 20px;
+}
+
+form[role=search] input {
+    background-color: #F1F2F2;
+    border: 0;
+}
+form[role=search] .btn .glyphicon-search {
+    line-height: inherit;
 }
 
 .form-signin {
