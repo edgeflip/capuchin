@@ -10,6 +10,7 @@ from capuchin.models.post import Post
 from capuchin.db import init_influxdb
 
 from flask_login import current_user
+from flask import current_app
 
 date_format = "%Y-%m-%dT%H:%M:%S+0000"
 
@@ -307,7 +308,7 @@ def post_performance(start, end):
             base_dataset.append({
                 'post_id': post.id,
                 'ts': ts*1000,
-                'message': post.message,
+                'message': current_app.jinja_env.filters['truncate'](post.message, 60),
                 #'reach': INFLUX.query("select max(value) from insights.{}.post.{}.post_impressions_unique.lifetime".format(current_user.client._id, post.id))[0]['points'][0][1],
                 #'engaged_users': INFLUX.query("select max(value) from insights.{}.post.{}.post_engaged_users.lifetime".format(current_user.client._id, post.id))[0]['points'][0][1],
                 'likes': len(post.likes),
@@ -323,12 +324,17 @@ def post_performance(start, end):
     for post in base_dataset:
         view = post.copy()
         view['value'] = post['likes']
-        views_dataset.append(view)
 
         engage = post.copy()
-        engage['value'] = post['shares'] + post['comments']
+        engage['value'] = (post['shares'] / float(post['likes'])) if post['likes'] > 0 else 0
+        engage['value'] = round(100*engage['value'], 1)
         #engage['value'] = post['likes'] + post['comments'] + post['shares']
+        view['engagement'] = engage['value']
+        engage['engagement'] = engage['value']
+
+
         engagement_dataset.append(engage)
+        views_dataset.append(view)
 
         benchmark_dataset.append({
             'ts': post['ts'],

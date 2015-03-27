@@ -135,14 +135,14 @@ class DummyDualAxisTimeChart(InfluxChart):
             key = "{} (right axis)".format(v) if self.typ[v]['yAxis'] == 2 else v
             tooltips[key] = {}
             vals = [
-                {"x":a['ts'], "y":a['value'], "message": a.get('message', None), "likes": a.get('likes', 0), "shares": a.get('shares', 0)}
+                {"x":a['ts'], "y":a['value'], "message": a.get('message', None), "likes": a.get('likes', 0), "engagement": a.get('engagement', 0)}
                 for a in d
             ]
             vals.reverse()
             for i, val in enumerate(vals):
                 pretty_date = datetime.datetime.strftime(datetime.datetime.fromtimestamp(val["x"]/1000), self.date_format)
                 if val['message']:
-                    tooltips[key][i] = "<div class='overhead-popover'>" + "<br />".join([val['message'], pretty_date, "Likes: {}".format(val['likes']), "Shares: {}%".format(val['shares'])]) + "</div>";
+                    tooltips[key][i] = "<div class='overhead-popover'>" + "<br />".join([val['message'], pretty_date, "Likes: {}".format(val['likes']), "Engagement: {}%".format(val['engagement'])]) + "</div>";
                 else:
                     tooltips[key][i] = "<div class='overhead-popover'>" + "<br />".join([pretty_date, "{}: {}".format(key, val['y'])]) + "</div>"
 

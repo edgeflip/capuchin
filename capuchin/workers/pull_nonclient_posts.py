@@ -117,21 +117,11 @@ class PullNonClientPosts():
 
     def page_interactions(self, post_id, typ, data):
         res = [a for a in data.get("data", [])]
-        cursors = data.get("paging", {}).get("cursors", {})
-        if cursors.get('before') == cursors.get('after'): return res
-        last = {'before':cursors['before'], 'after':cursors['after']}
-        for i in last:
-            while last[i]:
-                resp = self.fb_app.get(
-                    "/v2.2/{}/{}".format(post_id, typ),
-                    data={
-                        "limit":250,
-                        i:cursors[i]
-                    },
-                )
-                res+=[a for a in resp.data.get("data")]
-                af = resp.data.get("paging", {}).get(i)
-                last[i] = af if af != last[i] else None
+        next_link = data.get("paging", {}).get("next", None)
+        while next_link:
+            resp = self.fb_app.get(next_link)
+            res+=[a for a in resp.data.get("data")]
+            next_link = resp.data.get("paging", {}).get("next", None)
 
         return res
 
