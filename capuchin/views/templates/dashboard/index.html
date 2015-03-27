@@ -87,20 +87,7 @@ $(document).ready(function(){
             </div>
         </div>
     </div>
-    <div class="modal fade" id="boost-modal" tabindex="-1" role="dialog" aria-labelledby="New Notification" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="modal-title">New Notification</h4>
-                </div>
-                <div class="modal-body" id="modal-body">
-                    {% set engage=True %}
-                    {% include "notifications/form.html" %}
-                </div>
-            </div>
-        </div>
-    </div>
+    {% include "notifications/includes/modal.html" %}
     {% from "widgets/bucket.html" import bucket %}
     <div class="row buckets">
         <div class="col-md-3 right-carot">
