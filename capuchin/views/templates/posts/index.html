@@ -16,7 +16,7 @@
         <div class="col-md-3 heading-embedded">
             <form action="{{url_for('.index')}}" method="get" role="search">
                 <div class="input-group">
-                    <input name="q" type="text" class="form-control" value="{{q if q != '*' else ''}}">
+                    <input name="q" type="text" autocomplete="off" class="form-control" value="{{q if q != '*' else ''}}">
                     <span class="input-group-btn">
                         <button class="btn btn-default" type="submit">
                             <span class="glyphicon glyphicon-search" aria-hidden="true"></span>

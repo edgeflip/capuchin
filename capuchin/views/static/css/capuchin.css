@@ -166,6 +166,7 @@ h3 .btn {
 .navbar-form input {
     background-color: #155982 !important;
     border: 0;
+    color: white;
 }
 ul.navbar-right.dropdown {
     margin-left: 5px;
@@ -394,6 +395,9 @@ table td img.table-image{
 form[role=search] input {
     background-color: #F1F2F2;
     border: 0;
+}
+form[role=search] input:focus {
+    box-shadow: none;
 }
 form[role=search] .btn .glyphicon-search {
     line-height: inherit;
