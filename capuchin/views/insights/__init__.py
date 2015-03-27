@@ -300,13 +300,13 @@ def hours_active():
 def post_performance(start, end):
     posts = Post.records(current_user.client, "*", 0, 10, ('created_time', 'asc'))
     logging.info(posts.hits)
-    INFLUX = init_influxdb()
+    #INFLUX = init_influxdb()
     base_dataset = [{
         'post_id': post.id,
         'ts': int(time.mktime(datetime.datetime.strptime(post.created_time, date_format).timetuple()))*1000,
         'message': post.message,
-        'reach': INFLUX.query("select max(value) from insights.{}.post.{}.post_impressions_unique.lifetime".format(current_user.client._id, post.id))[0]['points'][0][1],
-        'engaged_users': INFLUX.query("select max(value) from insights.{}.post.{}.post_engaged_users.lifetime".format(current_user.client._id, post.id))[0]['points'][0][1],
+        #'reach': INFLUX.query("select max(value) from insights.{}.post.{}.post_impressions_unique.lifetime".format(current_user.client._id, post.id))[0]['points'][0][1],
+        #'engaged_users': INFLUX.query("select max(value) from insights.{}.post.{}.post_engaged_users.lifetime".format(current_user.client._id, post.id))[0]['points'][0][1],
         'likes': len(post.likes),
         'comments': len(post.comments),
         'shares': post.shares.count if hasattr(post, 'shares') else 0,
@@ -317,11 +317,11 @@ def post_performance(start, end):
     benchmark_dataset = []
     for post in base_dataset:
         view = post.copy()
-        view['value'] = post['reach']
+        view['value'] = post['likes']
         views_dataset.append(view)
 
         engage = post.copy()
-        engage['value'] = post['engaged_users']
+        engage['value'] = post['shares'] + post['comments']
         #engage['value'] = post['likes'] + post['comments'] + post['shares']
         engagement_dataset.append(engage)
 
