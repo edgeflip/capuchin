@@ -1,26 +1,12 @@
-from flask import Blueprint, render_template, request, g, jsonify, Response, current_app
+from flask import Blueprint, render_template, request, jsonify
 from flask.views import MethodView
 from flask.ext.login import current_user
 from capuchin import config
-from capuchin import db as dbs
-from capuchin.models.list import List
 from capuchin.models.post import Post
-from capuchin.models.segment import Segment
 from capuchin.controllers.tables import render_table
 from capuchin.views.tables.dashboard import Posts
-from capuchin.views.insights.geo import CityPopulation
 from capuchin.views.insights import *
-from capuchin.views.insights.charts import \
-    FBInsightsPieChart,\
-    FBInsightsMultiBarChart,\
-    HistogramChart,\
-    FreeHistogramChart,\
-    WordBubble, \
-    HorizontalBarChart
 
-import logging
-import json
-from bunch import Bunch
 
 db = Blueprint(
     'dashboard',
@@ -41,9 +27,14 @@ class DashboardDefault(MethodView):
     def get(self):
         first = request.args.get("first")
         lists = current_user.client.lists()
-        segments = current_user.client.segments(query={"name":{"$ne":None}})
+        segments = current_user.client.segments(query={"name": {"$ne": None}})
+
         posts = render_table(Posts)
-        if not posts: posts = Posts(current_user.client).render(size=5, pagination=False)
+        if not posts:
+            posts = Posts(current_user.client).render(size=5,
+                                                      pagination=False,
+                                                      sort=('created_time', 'desc'))
+
         try:
             like_change = like_weekly_change()
             engagement_change = engagement_weekly_change()
@@ -60,6 +51,7 @@ class DashboardDefault(MethodView):
             segments=segments,
             first=first,
         )
+
 
 class DashboardChart(MethodView):
     charts = {
