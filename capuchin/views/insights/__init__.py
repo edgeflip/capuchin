@@ -298,11 +298,10 @@ def hours_active():
 
 
 def post_performance(start, end):
-    posts = Post.records(current_user.client, "*", 0, 10, ('created_time', 'asc'))
-    logging.info(posts.hits)
+    posts = Post.records(current_user.client, "*", 0, 45, ('created_time', 'desc'))
     base_dataset = []
     #INFLUX = init_influxdb()
-    for post in posts.hits:
+    for post in reversed(posts.hits):
         ts = time.mktime(datetime.datetime.strptime(post.created_time, date_format).timetuple())
         if ts < end and ts > start:
             base_dataset.append({
