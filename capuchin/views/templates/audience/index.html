@@ -29,7 +29,7 @@
         <h3>Segments <a href="{{ url_for('.create') }}" class="btn btn-primary btn-action">New Segment</a></h3>
         {{segments.render(q={"name": {"$ne": None}}) | safe}}
     </div>
-    <div class="col-md-3 heading-embedded">
+    <div class="col-md-3 sidebar">
         <div class="smart-segment">
             <h4><span data-icon="&#xe031;"></span> Smart Segments</h4>
             <h5>Boost engagement among young urban professionals.</h5>

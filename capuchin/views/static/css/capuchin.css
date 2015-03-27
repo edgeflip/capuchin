@@ -405,6 +405,10 @@ table td img.table-image{
     padding-top: 20px;
 }
 
+.sidebar {
+    padding-top: 50px;
+}
+
 form[role=search] input {
     background-color: #F1F2F2;
     border: 0;
