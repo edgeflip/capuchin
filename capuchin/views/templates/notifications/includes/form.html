@@ -1,45 +1,86 @@
-<form action="{{ url_for('notifications.save') }}" method="POST">
+<form class="form-notification" action="{{ url_for('notifications.save') }}" method="POST">
     {% if engage %}
     <div class="form-group">
-        <label for="posts">Post <a href="#">Create New</a></label>
-        <select class="form-control" id="posts" name="posts">
-            {% for s in notification['posts'].hits %}
-                <option value="{{s.id}}" {% if post_id == s.id %} selected{% endif %}>{{s.message|truncate(33)}}</option>
-            {% endfor %}
-        </select>
-        <p>or</p>
-        <input class="form-control" type="text" name="url" id="url" placeholder="URL..." />
+        <label for="posts">Select a Post:</label>
+        <div class="row">
+            <div class="col-sm-9">
+                <select class="form-control" id="posts" tabindex="1" name="posts">
+                    {% for s in notification['posts'].hits %}
+                        <option value="{{s.id}}" {% if post_id == s.id %} selected{% endif %}>{{s.message|truncate(53)}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-sm-3">
+                <a class="anchor form-link-new" href="#">New Post</a>
+            </div>
+        </div>
+    </div>
+    <p>OR</p>
+    <div class="form-group">
+        <label for="url">Enter URL:</label>
+        <div class="row">
+            <div class="col-sm-9">
+                <input class="form-control" type="text" name="url" id="url" tabindex="2" placeholder="http://my-site.com/" />
+            </div>
+        </div>
     </div>
     {% endif %}
+
     <div class="form-group">
-        <label for="segments">Audience <a href="{{url_for('audience.create')}}">Create New</a></label>
-        <select class="form-control" id="segments" name="segments">
-            {% for s in segments %}
-                <option value="{{s._id|string}}" {% if segment_id == s._id|string %} selected{% endif %}>{{s.name}} ({{s.count}})</option>
-            {% endfor %}
-        </select>
+        <label for="segments">Select Audience:</label>
+        <div class="row">
+            <div class="col-sm-9">
+                <select class="form-control" id="segments" tabindex="3" name="segments">
+                    {% for s in segments %}
+                        <option value="{{s._id|string}}" {% if segment_id == s._id|string %} selected{% endif %}>{{s.name}} ({{s.count}})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-sm-3">
+                <a class="anchor form-link-new" href="#">New Segment</a>
+            </div>
+        </div>
     </div>
 
     <div class="form-group">
-        <label for="messages">Select a Message <a href="#">Write your own</a></label>
-        <select class="form-control" id="messages" name="messages">
-            {% for s in notification['messages'] %}
-                <option value="{{s}}">{{s}}</option>
-            {% endfor %}
-        </select>
-    </div>
-    <div class="form-group">
-        <div class="checkbox">
-            <label>
-                <input type="checkbox" name="smart_advertising"> Boost with SmartAdvertising <a href="{{ url_for('facebook.index') }}">Settings</a>
-            </label>
+        <label for="messages">Select Message:</label>
+        <div class="row">
+            <div class="col-sm-9">
+                <select class="form-control" id="messages" tabindex="4" name="messages">
+                    {% for s in notification['messages'] %}
+                        <option value="{{s}}">{{s}}</option>
+                    {% endfor %}
+                </select>
+                <div class="checkbox">
+                    <div class="col-sm-6">
+                        <label>
+                            <input type="checkbox" name="smart_advertising">Boost with SmartAdvertising</input>
+                        </label>
+                    </div>
+                    <div class="col-sm-3">
+                        <a class="anchor" href="{{ url_for('facebook.index') }}">Settings</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <a class="anchor form-link-new" href="#">Write Your Own</a>
+            </div>
         </div>
     </div>
-    <button type="submit" class="btn btn-danger">SmartSchedule</button><br />
-    <p>Messages sent with SmartSchedule have 25% higher engagement.</p>
-    <button type="submit" class="btn btn-default calendar">
-        Manual Schedule
-        <div id="dateinput"></div>
-    </button> or <button type="submit" class="btn btn-default">Send Now</button>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-danger" tabindex="5">SmartSchedule</button>
+        <div class="advice-block row">
+            <div class="col-sm-1"><span class="advice-block bigger" data-icon="&#xe028;"></span></div>
+            <div class="col-sm-11">Messages sent with SmartSchedule have 25% higher engagement.</div>
+        </div>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-default calendar" tabindex="6">
+            Manual Schedule
+            <div id="dateinput"></div>
+        </button>
+        OR
+        <button type="submit" class="btn btn-default" tabindex="7">Send Now</button>
     </div>
 </form>

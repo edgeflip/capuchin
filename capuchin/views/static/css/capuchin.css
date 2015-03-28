@@ -9,6 +9,16 @@ body {
     font-size: 12px;
 }
 
+.bigger {
+    font-size: 16px;
+}
+
+.advice-block {
+    display: block;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
 .person-details{
     margin-top: 35px;
 }
@@ -98,6 +108,10 @@ h3 .btn {
     background-image: none;
     border: 0;
     text-shadow: none;
+}
+
+.anchor {
+    text-decoration: underline;
 }
 
 /* Bootstrap overrides */
@@ -312,9 +326,6 @@ ul.navbar-right.dropdown {
 .buckets .caption p {
     line-height: 1;
 }
-.buckets .caption .bigger {
-    font-size: 16px;
-}
 .buckets .caption p.info {
     color: #4785AB;
 }
@@ -418,6 +429,44 @@ form[role=search] input:focus {
 }
 form[role=search] .btn .glyphicon-search {
     line-height: inherit;
+}
+
+.form-notification .form-link-new {
+    vertical-align: -webkit-baseline-middle;
+    vertical-align: -moz-middle-with-baseline;
+}
+
+.form-notification [class^=col-sm-] {
+    padding-right: 0;
+}
+.form-notification .form-control {
+    border: 1px solid #4785AB;
+    border-radius: 5px;
+    color: #4785AB;
+    padding-left: 10px;
+}
+.form-notification .form-control:focus {
+    box-shadow: none;
+}
+.form-notification input.form-control {
+    border: 0;
+    background-color: #A0CAE2;
+    color: white;
+}
+.form-notification ::-webkit-input-placeholder {
+    color: white;
+}
+.form-notification :-moz-placeholder {
+    color: white;
+}
+.form-notification ::-moz-placeholder {
+    color: white;
+}
+.form-notification :-ms-input-placeholder {
+    color: white;
+}
+.form-notification .advice-block {
+    max-width: 275px;
 }
 
 .form-signin {
