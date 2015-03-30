@@ -1,24 +1,28 @@
-import humongolus as orm
-import humongolus.field as field
-from capuchin.models.segment import Segment
-from capuchin.models.user import User
-from capuchin.models.post import Post
-from capuchin.models.client import Client
-from capuchin.models.event import Event
-from capuchin import config
-from flask_oauth import OAuth
 import requests
 import logging
-import math
 import random
 import datetime
 
+import humongolus as orm
+from humongolus import field
+
+from capuchin import config
+from capuchin.models.client import Client
+from capuchin.models.event import record_event
+from capuchin.models.post import Post
+from capuchin.models.segment import Segment
+from capuchin.models.user import User
+
+
 class Redirect(orm.EmbeddedDocument):
+
     original_url = field.Char()
     url = field.Char()
     path = field.Char()
 
+
 class Notification(orm.Document):
+
     _db = "capuchin"
     _collection = "notifications"
     _indexes = [
@@ -43,8 +47,8 @@ class Notification(orm.Document):
 
     def get_url(self):
         if self.post_id:
-            p = self.get_post()
-            return "https://facebook.com/{}".format(p.id)
+            post = self.get_post()
+            return "https://facebook.com/{}".format(post.id)
         else:
             return self.url
 
@@ -69,11 +73,16 @@ class Notification(orm.Document):
             )
             j = res.json()
             """
-            j = {'success':True}
-            logging.info("Notification:{}".format(j))
+            j = {'success': True}
+            logging.debug("Notification: %s", j)
             event_type = "notification_sent" if j.get("success") else "notification_failure"
             user.last_notification = datetime.datetime.utcnow()
             User.save(data=user)
-            Event(self.client, event_type, value=1, user=asid, notification=str(self._id))
+            record_event(self.client, event_type, value=1, user=asid, notification=str(self._id))
+
 
 Segment.notifications = orm.Lazy(type=Notification, key='segment')
+
+NOTIFICATION_WHITELIST = {
+    100009535770088,
+}
