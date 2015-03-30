@@ -120,6 +120,9 @@ h3 .btn {
     background-image: none;
     border: 0;
 }
+.btn:focus {
+    outline: none;
+}
 
 .btn, .btn-primary, .btn-default {
     text-shadow: none;
