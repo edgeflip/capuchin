@@ -1,4 +1,3 @@
-from flask import url_for
 import os
 import logging
 import datetime
