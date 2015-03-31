@@ -54,12 +54,7 @@ $(document).ready(function(){
 <div class="row">
     <div class="col-md-4">
         <h3>Post Preview</h3>
-        <div
-            class="fb-post post-preview"
-            data-href="https://www.facebook.com/{{current_user.client.social.facebook.name}}/posts/{{post.id.split("_")[-1]}}"
-            data-width="350"
-        >
-        </div>
+        <div class="fb-post post-preview" data-href="https://www.facebook.com/{{post.page_id}}/posts/{{post.fbid}}" data-width="350"></div>
     </div>
     <div id="charts"></div>
 </div>
@@ -70,6 +65,6 @@ $(document).ready(function(){
 </div>
 <div class="row">
     <h3>Activity</h3>
-    {{notifications.render({"post_id":post.id})|safe}}
+    {{notifications.render({"post_id": post.id})|safe}}
 </div>
 {% endblock %}
