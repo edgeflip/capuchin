@@ -6,14 +6,7 @@ from capuchin import config
 from capuchin.models.segment import Segment
 from capuchin.models.post import Post
 from capuchin.models.notification import Notification
-from capuchin.workers.notifications import get_redirect_url
-
-
-notifications = Blueprint(
-    'notifications',
-    __name__,
-    template_folder=config.TEMPLATES,
-)
+from capuchin.workers.notifications import get_redirect_url, send_notifications
 
 
 class NotificationsDefault(MethodView):
@@ -44,16 +37,24 @@ class NotificationsCreate(MethodView):
         notification = Notification()
         notification.message = request.form['messages']
         notification.post_id = request.form['posts']
-        notification.smart = bool(request.form.get('smart_advertising'))
         notification.segment = Segment(id=request.form['segments'])
+        notification.smart = bool(request.form.get('smart_advertising'))
         notification.client = current_user.client
         notification.save()
 
-        get_redirect_url.delay(str(notification._id))
-        # notification.send() # TODO
+        # Retrieve canvas redirect URL for notification, and send:
+        nid = str(notification._id)
+        chain = (get_redirect_url.si(nid) | send_notifications.si(nid))
+        chain.delay()
 
         return redirect(url_for(".index"))
 
+
+notifications = Blueprint(
+    'notifications',
+    __name__,
+    template_folder=config.TEMPLATES,
+)
 
 notifications.add_url_rule("/notifications", view_func=NotificationsDefault.as_view('index'))
 notifications.add_url_rule("/notifications/create", view_func=NotificationsCreate.as_view('create'))

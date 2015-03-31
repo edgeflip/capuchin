@@ -1,26 +1,35 @@
-from capuchin import config
-from capuchin.workers import app
-from capuchin.models.notification import Notification
 import datetime
 import requests
-import logging
+
+from celery.utils.log import get_task_logger
+
+from capuchin import config
+from capuchin.workers import app
+from capuchin.models.event import record_event
+from capuchin.models.notification import Notification
+from capuchin.models.segment import Segment
+from capuchin.models.user import User
+
+
+LOG = get_task_logger(__name__)
 
 
 @app.task
 def get_redirect_url(nid):
     notification = Notification(id=nid)
     url = notification.get_url()
-    logging.info("URL: {}".format(url))
-    res = requests.post(
+    LOG.debug("Notification target URL: %s", url)
+    response = requests.post(
         config.REDIRECTOR_URL,
         data={'url': url},
         headers={'Authorization': ' apikey {}'.format(config.REDIRECTOR_AUTH)},
-        allow_redirects=False
+        allow_redirects=False,
     )
-    path = "/{}".format("/".join(res.headers.get("location").split("/")[-4:]))
-    logging.info("Redirect Location: {}".format(path))
+    location = response.headers['location']
+    (_base, path) = location.split('/canvas/', 1)
+    LOG.debug("Notification redirect href: %s", path)
     notification.redirect.original_url = url
-    notification.redirect.url = res.headers.get("location")
+    notification.redirect.url = location
     notification.redirect.path = path
     notification.save()
 
@@ -28,13 +37,77 @@ def get_redirect_url(nid):
 @app.task
 def send_notifications(nid):
     notification = Notification(id=nid)
-    for i in notification.segment.records().hits:
-        try:
-            logging.info(i)
-            notification.post(i)
-        except Exception as e:
-            logging.exception(e)
 
-    seg = Segment(id=notification._get('segment')._value)
-    seg.last_notification = datetime.datetime.utcnow()
-    seg.save()
+    # Raise formatting errors eagerly:
+    formatted = notification.message.format(
+        Org=notification.client.name,
+    )
+
+    for user in notification.segment.records().hits:
+        send_notification.delay(nid, user.efid, formatted)
+
+    segment = Segment(id=notification._get('segment')._value)
+    segment.last_notification = datetime.datetime.utcnow()
+    segment.save()
+
+
+class NotificationError(Exception):
+    pass
+
+
+class UnaffiliatedUserError(NotificationError):
+    pass
+
+
+# DEMO
+class UnauthorizedDemo(NotificationError):
+
+    WHITELIST = {
+        100009535770088, # Jed 'One-Take' Bartlet, test user of SociallyMinded app
+        10100552502193000, # Jesse
+        2904423, # Jesse (legacy FBID)
+        10153076992186411, # Rayid
+    }
+
+
+@app.task
+def send_notification(nid, efid, template):
+    notification = Notification(id=nid)
+    user = User(id=efid)
+
+    client = notification.client
+    for user_client in user.get('clients', []):
+        user_client_id = user_client.get('id')
+        asid = user_client.get('asid')
+        if user_client_id and asid and str(user_client_id) == str(client._id):
+            break
+    else:
+        raise UnaffiliatedUserError("User {} not affiliated with client {} of notification {}"
+                                    .format(efid, client._id, nid))
+
+    # DEMO
+    if asid not in UnauthorizedDemo.WHITELIST:
+        raise UnauthorizedDemo("User {} ({}) is not approved to receive demo notifications"
+                               .format(asid, efid))
+
+    # FIXME: appid not global, comes from user-client
+    try:
+        response = requests.post(
+            'https://graph.facebook.com/{}/notifications'.format(asid),
+            data={
+                'access_token': '{}|{}'.format(config.FACEBOOK_APP_ID, config.FACEBOOK_APP_SECRET),
+                'template': template,
+                'href': notification.redirect.path,
+                'ref': 'demo',
+            }
+        )
+        response.raise_for_status()
+    except (IOError, RuntimeError) as exc:
+        send_notification.retry(exc=exc)
+
+    user.last_notification = datetime.datetime.utcnow()
+    User.save(data=user)
+
+    result = response.json()
+    event_type = 'notification_sent' if result.get('success') else 'notification_failure'
+    record_event(client, event_type, value=1, user=asid, notification=str(notification._id))
