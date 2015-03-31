@@ -88,7 +88,7 @@ def send_notification(nid, efid, template):
 
     # DEMO
     if asid not in UnauthorizedDemo.WHITELIST:
-        raise UnauthorizedDemo("User {} ({}) is not approved to receive demo notifications"
+        raise UnauthorizedDemo("User {} (efid {}) is not approved to receive demo notifications"
                                .format(asid, efid))
 
     # FIXME: appid not global, comes from user-client
@@ -104,6 +104,11 @@ def send_notification(nid, efid, template):
         )
         response.raise_for_status()
     except (IOError, RuntimeError) as exc:
+        if isinstance(exc, requests.HTTPError) and 400 <= exc.response.status_code < 500:
+            LOG.fatal("send_notification to user %s (efid %s) failed with %r | %r",
+                      asid, efid, exc, exc.response.content)
+            raise
+
         send_notification.retry(exc=exc)
 
     user.last_notification = datetime.datetime.utcnow()
