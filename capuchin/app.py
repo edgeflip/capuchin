@@ -5,15 +5,13 @@ from flask.ext.session import Session
 from capuchin.models.client import Admin
 from capuchin import db
 from capuchin.util import date_format, to_json
-from elasticsearch import TransportError
 from slugify import slugify
 import humongolus
 from capuchin import config
 import logging
-import time
-import gevent
 
 logging.basicConfig(level=config.LOG_LEVEL)
+
 
 class Capuchin(Flask):
 
@@ -38,7 +36,7 @@ class Capuchin(Flask):
             "Cache-Control": "no-store, must-revalidate, max-age=0",
             "Pragma": "no-cache",
             "Expires": "Sat, 26 Jul 1997 05:00:00 GMT"
-        });
+        })
         return resp
 
     def load_user(self, id):
@@ -75,7 +73,8 @@ class Capuchin(Flask):
     def init_pjax(self):
         PJAX(self)
 
-    def configure_dbs(self):pass
+    def configure_dbs(self):
+        pass
 
     def init_dbs(self):
         g.ES = db.init_elasticsearch()
@@ -84,7 +83,7 @@ class Capuchin(Flask):
 
     def init_blueprints(self):
         from controllers.dashboard import db
-        from controllers.notifications import notif
+        from controllers.notifications import notifications
         from controllers.lists import lists
         from controllers.audience import audience
         from controllers.campaigns import campaigns
@@ -96,7 +95,7 @@ class Capuchin(Flask):
         from controllers.tables import tables
         from controllers.reports import reports
         db.before_request(self.user_logged_in)
-        notif.before_request(self.user_logged_in)
+        notifications.before_request(self.user_logged_in)
         lists.before_request(self.user_logged_in)
         audience.before_request(self.user_logged_in)
         campaigns.before_request(self.user_logged_in)
@@ -105,7 +104,7 @@ class Capuchin(Flask):
         reports.before_request(self.user_logged_in)
         self.register_blueprint(hc)
         self.register_blueprint(db)
-        self.register_blueprint(notif)
+        self.register_blueprint(notifications)
         self.register_blueprint(lists)
         self.register_blueprint(audience)
         self.register_blueprint(campaigns)
