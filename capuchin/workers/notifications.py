@@ -65,8 +65,9 @@ class UnauthorizedDemo(NotificationError):
     WHITELIST = {
         100009535770088, # Jed 'One-Take' Bartlet, test user of SociallyMinded app
         10100552502193000, # Jesse
-        2904423, # Jesse (legacy FBID)
+        2904423, # Jesse (legacy fbid)
         10153076992186411, # Rayid
+        751, # Chris Synder (legacy fbid)
     }
 
 
