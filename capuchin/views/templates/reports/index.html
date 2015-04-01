@@ -156,6 +156,7 @@ var enable_graph = function(event, ui) {
             $("#psycho_charts").bar({
                 name:"Hours Active on Facebook",
                 data_url:"{{url_for('.chart', chart_id='hours_active')}}",
+                onclick:function(e) { changefunc(e, 'hours_active', function(d) { return d.point.label }) },
                 height:250,
             }).render(12, chartList);
             $("#psycho_charts").horizontal_percent_multibar({

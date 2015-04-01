@@ -606,9 +606,8 @@ function DumpObjectIndented(obj, indent)
 (function($){
     $.fn.multibar = function(options){
         options.build_chart = function(settings, data){
-            var chart;
             nv.addGraph(function() {
-                chart = nv.models.multiBarChart();
+                var chart = nv.models.multiBarChart();
 
                 chart.xAxis
                 .tickFormat(function(d) {
@@ -628,7 +627,6 @@ function DumpObjectIndented(obj, indent)
 
                 return chart;
             });
-            return chart;
         };
         return $(this).chart(options);
     };
@@ -638,12 +636,11 @@ function DumpObjectIndented(obj, indent)
 (function($){
     $.fn.bar = function(options){
         options.build_chart = function(settings, data, chartList){
-            var chart;
             nv.addGraph(function() {
                 var chartInfo = {
                     transformer:function(data) { return data.data.points; }
                 }
-                chart = nv.models.discreteBarChart()
+                var chart = nv.models.discreteBarChart()
                     .x(function(d) { return d.label })
                     .y(function(d) { return d.value })
                     .color(function(d) { return '#4785AB'; });
@@ -684,7 +681,6 @@ function DumpObjectIndented(obj, indent)
                 chartList["chart"+settings.id] = chartInfo;
                 return chart;
             });
-            return chart;
         };
         return $(this).chart(options);
     };
@@ -698,7 +694,7 @@ function DumpObjectIndented(obj, indent)
                 var chartInfo = {
                     transformer:function(data) { return data.data; }
                 }
-                chart = nv.models.multiBarHorizontalChart()
+                var chart = nv.models.multiBarHorizontalChart()
                 .x(function(d) { return d.label })
                 .y(function(d) { return d.value })
                 .margin({top: 30, right: 20, bottom: 50, left: 175})
@@ -761,7 +757,7 @@ function DumpObjectIndented(obj, indent)
                 var chartInfo = {
                     transformer:function(data) { return data.data; }
                 }
-                chart = nv.models.multiBarHorizontalChart()
+                var chart = nv.models.multiBarHorizontalChart()
                 .x(function(d) { return d.label })
                 .y(function(d) { return d.value })
                 .margin({top: 30, right: 20, bottom: 50, left: 175})
@@ -816,7 +812,7 @@ function DumpObjectIndented(obj, indent)
                 var chartInfo = {
                     transformer:function(data) { return data.data; }
                 }
-                chart = nv.models.pieChart()
+                var chart = nv.models.pieChart()
                 .x(function(d) { return d.label })
                 .y(function(d) { return d.value })
                 .showLabels(true)     //Display pie labels
