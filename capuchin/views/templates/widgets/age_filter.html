@@ -28,6 +28,7 @@ $("#range{{filter['field']|string|slugify}}").slider({
         $("#range-{{filter['field']|string|slugify}}-max").html(val);
         filters["{{filter['field']}}"] = ui.values;
         console.log(filters);
+        refresh(e);
     }
 });
 var val = parseInt($("#range-{{filter['field']|string|slugify}}-max").html());

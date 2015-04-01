@@ -9,5 +9,6 @@
     $("input[name='gender']").change(function(e){
         filters["{{filter['field']}}"] = e.target.value;
         console.log(filters);
+        refresh(e);
     });
 </script>
