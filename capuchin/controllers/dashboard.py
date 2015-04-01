@@ -74,7 +74,7 @@ class DashboardChart(MethodView):
     def get(self, chart_id):
         start_ts = request.args.get("start_ts", None)
         end_ts = request.args.get("end_ts", None)
-        res = self.charts[chart_id](start=start_ts, end=end_ts)
+        res = self.charts[chart_id](start=start_ts, end=end_ts, request_args={})
         obj = {'data': res.data}
         try:
             obj['date_format'] = res.date_format

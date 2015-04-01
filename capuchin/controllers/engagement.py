@@ -122,7 +122,7 @@ class Chart(MethodView):
             res = self.post_charts[chart_id](post)
             return jsonify(**dict(data=res.data, date_format=res.date_format))
         else:
-            res = self.fake_charts[chart_id]()
+            res = self.fake_charts[chart_id](None, None, {})
             return jsonify(**dict(data=res.data))
 
 

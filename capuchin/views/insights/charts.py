@@ -9,7 +9,7 @@ import datetime
 
 class InfluxChart(object):
 
-    def __init__(self, client, typ, where="", prefix="insights", date_format="%m/%d/%y", massage=True, tooltip_formatter=None):
+    def __init__(self, client, typ, where="", prefix="insights", date_format="%m/%d/%y", massage=True, tooltip_formatter=None, randomize=False):
         self.INFLUX = db.init_influxdb()
         self.client = client
         self.typ = typ
@@ -17,6 +17,7 @@ class InfluxChart(object):
         self.prefix = prefix
         self.date_format = date_format
         self.tooltip_formatter = tooltip_formatter
+        self.randomize = randomize
         try:
             self.data = self.query()
             logging.debug(self.data)
@@ -77,6 +78,8 @@ class FBInsightsDiscreteBarChart(InfluxChart):
         values = []
         for a in data[0]['points']:
             y = a[1]
+            if self.randomize:
+                y += random.randint(int(-y/5), int(y/5))
             x = a[2]
             tooltips[x] = self.tooltip_formatter(x, y)
             values.append({
@@ -127,7 +130,7 @@ class FBInsightsMultiBarChart(InfluxChart):
 class DummyDualAxisTimeChart(InfluxChart):
 
     def massage(self, data):
-        logging.info(data)
+        #logging.info(data)
         ar = []
 
         tooltips = {}
@@ -517,7 +520,7 @@ class HorizontalBarChart(object):
 
 class TopCities(object):
 
-    def __init__(self, client, top_n):
+    def __init__(self, client, top_n, cities_override):
         and_ = [{
             "term": {
                 "clients.id": str(client._id)
@@ -552,12 +555,18 @@ class TopCities(object):
             if city:
                 c = City.find_one({"full_state": state, "city": city})
                 if c:
+                    val = i['doc_count']
                     values.append({
                         "label":"{}, {}".format(c.city, c.state),
                         "value": i['doc_count']
                     })
+        if cities_override:
+            total = sum(val['value'] for val in values)
+            for val in values:
+                val['value'] *= float(val['value'])/total
+                val['value'] = int(val['value'])
         self.data = [{
-            'key': 'Top 5 Cities',
+            'key': 'Top Cities',
             'values':values
         }]
 
@@ -572,6 +581,8 @@ class AudienceRangeBar(object):
         ranges,
         tooltip_formatter,
         key_formatter,
+        randomize=False,
+        solo=None,
     ):
         and_ = [{
             "term": {
@@ -607,6 +618,10 @@ class AudienceRangeBar(object):
         for i in res['aggregations']['agg']['buckets']:
             x = self.key_formatter(i['key'])
             y = i['doc_count']
+            if randomize and y > 20:
+                y += random.randint(-20, 20)
+            if solo and x != solo:
+                y = 0
             tooltips[x] = self.tooltip_formatter(x, y)
             values.append({
                 'label': x,

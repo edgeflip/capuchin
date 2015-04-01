@@ -9,6 +9,7 @@
 
 <script>
 var activated = {};
+var chartList = {};
 var enable_graph = function(event, ui) {
     var tab;
     if ('newTab' in ui) {
@@ -49,28 +50,70 @@ var enable_graph = function(event, ui) {
                 height:300,
                 legend_x:-240,
                 legend_y:240,
-            }).render(12);
+            }).render(12, chartList);
             $("#audience_charts").pie({
                 name:"Audience by Source",
                 data_url:"{{url_for('.chart', chart_id='audience_by_source')}}",
                 height:300,
-            }).render(6);
-            $("#audience_charts").horizontal_multibar({
-                name:"Your Growth vs Similar Pages",
-                data_url:"{{url_for('.chart', chart_id='growth_vs_competitors')}}",
-                height:300,
-                legend_x:-112,
-                legend_y:255,
-            }).render(6);
-            $("#audience_charts").horizontal_multibar({
-                name:"Share-Like Ratios",
-                data_url:"{{url_for('.chart', chart_id='share_like_ratios')}}",
-                height:300,
-                legend_x:-112,
-                legend_y:255,
-            }).render(6);
+            }).render(6, chartList);
         }
         else if(title == "Audience Profile") {
+            var changefunc = function(e, chart_name, label_grabber) {
+                d3.selectAll('#psycho_charts .chart')[0].forEach(function(d,i) {
+                    var params = $.param({"chart": chart_name, "value": e.value, "label": label_grabber(e)});
+                    var me = d3.select(d);
+                    var data_url = me.attr('data-url') + "?" + params;
+                    $.get(data_url, function(data, e) {
+                        var chart_id = me.attr('id');
+                        var chartInfo = chartList[chart_id];
+                        d3.select("#" + chart_id + " svg")
+                        .datum(chartInfo.transformer(data))
+                        .transition().duration(500)
+                        .call(chartInfo.chart);
+                        chartInfo.chart.update();
+                    });
+                });
+
+                var parent = $('#trending');
+                var children = parent.children("p").get().sort(function() {
+                    return Math.random() - 0.5;
+                });
+                parent.append(children);
+
+                d3.selectAll('.audience_explorer').style('display', 'inline');
+                d3.selectAll('.audience_segment').style('display', 'none');
+            };
+            var resetfunc = function(e) {
+                d3.selectAll('#psycho_charts .chart')[0].forEach(function(d,i) {
+                    var me = d3.select(d);
+                    var data_url = me.attr('data-url');
+                    $.get(data_url, function(data, e) {
+                        var chart_id = me.attr('id');
+                        var chartInfo = chartList[chart_id];
+                        d3.select("#" + chart_id + " svg")
+                        .datum(chartInfo.transformer(data))
+                        .transition().duration(500)
+                        .call(chartInfo.chart);
+                        chartInfo.chart.update();
+                    });
+                });
+
+                var parent = $('#trending');
+                var children = parent.children("p").get().sort(function(a, b) {
+                    var a_rank = +(a.firstChild.getAttribute('data-rank'));
+                    var b_rank = +(b.firstChild.getAttribute('data-rank'));
+                    if (a_rank > b_rank) {
+                        return 1;
+                    } else {
+                        return -1;
+                    }
+                });
+                parent.append(children);
+
+                d3.selectAll('.audience_explorer').style('display', 'none');
+                d3.selectAll('.audience_segment').style('display', 'inline');
+            };
+            $( "#clear_audience" ).click(resetfunc);
             $( "#audience_range" ).selectmenu();
             $( "#audience_from" ).datepicker({
                 defaultDate: "-1w",
@@ -94,7 +137,8 @@ var enable_graph = function(event, ui) {
                 name:"Gender",
                 data_url:"{{url_for('.chart', chart_id='gender')}}",
                 height:300,
-            }).render(4);
+                onclick:function(e) { changefunc(e, 'gender', function(d) { return d.label }) },
+            }).render(4, chartList);
             $("#psycho_charts").bar({
                 name:"Age",
                 data_url:"{{url_for('.chart', chart_id='age')}}",
@@ -102,7 +146,8 @@ var enable_graph = function(event, ui) {
                 yShowMaxMin: false,
                 showTooltip: true,
                 yformat: ',.0f',
-            }).render(4);
+                onclick:function(e) { changefunc(e, 'age', function(d) { return d.point.label }) },
+            }).render(4, chartList);
             $("#psycho_charts").list({
                 name:"Trending",
                 columns: 4,
@@ -111,34 +156,51 @@ var enable_graph = function(event, ui) {
             $("#psycho_charts").bar({
                 name:"Hours Active on Facebook",
                 data_url:"{{url_for('.chart', chart_id='hours_active')}}",
+                onclick:function(e) { changefunc(e, 'hours_active', function(d) { return d.point.label }) },
                 height:250,
-            }).render(12);
+            }).render(12, chartList);
             $("#psycho_charts").horizontal_percent_multibar({
                 name:"Interests",
                 data_url:"{{url_for('.chart', chart_id='interests')}}",
                 height:300,
-            }).render(6);
+            }).render(6, chartList);
             $("#psycho_charts").horizontal_multibar({
                 name:"Top Cities",
                 data_url:"{{url_for('.chart', chart_id='top_cities')}}",
                 valueFormat: ',.0f',
                 hideLegend: true,
                 height:300,
-            }).render(6);
+            }).render(6, chartList);
             $("#psycho_charts").choropleth({
                 name:"Audience Location",
                 data_url:"{{url_for('.chart', chart_id='audience_location')}}",
                 width: 1080,
                 height: 520,
-            }).render(12);
+            }).render(12, chartList);
         }
         else {
-            $( "#performance_range" ).selectmenu();
+            $( "#performance_range" ).selectmenu({
+                change: function(event, ui) {
+                    d3.selectAll('#page_charts .chart')[0].forEach(function(d,i) {
+                        var since = $.param({"since": ui.item.value});
+                        var me = d3.select(d);
+                        var data_url = me.attr('data-url') + "?" + since;
+                        $.get(data_url, function(data, e) {
+                            var chart_id = me.attr('id');
+                            var chartInfo = chartList[chart_id];
+                            d3.select("#" + chart_id + " svg")
+                            .datum(chartInfo.transformer(data))
+                            .transition().duration(500)
+                            .call(chartInfo.chart);
+                            chartInfo.chart.update();
+                        });
+                    });
+                }
+            });
             $( "#performance_from" ).datepicker({
                 defaultDate: "-1w",
                 changeMonth: true,
                 autoSize: true,
-                disabled: true,
                 onClose: function( selectedDate ) {
                     $( "#performance_to" ).datepicker( "option", "minDate", selectedDate );
                 }
@@ -147,7 +209,6 @@ var enable_graph = function(event, ui) {
                 defaultDate: "+1w",
                 changeMonth: true,
                 autoSize: true,
-                disabled: true,
                 onClose: function( selectedDate ) {
                     $( "#performance_from" ).datepicker( "option", "maxDate", selectedDate );
                 }
@@ -155,11 +216,25 @@ var enable_graph = function(event, ui) {
             $("#page_charts").manylines({
                 name:"Posts",
                 data_url:"{{url_for('.chart', chart_id='post_performance')}}",
-                height:250,
+                data_id:"post_performance",
                 date_format:"%-m-%d %-I %p",
                 legend_x:-77,
                 legend_y:195,
-            }).render(12);
+            }).render(12, chartList);
+            $("#page_charts").horizontal_multibar({
+                name:"Your Growth vs Similar Pages",
+                data_url:"{{url_for('.chart', chart_id='growth_vs_competitors')}}",
+                height:300,
+                legend_x:-112,
+                legend_y:255,
+            }).render(6, chartList);
+            $("#page_charts").horizontal_multibar({
+                name:"Share-Like Ratios",
+                data_url:"{{url_for('.chart', chart_id='share_like_ratios')}}",
+                height:300,
+                legend_x:-112,
+                legend_y:255,
+            }).render(6, chartList);
         }
     }
 };
@@ -176,11 +251,26 @@ $(document).ready(function(){
 {% block content %}
     <div id="tabs">
         <ul id="tabpicker">
-            <li><a href="#one">Audience Growth</a></li>
-            <li><a href="#two">Audience Profile</a></li>
-            <li><a href="#three">Page Performance</a></li>
+            <li><a href="#audience_profile">Audience Profile</a></li>
+            <li><a href="#audience_growth">Audience Growth</a></li>
+            <li><a href="#page_performance">Page Performance</a></li>
         </ul>
-        <div class="row" id="one">
+        <div class="row" id="audience_profile">
+            <span class="audience_segment">
+                <label for="audience_segment">Pick a Segment</option>
+                <select id="audience_segment">
+                    {% for s in segments %}
+                    <option value="{{s.name}}">{{s.name}}</option>
+                    {% endfor %}
+                </select>
+            </span>
+            <span class="audience_explorer">
+                <a href="{{ url_for('.create_segment') }}" class="btn btn-default btn-action">Create Segment</a>
+                <a href="#" class="btn btn-default btn-action" id="clear_audience">Clear</a>
+            </span>
+            <div class="col-md-12" id="psycho_charts"></div>
+        </div>
+        <div class="row" id="audience_growth">
             <span class="daterangepicker">
                 <label for="growth_range">Date Range:</label>
                 <select id="growth_range">
@@ -199,38 +289,13 @@ $(document).ready(function(){
             </span>
             <div class="col-md-12" id="audience_charts"></div>
         </div>
-        <div class="row" id="two">
-            <label for="audience_segment">Pick a Segment</option>
-            <select id="audience_segment">
-                {% for s in segments %}
-                <option value="{{s.name}}">{{s.name}}</option>
-                {% endfor %}
-            </select>
-            <span class="daterangepicker">
-                <label for="audience_range">Date Range:</label>
-                <select id="audience_range">
-                    <option value="Last Week" disabled>Last Week</option>
-                    <option value="Last Month" selected>Last Month</option>
-                    <option value="All Time" disabled>All Time</option>
-                </select>
-            </span>
-            <span class="daterangepicker">
-                <label for="audience_from">Custom:</label>
-                <input id="audience_from"></input>
-            </span>
-            <span class="daterangepicker">
-                <label for="audience_to">To:</label>
-                <input id="audience_to"></input>
-            </span>
-            <div class="col-md-12" id="psycho_charts"></div>
-        </div>
-        <div class="row" id="three">
+        <div class="row" id="page_performance">
             <span class="daterangepicker">
                 <label for="performance_range">Date Range:</label>
                 <select id="performance_range">
-                    <option value="Last Week" disabled>Last Week</option>
+                    <option value="Last Week">Last Week</option>
                     <option value="Last Month" selected>Last Month</option>
-                    <option value="All Time" disabled>All Time</option>
+                    <option value="All Time">All Time</option>
                 </select>
             </span>
             <span class="daterangepicker">

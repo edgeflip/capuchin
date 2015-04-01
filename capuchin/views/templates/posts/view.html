@@ -6,6 +6,7 @@
 <script src="/static/js/charts/chart.js"></script>
 <script>
 $(document).ready(function(){
+    var chartList = {};
     $("#charts").manylines({
         name:"2-Day Performance",
         data_url:"{{url_for('.chart', chart_id='engagement', post_id=post.id)}}",
@@ -14,24 +15,24 @@ $(document).ready(function(){
         legend_x:-20,
         legend_y:190,
         has_circles:false,
-    }).render(8);
+    }).render(8, chartList);
     $("#audience_charts").bar({
         name:"Age",
         data_url:"{{url_for('.chart', chart_id='age', post_id=post.id)}}",
         height: 300,
         yShowMaxMin: false,
         yformat: ',.0f',
-    }).render(4);
+    }).render(4, chartList);
     $("#audience_charts").pie({
         name: "Gender",
         data_url:"{{url_for('.chart', chart_id='gender', post_id=post.id)}}",
         height: 300,
-    }).render(4);
+    }).render(4, chartList);
     $("#audience_charts").horizontal_percent_multibar({
         name:"Interests",
         data_url:"{{url_for('.chart', chart_id='interests', post_id=post.id)}}",
         height:300,
-    }).render(4);
+    }).render(4, chartList);
 });
 </script>
 {% endblock %}

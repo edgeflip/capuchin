@@ -528,6 +528,7 @@ function DumpObjectIndented(obj, indent)
         var settings = $.extend({
             name:"Chart",
             data_url:"/",
+            data_id:"",
             build_chart:build_chart,
             parse_data:parse_data,
             id:parseInt(Math.random()*1000000)
@@ -535,10 +536,10 @@ function DumpObjectIndented(obj, indent)
 
         var interval = false
 
-        this.render = function(columns){
+        this.render = function(columns, chartList){
             $(this).append("<div class=\"col-md-"+columns+" dash-chart\"> \
                 <h3>"+settings.name+"</h3> \
-                <div id=\"chart"+settings.id+"\" class=\"chart\"> \
+                <div id=\"chart"+settings.id+"\" data-url=\""+settings.data_url+"\" class=\"chart\"> \
                     <div class=\"progress\">\
                         <div\
                             class=\"progress-bar progress-bar-info progress-bar-striped active loader\"\
@@ -553,7 +554,7 @@ function DumpObjectIndented(obj, indent)
                 </div> \
             </div>");
             animate_loader();
-            load_data();
+            load_data(chartList);
         }
 
         function animate_loader(){
@@ -569,12 +570,12 @@ function DumpObjectIndented(obj, indent)
             $("#chart"+settings.id+" .progress").remove();
         }
 
-        function load_data(){
+        function load_data(chartList){
             var me = this;
             $.get(settings.data_url, function(data, e){
                 var d = settings.parse_data(data);
                 remove_loader();
-                settings.build_chart(settings, d);
+                settings.build_chart(settings, d, chartList);
 
                 if(settings['height']) {
                     var chartSelector = '#chart'+settings.id;
@@ -634,8 +635,11 @@ function DumpObjectIndented(obj, indent)
 
 (function($){
     $.fn.bar = function(options){
-        options.build_chart = function(settings, data){
+        options.build_chart = function(settings, data, chartList){
             nv.addGraph(function() {
+                var chartInfo = {
+                    transformer:function(data) { return data.data.points; }
+                }
                 var chart = nv.models.discreteBarChart()
                     .x(function(d) { return d.label })
                     .y(function(d) { return d.value })
@@ -661,7 +665,7 @@ function DumpObjectIndented(obj, indent)
                     chart.yAxis.showMaxMin(false);
                 }
                 d3.select("#chart"+settings.id+" svg")
-                .datum(data.data.points)
+                .datum(chartInfo.transformer(data))
                 .transition().duration(500)
                 .call(chart);
                 var chartSelector = '#chart'+settings.id;
@@ -670,8 +674,11 @@ function DumpObjectIndented(obj, indent)
                     d3.select(d).style('display', 'none');
                 });
 
+                chart.discretebar.dispatch.on("elementClick", settings.onclick)
                 nv.utils.windowResize(chart.update);
 
+                chartInfo.chart = chart;
+                chartList["chart"+settings.id] = chartInfo;
                 return chart;
             });
         };
@@ -682,8 +689,11 @@ function DumpObjectIndented(obj, indent)
 
 (function($){
     $.fn.horizontal_multibar = function(options){
-        options.build_chart = function(settings, data){
+        options.build_chart = function(settings, data, chartList){
             nv.addGraph(function() {
+                var chartInfo = {
+                    transformer:function(data) { return data.data; }
+                }
                 var chart = nv.models.multiBarHorizontalChart()
                 .x(function(d) { return d.label })
                 .y(function(d) { return d.value })
@@ -701,7 +711,7 @@ function DumpObjectIndented(obj, indent)
                 }
                 var chartSelector = '#chart'+settings.id;
                 d3.select('#chart'+settings.id+' svg')
-                .datum(data.data)
+                .datum(chartInfo.transformer(data))
                 .transition().duration(500)
                 .call(chart);
                 d3.selectAll(chartSelector + ' .tick line').style('display', 'none');
@@ -729,6 +739,8 @@ function DumpObjectIndented(obj, indent)
                 }
 
                 nv.utils.windowResize(chart.update);
+                chartInfo.chart = chart;
+                chartList["chart"+settings.id] = chartInfo;
 
                 return chart;
             });
@@ -740,8 +752,11 @@ function DumpObjectIndented(obj, indent)
 
 (function($){
     $.fn.horizontal_percent_multibar = function(options){
-        options.build_chart = function(settings, data){
+        options.build_chart = function(settings, data, chartList){
             nv.addGraph(function() {
+                var chartInfo = {
+                    transformer:function(data) { return data.data; }
+                }
                 var chart = nv.models.multiBarHorizontalChart()
                 .x(function(d) { return d.label })
                 .y(function(d) { return d.value })
@@ -753,11 +768,11 @@ function DumpObjectIndented(obj, indent)
                 .showLegend(false);
 
                 chart.showYAxis(false);
-                chart.valueFormat(d3.format('p'));
+                chart.valueFormat(d3.format('%'));
 
                 var chartSelector = '#chart'+settings.id;
                 d3.select(chartSelector + ' svg')
-                .datum(data.data)
+                .datum(chartInfo.transformer(data))
                 .transition().duration(500)
                 .call(chart);
                 d3.selectAll(chartSelector + ' .tick line').style('display', 'none');
@@ -780,6 +795,8 @@ function DumpObjectIndented(obj, indent)
                     .style('fill', color);
                 });
                 nv.utils.windowResize(chart.update);
+                chartInfo.chart = chart;
+                chartList["chart"+settings.id] = chartInfo;
 
                 return chart;
             });
@@ -790,8 +807,11 @@ function DumpObjectIndented(obj, indent)
 
 (function($){
     $.fn.pie = function(options){
-        options.build_chart = function(settings, data){
+        options.build_chart = function(settings, data, chartList){
             nv.addGraph(function() {
+                var chartInfo = {
+                    transformer:function(data) { return data.data; }
+                }
                 var chart = nv.models.pieChart()
                 .x(function(d) { return d.label })
                 .y(function(d) { return d.value })
@@ -806,7 +826,7 @@ function DumpObjectIndented(obj, indent)
                 var arc = d3.svg.arc().outerRadius(r);
                 var chartSelector = '#chart'+settings.id;
                 d3.select(chartSelector +' svg')
-                .datum(data.data)
+                .datum(chartInfo.transformer(data))
                 .transition().duration(350)
                 .call(chart);
 
@@ -844,6 +864,8 @@ function DumpObjectIndented(obj, indent)
                         chart.legend.dispatch[property] = function() { };
                 }
 
+                chart.pie.dispatch.on("elementClick", settings.onclick);
+
                 if (!settings.pie_x) {
                     settings.pie_x = 0;
                 }
@@ -869,10 +891,12 @@ function DumpObjectIndented(obj, indent)
                     // make sure the fill color matches the original circle
                     .style('fill', color);
                 });
-                d3.select(chartSelector + " .nv-legend")
-                  .attr("transform", "translate(-175,275)");
+                //d3.select(chartSelector + " .nv-legend")
+                  //.attr("transform", "translate(-175,275)");
                 nv.utils.windowResize(chart.update);
 
+                chartInfo.chart = chart;
+                chartList["chart"+settings.id] = chartInfo;
                 return chart;
             });
         };
@@ -883,9 +907,12 @@ function DumpObjectIndented(obj, indent)
 
 (function($){
     $.fn.lineplusarea = function(options){
-        options.build_chart = function(settings, data){
+        options.build_chart = function(settings, data, chartList){
             nv.addGraph(function() {
-                var chart = multiChart()
+                var chartInfo = {
+                    transformer:function(data) { return data.data.points; }
+                }
+                chart = multiChart()
                     .margin({top: 30, right: 60, bottom: 50, left: 70})
                     .tooltipContent(function (key, x, val, graph) {
                         return data.data.messages[key][graph.pointIndex];
@@ -903,7 +930,7 @@ function DumpObjectIndented(obj, indent)
                 }
 
                 // Get normalised data for chart
-                var seriesData = data.data.points;
+                var seriesData = chartInfo.transformer(data);
 
                 // Get max values for each axis
                 var minY1 = 0;
@@ -948,7 +975,7 @@ function DumpObjectIndented(obj, indent)
 
                 var chartSelector = '#chart'+settings.id;
                 d3.select(chartSelector + ' svg')
-                .datum(data.data.points)
+                .datum(seriesData)
                 .call(chart);
 
                 d3.select(chartSelector + ' .lines1Wrap')
@@ -989,6 +1016,8 @@ function DumpObjectIndented(obj, indent)
                         chart.legend.dispatch[property] = function() { };
                 }
                 nv.utils.windowResize(chart.update);
+                chartInfo.chart = chart;
+                chartList["chart"+settings.id] = chartInfo;
                 return chart
             });
         };
@@ -1000,8 +1029,11 @@ function DumpObjectIndented(obj, indent)
 
 (function($){
     $.fn.manylines = function(options){
-        options.build_chart = function(settings, data){
+        options.build_chart = function(settings, data, chartList){
             nv.addGraph(function() {
+                var chartInfo = {
+                    transformer:function(data) { return data.data.points; }
+                }
                 var chart = multiChart()
                     .margin({top: 30, right: 60, bottom: 50, left: 70})
                     .tooltipContent(function (key, x, val, graph) {
@@ -1027,7 +1059,7 @@ function DumpObjectIndented(obj, indent)
                 chart.yAxis1.showMaxMin(false);
 
                 d3.select('#chart'+settings.id+' svg')
-                .datum(data.data.points)
+                .datum(chartInfo.transformer(data))
                 .call(chart);
 
                 var chartSelector = '#chart'+settings.id;
@@ -1053,8 +1085,8 @@ function DumpObjectIndented(obj, indent)
                     // make sure the fill color matches the original circle
                     .style('fill', color);
                 });
-                d3.select(chartSelector + " .legendWrap")
-                  .attr("transform", "translate(" + settings.legend_x + "," + settings.legend_y + ")");
+                //d3.select(chartSelector + " .legendWrap")
+                  //.attr("transform", "translate(" + settings.legend_x + "," + settings.legend_y + ")");
                 // All of our manual tweaks will be for naught if they click the legend
                 for (var property in chart.legend.dispatch) {
                         chart.legend.dispatch[property] = function() { };
@@ -1070,6 +1102,8 @@ function DumpObjectIndented(obj, indent)
                     });
                 }
                 nv.utils.windowResize(chart.update);
+                chartInfo.chart = chart;
+                chartList["chart"+settings.id] = chartInfo;
                 return chart
             });
         };
@@ -1081,9 +1115,9 @@ function DumpObjectIndented(obj, indent)
 
 (function($){
     $.fn.lineplusbar = function(options){
-        options.build_chart = function(settings, data){
+        options.build_chart = function(settings, data, chartList){
             nv.addGraph(function() {
-                var chart = nv.models.linePlusBarChart()
+                chart = nv.models.linePlusBarChart()
                 .x(function(d) { return d.x })   //We can modify the data accessor functions...
                 .y(function(d) { return d.y })   //...in case your data is formatted differently.
 
@@ -1116,9 +1150,9 @@ function DumpObjectIndented(obj, indent)
 
 (function($){
     $.fn.stackedline = function(options){
-        options.build_chart = function(settings, data){
+        options.build_chart = function(settings, data, chartList){
             nv.addGraph(function() {
-                var chart = nv.models.stackedAreaChart()
+                chart = nv.models.stackedAreaChart()
                 .x(function(d) { return d.x })   //We can modify the data accessor functions...
                 .y(function(d) { return d.y })   //...in case your data is formatted differently.
                 .useInteractiveGuideline(true)    //Tooltips which show all data points. Very nice!
@@ -1140,6 +1174,7 @@ function DumpObjectIndented(obj, indent)
                 nv.utils.windowResize(chart.update);
                 return chart
             });
+            return chart;
         };
         return $(this).chart(options);
     };
@@ -1463,18 +1498,18 @@ function DumpObjectIndented(obj, indent)
 
 (function($){
     $.fn.list = function(settings){
-        $(this).append("<div class=\"col-md-"+settings.columns+" dash-chart\"> \
+        $(this).append("<div class=\"col-md-"+settings.columns+" dash-chart\" id=\"trending\"> \
             <h3>"+settings.name+"</h3> \
-            <p><a target=\"_blank\" href=\"https://www.facebook.com/topic/Jon-Hamm/112468628768413\"><img class=\"trending\" src=\"/static/img/fb-trending.png\"></img>Jon Hamm</a></p> \
-            <p><a target=\"_blank\" href=\"https://www.facebook.com/topic/Germanwings/108639032494132\"><img class=\"trending\" src=\"/static/img/fb-trending.png\"></img>Germanwings</a></p> \
-            <p><a target=\"_blank\" href=\"https://www.facebook.com/topic/Big-Crunch/104023519633436\"><img class=\"trending\" src=\"/static/img/fb-trending.png\"></img>Big Crunch</a></p> \
-            <p><a target=\"_blank\" href=\"https://www.facebook.com/topic/Jesse-Eisenberg/104376719599635\"><img class=\"trending\" src=\"/static/img/fb-trending.png\"></img>Jesse Eisenberg</a></p> \
-            <p><a target=\"_blank\" href=\"https://www.facebook.com/topic/Triassic/109285719089300\"><img class=\"trending\" src=\"/static/img/fb-trending.png\"></img>Triassic</a></p> \
-            <p><a target=\"_blank\" href=\"https://www.facebook.com/topic/J-K-Rowling/112585118757481/\"><img class=\"trending\" src=\"/static/img/fb-trending.png\"></img>J.K. Rowling</a></p> \
-            <p><a target=\"_blank\" href=\"https://www.facebook.com/topic/New-York-Yankees/113063165374299\"><img class=\"trending\" src=\"/static/img/fb-trending.png\"></img>New York Yankees</a></p> \
-            <p><a target=\"_blank\" href=\"https://www.facebook.com/topic/Tataouine/107750969247738\"><img class=\"trending\" src=\"/static/img/fb-trending.png\"></img>Tataouine</a></p> \
-            <p><a target=\"_blank\" href=\"https://www.facebook.com/topic/Vietnam-Womens-Memorial/102916926429233\"><img class=\"trending\" src=\"/static/img/fb-trending.png\"></img>Vietnam Women&#39;s Memorial</a></p> \
-            <p><a target=\"_blank\" href=\"https://www.facebook.com/topic/Phil-Robertson/107609529268893\"><img class=\"trending\" src=\"/static/img/fb-trending.png\"></img>Phil Robertson</a></p> \
+            <p><a target=\"_blank\" data-rank=1 href=\"https://www.facebook.com/topic/Jon-Hamm/112468628768413\"><img class=\"trending\" src=\"/static/img/fb-trending.png\"></img>Jon Hamm</a></p> \
+            <p><a target=\"_blank\" data-rank=2 href=\"https://www.facebook.com/topic/Germanwings/108639032494132\"><img class=\"trending\" src=\"/static/img/fb-trending.png\"></img>Germanwings</a></p> \
+            <p><a target=\"_blank\" data-rank=3 href=\"https://www.facebook.com/topic/Big-Crunch/104023519633436\"><img class=\"trending\" src=\"/static/img/fb-trending.png\"></img>Big Crunch</a></p> \
+            <p><a target=\"_blank\" data-rank=4 href=\"https://www.facebook.com/topic/Jesse-Eisenberg/104376719599635\"><img class=\"trending\" src=\"/static/img/fb-trending.png\"></img>Jesse Eisenberg</a></p> \
+            <p><a target=\"_blank\" data-rank=5 href=\"https://www.facebook.com/topic/Triassic/109285719089300\"><img class=\"trending\" src=\"/static/img/fb-trending.png\"></img>Triassic</a></p> \
+            <p><a target=\"_blank\" data-rank=6 href=\"https://www.facebook.com/topic/J-K-Rowling/112585118757481/\"><img class=\"trending\" src=\"/static/img/fb-trending.png\"></img>J.K. Rowling</a></p> \
+            <p><a target=\"_blank\" data-rank=7 href=\"https://www.facebook.com/topic/New-York-Yankees/113063165374299\"><img class=\"trending\" src=\"/static/img/fb-trending.png\"></img>New York Yankees</a></p> \
+            <p><a target=\"_blank\" data-rank=8 href=\"https://www.facebook.com/topic/Tataouine/107750969247738\"><img class=\"trending\" src=\"/static/img/fb-trending.png\"></img>Tataouine</a></p> \
+            <p><a target=\"_blank\" data-rank=9 href=\"https://www.facebook.com/topic/Vietnam-Womens-Memorial/102916926429233\"><img class=\"trending\" src=\"/static/img/fb-trending.png\"></img>Vietnam Women&#39;s Memorial</a></p> \
+            <p><a target=\"_blank\" data-rank=10 href=\"https://www.facebook.com/topic/Phil-Robertson/107609529268893\"><img class=\"trending\" src=\"/static/img/fb-trending.png\"></img>Phil Robertson</a></p> \
         </div>");
     };
 })(jQuery);
