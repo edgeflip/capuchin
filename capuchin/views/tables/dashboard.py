@@ -6,13 +6,15 @@ from capuchin.views.tables import Column, Table, MongoTable
 import random
 import logging
 
-#TODO move all the html into templates and/or macros
+# TODO move all the html into templates and/or macros
+
 
 def post_type(val, record):
     try:
         return "<img src=\"{}\" />".format(record.icon)
     except:
         return ""
+
 
 def post_targeting(val, record):
     return """<span class="icon-globe"></span>"""
@@ -38,13 +40,15 @@ def post_engagement(val, record):
 
 
 def post_actions(val, record):
-    return """<div class="btn-group btn-group-xs" role="group" aria-label="...">
-            <a href="{}" class="btn btn-default">View</button>
-            <a href="{}" class="btn btn-default">Boost</button>
-        </div>""".format(
-            url_for('engagement.view', id=record.id),
-            url_for('notifications.create', post=record.id, engage=1)
-        )
+    return """\
+<div class="btn-group btn-group-xs" role="group" aria-label="...">
+    <a class="btn btn-default" href="{view_href}">View</a>
+    <a class="btn btn-default" href="#boost-modal" data-toggle="modal" data-target="#boost-modal" data-post="{post_id}">Boost</a>
+</div>""".format(
+        post_id=record.id,
+        view_href=url_for('engagement.view', id=record.id),
+    )
+
 
 def post_message(val, record):
     logging.info(val)
@@ -57,8 +61,10 @@ def post_message(val, record):
     mes = u"<div class=\"col-md-10\"><p>{}</p></div>".format(truncated_val)
     return u"{}{}".format(img, mes)
 
+
 def date_formatter(v, r):
     return date_format(r.created_time)
+
 
 post_columns = [
     Column('created_time', "Published", formatter=date_formatter, sortable=True),
@@ -70,20 +76,23 @@ post_columns = [
     Column('', '', formatter=post_actions, cls="actions"),
 ]
 
+
 class Posts(Table):
     cls = Post
     columns = post_columns
+
 
 def notif_message(v, r):
     return current_app.jinja_env.filters['truncate'](v, 25)
 
 notification_columns = [
     Column('created', 'Date', formatter=lambda v, r: date_format(v)),
-    Column('', 'Notification', formatter=lambda v,r: 'Notification'),
-    Column('', 'Segment', formatter=lambda v,r: r.segment.name),
+    Column('', 'Notification', formatter=lambda v, r: 'Notification'),
+    Column('', 'Segment', formatter=lambda v, r: r.segment.name),
     Column('message', 'Description', formatter=notif_message),
     Column('engagement', 'Click %', formatter=lambda v, r: "{}%".format(random.randint(2, 99)))
 ]
+
 
 class Notifications(MongoTable):
     cls = Notification

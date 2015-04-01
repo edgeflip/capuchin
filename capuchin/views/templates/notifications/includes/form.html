@@ -1,26 +1,36 @@
 <form class="form-notification" action="{{ url_for('notifications.save') }}" method="POST">
     {% if engage %}
-    <div class="form-group">
-        <label for="posts">Select a Post:</label>
-        <div class="row">
-            <div class="col-sm-9">
-                <select class="form-control" id="posts" tabindex="1" name="posts">
-                    {% for s in notification['posts'].hits %}
-                        <option value="{{s.id}}" {% if post_id == s.id %} selected{% endif %}>{{s.message|truncate(53)}}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-sm-3">
-                <a class="anchor form-link-new" href="#">New Post</a>
+    <div id="engagement">
+        <div class="form-group">
+            <label for="posts">Select a Post:</label>
+            <div class="row">
+                <div class="col-sm-9">
+                    <select class="form-control" id="posts" tabindex="1" name="posts">
+                        {% for s in notification['posts'].hits %}
+                            <option value="{{s.id}}" {% if post_id == s.id %} selected{% endif %}>{{s.message|truncate(53)}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <a class="anchor form-link-new" href="#">New Post</a>
+                </div>
             </div>
         </div>
-    </div>
-    <p>OR</p>
-    <div class="form-group">
-        <label for="url">Enter URL:</label>
-        <div class="row">
-            <div class="col-sm-9">
-                <input class="form-control" type="text" name="url" id="url" tabindex="2" placeholder="http://my-site.com/" />
+        <p>OR</p>
+        <div class="form-group">
+            <label for="url">Enter URL:</label>
+            <div class="row">
+                <div class="col-sm-9">
+                    <input class="form-control" type="text" name="url" id="url" tabindex="2" placeholder="http://my-site.com/" />
+                </div>
+            </div>
+        </div>
+        <div class="form-group boost-post">
+            <label>We'll boost:</label>
+            <div class="row">
+                <div class="col-sm-9">
+                    <div id="boosted-post"></div>
+                </div>
             </div>
         </div>
     </div>

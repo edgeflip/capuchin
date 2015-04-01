@@ -1,14 +1,58 @@
-$(document).ready(function(){
+$(document).ready(function () {
     register_table_sorting();
     init_create_button();
     register_paging();
     init_table_rows();
+
     // Anchors with rel="external" open their href in a new window.
-    $('a[rel="external"]').click(function (event) {
+    $('a[rel=external]').click(function (event) {
         event.preventDefault();
         window.open(this.href);
     });
+}).ready(function () {
+    /* Transform the boost modal for individual posts.
+     */
+    var modal = $('#boost-modal'),
+        engagement = $('#engagement');
+
+    if (modal.length === 0 || engagement.length === 0) {
+        return;
+    }
+
+    var posts = $('#posts'),
+        boostedPost = $('#boosted-post'),
+        postBooster = boostedPost.closest('.boost-post'),
+        defaults = engagement.children().not(postBooster),
+        lastValue = null;
+
+    postBooster.hide();
+
+    modal
+    .on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget),
+            postId = button.data('post'),
+            postSnippet;
+
+        if (postId) {
+            lastValue = posts.val();
+            postSnippet = posts.find('option[value="' + postId + '"]').text();
+            boostedPost.text(postSnippet);
+            posts.val(postId);
+            defaults.hide();
+            postBooster.show();
+        } else {
+            lastValue = null;
+        }
+    })
+    .on('hidden.bs.modal', function () {
+        if (lastValue) {
+            posts.val(lastValue);
+        }
+        postBooster.hide();
+        defaults.show();
+    });
 });
+
 
 function notify(cls, message){
     $("#notifications").html("<div class=\"alert alert-"+cls+" alert-dismissible\" role=\"alert\"> \
@@ -20,12 +64,11 @@ function notify(cls, message){
     }, 5000);
 }
 
-function init_table_rows(){
-    $(".table > tbody > tr").click(function(e){
-        console.log(e);
-        var url = $(e.currentTarget).data("url");
-        console.log(url);
-        window.location.href = url;
+function init_table_rows() {
+    $(".table > tbody > tr[data-url]").click(function(event) {
+        if ($(event.target).data('toggle') !== 'modal') {
+            window.location.href = $(event.currentTarget).data('url');
+        }
     });
     $('[data-toggle="tooltip"]').tooltip({
         html:'true',

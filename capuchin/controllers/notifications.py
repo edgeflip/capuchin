@@ -27,7 +27,6 @@ class NotificationsCreate(MethodView):
             "notifications/create.html",
             segments=Segment.find({'name': {'$ne': None}}),
             notification={'posts': posts, 'messages': config.MESSAGES},
-            messages=config.MESSAGES,
             segment_id=segment_id,
             post_id=post_id,
             engage=engage,

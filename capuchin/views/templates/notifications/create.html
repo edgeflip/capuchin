@@ -25,11 +25,7 @@ $(document).ready(function(){
 
 {% block content %}
 <div class="row">
-    {% if engage %}
-        <h3>Engage</h3>
-    {% else %}
-        <h3>Grow</h3>
-    {% endif %}
+    <h3>{% if engage %}Engage{% else %}Grow{% endif %}</h3>
     {% include "notifications/includes/form.html" %}
 </div>
 

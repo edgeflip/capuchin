@@ -14,13 +14,15 @@ db = Blueprint(
     template_folder=config.TEMPLATES,
 )
 
+
 @db.context_processor
 def notification_creation():
-    return {'notification':{
-        'posts':Post.records(client=current_user.client),
-        'messages':config.MESSAGES
+    return {'notification': {
+        'posts': Post.records(client=current_user.client, sort=('created_time', 'desc')),
+        'messages': config.MESSAGES
+        }
     }
-}
+
 
 class DashboardDefault(MethodView):
 
@@ -39,8 +41,8 @@ class DashboardDefault(MethodView):
             like_change = like_weekly_change()
             engagement_change = engagement_weekly_change()
         except:
-            like_change = {'change':0, 'total':0}
-            engagement_change = {'change':0, 'total':0}
+            like_change = {'change': 0, 'total': 0}
+            engagement_change = {'change': 0, 'total': 0}
 
         return render_template(
             "dashboard/index.html",
@@ -55,30 +57,31 @@ class DashboardDefault(MethodView):
 
 class DashboardChart(MethodView):
     charts = {
-        "page_by_type":page_by_type,
-        "engaged_users":engaged_users,
-        "country":country,
-        "online":online,
-        "notifications":notifications,
-        "likes":likes,
-        "like_gains":like_gains,
+        "page_by_type": page_by_type,
+        "engaged_users": engaged_users,
+        "country": country,
+        "online": online,
+        "notifications": notifications,
+        "likes": likes,
+        "like_gains": like_gains,
         "city_population": city_population,
-        "referrers":referrers,
-        "top_words":top_words,
-        "top_likes":top_likes,
+        "referrers": referrers,
+        "top_words": top_words,
+        "top_likes": top_likes,
         "total_growth_over_time": growth_over_time,
     }
-
 
     def get(self, chart_id):
         start_ts = request.args.get("start_ts", None)
         end_ts = request.args.get("end_ts", None)
         res = self.charts[chart_id](start=start_ts, end=end_ts)
-        obj = {'data':res.data}
+        obj = {'data': res.data}
         try:
             obj['date_format'] = res.date_format
-        except:pass
+        except:
+            pass
         return jsonify(**obj)
+
 
 db.add_url_rule("/", view_func=DashboardDefault.as_view('index'))
 db.add_url_rule("/chart/<chart_id>", view_func=DashboardChart.as_view('chart'))
