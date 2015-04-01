@@ -1035,7 +1035,6 @@ function DumpObjectIndented(obj, indent)
                     transformer:function(data) { return data.data.points; }
                 }
                 var chart = multiChart()
-                    .margin({top: 30, right: 60, bottom: 50, left: 70})
                     .tooltipContent(function (key, x, val, graph) {
                         if(key == "Benchmark %") {
                             return "Benchmark Engagement";
@@ -1044,6 +1043,11 @@ function DumpObjectIndented(obj, indent)
                         }
                     });
 
+                var margin = {top: 30, right: 60, bottom: 50, left: 70};
+                if(settings.leftmargin) {
+                    margin.left = settings.leftmargin;
+                }
+                chart.margin(margin);
                 if(!data.data) {
                     return chart;
                 }
