@@ -749,3 +749,10 @@ select {
 .q7-9 { fill:rgb(8,81,156); }
 .q8-9 { fill:rgb(8,48,107); }
 
+.audience_explorer {
+    display: none;
+}
+
+.audience_explorer a {
+    color: white;
+}

@@ -12,6 +12,8 @@ from capuchin.db import init_influxdb
 from flask_login import current_user
 from flask import current_app
 
+import random
+
 date_format = "%Y-%m-%dT%H:%M:%S+0000"
 
 def top_likes():
@@ -20,13 +22,13 @@ def top_likes():
         facet="likes.name"
     )
 
-def city_population(start, end):
+def city_population(start, end, request_args):
     return CityPopulation(client=current_user.client, top_n=200)
 
-def top_cities(start, end):
-    return TopCities(client=current_user.client, top_n=11)
+def top_cities(start, end, request_args):
+    return TopCities(client=current_user.client, top_n=11, cities_override=request_args.get('value', None))
 
-def audience_location():
+def audience_location(start, end, request_args):
     return AudienceLocation(client=current_user.client)
 
 def top_words():
@@ -101,12 +103,12 @@ def likes():
         date_format = "%m/%d/%y"
     )
 
-def growth_vs_competitors(start, end):
+def growth_vs_competitors(start, end, request_args):
     return DummyHorizontalBarChart('Growth vs Competitors (last week)', {
-        'You': 0.03,
-        'Greenpeace': 0.01,
-        'WWF': 0.07,
-        'NRDC': 0.04,
+        'You': random.random()/10,
+        'Greenpeace': random.random()/10,
+        'WWF': random.random()/10,
+        'NRDC': random.random()/10,
     })
     comparables = \
         [{ 'series': 'insights.{}.page_fans.lifetime', 'display': 'You'}] +\
@@ -130,7 +132,7 @@ def generate_points(daily_values):
         for days_back, v in enumerate(reversed(daily_values))
     ]
 
-def growth_over_time(start, end):
+def growth_over_time(start, end, request_args):
 
     audience_dataset = generate_points([200, 202, 210, 211, 212, 212, 214, 216, 220, 221, 222, 224, 227, 230, 232, 234, 236, 238, 240, 242, 245, 250, 248, 254, 255, 250])
     pagelike_dataset = generate_points([390, 392, 395, 400, 402, 405, 407, 408, 410, 413, 416, 418, 420, 425, 430, 435, 440, 445, 450, 458, 475, 492, 502, 528, 530, 545])
@@ -157,7 +159,7 @@ def growth_over_time(start, end):
     )
 
 
-def net_growth_per_day(start, end):
+def net_growth_per_day(start, end, request_args):
     audience_dataset = generate_points([2, 3, 5, -2, 6, 1, -5])
     pagelike_dataset = generate_points([8, 17, 17, 10, 26, 2, 15])
 
@@ -183,7 +185,7 @@ def net_growth_per_day(start, end):
     )
 
 
-def audience_by_source(start, end):
+def audience_by_source(start, end, request_args):
     return DummyPieChart('Audience by Source', {
         'Smart Sharing': 25,
         'Email': 87,
@@ -198,14 +200,31 @@ def age_and_gender():
         {'13-17': 21, '18-24': 22},
     ]
 
-def gender():
-    return AudiencePie(
-        current_user.client,
-        'gender'
-    )
+def gender(start, end, request_args):
+    if 'chart' in request_args:
+        if request_args['chart'] == 'gender':
+            gender = request_args['label']
+            if gender == 'male':
+                args = { 'male': 100, 'female': 0, }
+            else:
+                args = { 'female': 100, 'male': 0, }
+        else:
+            dice_roll = random.randint(30, 70)
+            args = { 'male': dice_roll, 'female': 100-dice_roll }
+
+        return DummyPieChart(
+            'Gender',
+            args
+        )
+
+    else:
+        return AudiencePie(
+            current_user.client,
+            'gender'
+        )
 
 
-def age():
+def age(start, end, request_args):
     def age_formatter(x, y):
         return "<div class='overhead-popover'>Ages " + str(x) + ": " + str(y) + " users</div>"
 
@@ -247,17 +266,27 @@ def age():
             "from": 65
           }
     ]
+    randomize = False
+    solo = None
+    if 'chart' in request_args:
+        if request_args['chart'] == 'age':
+            solo = request_args['label']
+        else:
+            randomize = True
+
     return AudienceRangeBar(
         current_user.client,
         field="age",
         ranges=ranges,
         tooltip_formatter=age_formatter,
         key_formatter=key_formatter,
+        randomize=randomize,
+        solo=solo
     )
 
 
-def interests():
-    return DummyHorizontalBarChart('Interests', {
+def interests(start, end, request_args):
+    interests = {
         'Education': .09,
         'Gender and sexuality': .09,
         'Charitable donations': .12,
@@ -268,9 +297,16 @@ def interests():
         'Politics (left-leaning)': .72,
         'Nonprofits and advocacy': .85,
         'Environmental issues': .97,
-    })
+    }
 
-def actions():
+    if 'chart' in request_args:
+        for k in interests:
+            interests[k] += round(random.random() / 4 - 0.125, 2)
+            interests[k] = min(interests[k], 1.0)
+
+    return DummyHorizontalBarChart('Interests', interests)
+
+def actions(start, end, request_args):
     return DummyHorizontalBarChart('Interests', {
         'Donated to Charity': .42,
         'Attended a Concert': .12,
@@ -278,7 +314,7 @@ def actions():
     })
 
 
-def hours_active():
+def hours_active(start, end, request_args):
     def hour_tooltip_formatter(x, y):
         hour = int(x)
         if hour == 0:
@@ -295,10 +331,11 @@ def hours_active():
         current_user.client,
         typ="page_fans_online.day",
         tooltip_formatter=hour_tooltip_formatter,
+        randomize='chart' in request_args,
     )
 
 
-def post_performance(start, end):
+def post_performance(start, end, request_args):
     posts = Post.records(current_user.client, "*", 0, 45, ('created_time', 'desc'))
     base_dataset = []
     #INFLUX = init_influxdb()
@@ -364,11 +401,11 @@ def post_performance(start, end):
 
 
 
-def share_like_ratios():
-    return DummyHorizontalBarChart('Share-Like Ratios (last five posts)', {
-        'You': 0.06,
-        'Greenpeace': 0.04,
-        'WWF': 0.07,
+def share_like_ratios(start, end, request_args):
+    return DummyHorizontalBarChart('Share-Fan Ratios (last five posts)', {
+        'You': random.random()/10,
+        'Greenpeace': random.random()/10,
+        'WWF': random.random()/10,
         'NRDC': 0.04,
     })
 
