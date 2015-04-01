@@ -564,7 +564,7 @@ class TopCities(object):
             total = sum(val['value'] for val in values)
             for val in values:
                 val['value'] *= float(val['value'])/total
-                val['value'] = int(val['value'])
+                val['value'] = max(int(val['value']), 1)
         self.data = [{
             'key': 'Top Cities',
             'values':values
