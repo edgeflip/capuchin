@@ -41,7 +41,7 @@ class Notification(orm.Document):
         return Post(id=self.post_id)
 
     def get_url(self):
-        return "https://facebook.com/{}".format(self.post_id) if self.post_id else self.url
+        return Post.make_fb_url(self.post_id) if self.post_id else self.url
 
 
 Segment.notifications = orm.Lazy(type=Notification, key='segment')

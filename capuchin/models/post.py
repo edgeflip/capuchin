@@ -27,15 +27,21 @@ class Post(ESObject):
     def url(self):
         return url_for('engagement.view', id=self.id)
 
-    def _idparts(self):
-        return self.id.split('_')
+    @staticmethod
+    def _split_id(full_id):
+        return full_id.split('_')
+
+    @classmethod
+    def make_fb_url(cls, full_id):
+        (page_id, post_id) = cls._split_id(full_id)
+        return 'https://facebook.com/{}/posts/{}'.format(page_id, post_id)
 
     @property
     def page_id(self):
-        (page_id, _post_id) = self._idparts()
+        (page_id, _post_id) = self._split_id(self.id)
         return page_id
 
     @property
     def fbid(self):
-        (_page_id, post_id) = self._idparts()
+        (_page_id, post_id) = self._split_id(self.id)
         return post_id
