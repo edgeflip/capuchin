@@ -79,7 +79,7 @@ class FBInsightsDiscreteBarChart(InfluxChart):
         for a in data[0]['points']:
             y = a[1]
             if self.randomize:
-                y += random.randint(-y/5, y/5)
+                y += random.randint(int(-y/5), int(y/5))
             x = a[2]
             tooltips[x] = self.tooltip_formatter(x, y)
             values.append({
