@@ -563,7 +563,8 @@ class TopCities(object):
         if cities_override:
             total = sum(val['value'] for val in values)
             for val in values:
-                val['value'] *= val['value']/total
+                val['value'] *= float(val['value'])/total
+                val['value'] = int(val['value'])
         self.data = [{
             'key': 'Top Cities',
             'values':values

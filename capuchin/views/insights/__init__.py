@@ -303,6 +303,7 @@ def interests(start, end, request_args):
         for k in interests:
             interests[k] += round(random.random() / 4 - 0.125, 2)
             interests[k] = min(interests[k], 1.0)
+            interests[k] = max(interests[k], 0.0)
 
     return DummyHorizontalBarChart('Interests', interests)
 
