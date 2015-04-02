@@ -460,6 +460,9 @@ form[role=search] .btn .glyphicon-search {
     font-size: 14px;
     height: 28px;
     padding: 3px 20px 3px 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .form-notification .form-control {
     border: 1px solid #4785AB;

@@ -73,7 +73,7 @@ $(document).ready(function () {
                 // try to grab snippet from button's row in table
                 postSnippet = button.closest('tr').find('.post-detail').text();
             }
-            boostedPost.text(truncate(postSnippet, 55));
+            boostedPost.text(truncate(postSnippet, 70));
             postDefaults.hide();
             postBooster.show();
         } else {
