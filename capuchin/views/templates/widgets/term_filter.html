@@ -15,10 +15,14 @@
             console.log(filters);
             refresh(e);
         },
+        select: function(e, ui) {
+            refresh(e);
+        },
         delete: function(e, ui){
             var val = $(e).data('value');
             delete ui.selectedItems[val];
             delete filters["{{filter['field']}}"];
+            refresh(e);
             console.log("REMOVED", filters);
         }
     });
