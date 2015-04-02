@@ -13,6 +13,7 @@
         change: function(e, ui){
             filters["{{filter['field']}}"] = ui.item.value;
             console.log(filters);
+            refresh(e);
         },
         delete: function(e, ui){
             var val = $(e).data('value');

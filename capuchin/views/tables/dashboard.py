@@ -99,3 +99,24 @@ notification_columns = [
 class Notifications(MongoTable):
     cls = Notification
     columns = notification_columns
+
+    def build_rows(self, records):
+        real_rows = super(Notifications, self).build_rows(records)
+
+        data = (
+            ('3/19/2015', 'Notification', 'Urban 18-35', '{Name}, take five minutes to watch this video.', '54%'),
+            ('3/18/2015', 'Notification', 'Politically Active', '{Name}, help us move the political needle on this important issue!', '63%'),
+            ('3/17/2015', 'Notification', 'All Supporters', '{Name}, you need to see this...', '41%'),
+        )
+        for row in data:
+            td = [u"<tr data-url=\"None\">"]
+            for field in row:
+                td.append(u"<td>{}</td>".format(field))
+            td.append(u"</tr>")
+            real_rows.append(u"".join(td))
+        return real_rows
+
+
+    def get_records(self, q, from_, size, sort):
+        records, total = super(Notifications, self).get_records(q, from_, size, sort)
+        return records, total+3

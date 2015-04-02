@@ -8,5 +8,6 @@
     $("#import_origins{{filter['field']|string|slugify}}").change(function(e){
         filters["{{filter['field']}}"] = e.target.value;
         console.log(filters);
+        refresh(e);
     });
 </script>

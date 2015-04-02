@@ -44,19 +44,20 @@
         });
     }
 
+    var refresh = function(e){
+        collect_filters();
+        update_filters(true);
+        return false;
+    }
+
     $(document).ready(function(){
-        $("#segment-refresh").click(function(e){
-            collect_filters();
-            update_filters(true);
-            return false;
-        });
+        $("#segment-refresh").click(refresh);
 
         $("#segment-save").click(function(e){
             collect_filters();
             update_filters();
             return false;
         });
-
     });
 
 

@@ -123,13 +123,19 @@ class View(MethodView):
 class Create(MethodView):
 
     def get(self, id=None, page=0, template=None, segment=None):
-        if not segment:
-            segment, _id = get_segment(id)
+        logging.debug("segment %r", segment)
+        if segment:
+            _id = id
+        else:
+            (segment, _id) = get_segment(id)
+
         if not id:
             return redirect(url_for(".id", id=_id))
+
         users = render_table(SegmentUsers)
         if not users:
-            users = SegmentUsers(current_user.client, str(_id)).render()
+            users = SegmentUsers(current_user.client, segment).render()
+
         tmpl = template if template else "audience/create.html"
         lists = segment.get_lists()
         interests = Interest.find()
