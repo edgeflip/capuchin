@@ -45,7 +45,7 @@ div.post-preview{
     border: 4px solid #eeeeee;
 }
 
-.modal-body a{
+.modal-body a {
     margin-bottom: 30px;
 }
 
@@ -428,6 +428,10 @@ table td img.table-image{
 
 .sidebar {
     padding-top: 70px;
+}
+
+#grow-modal .btn {
+    min-width: 190px;
 }
 
 form[role=search] input {
