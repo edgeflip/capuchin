@@ -29,6 +29,10 @@
     <div class="col-md-9">
         <h3>Segments <a href="{{ url_for('.create') }}" class="btn btn-primary btn-action">New Segment</a></h3>
         {{segments.render(q={"name": {"$ne": None}}) | safe}}
+        <div id="records">
+            <h3>Your Audience</h3>
+            {% include "audience/records.html" %}
+        </div>
     </div>
     <div class="col-md-3 sidebar">
         <div class="smart-segment">
