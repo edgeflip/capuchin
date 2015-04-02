@@ -1,28 +1,34 @@
 {% set qualifier = values.get(filter['field'].replace(".", "___"), {}).get('qualifier') %}
 {% set val = values.get(filter['field'].replace(".", "___"), {}).get('value') %}
-<div class="col-md-6">
-    <select name="engagement_qualifier" class="form-control engagement">
-        <option value="eq" {% if qualifier == 'eq' %}selected{%endif%}>Exactly</option>
-        <option value="gte" {% if qualifier == 'gte' %}selected{%endif%}>At Least</option>
-    </select>
-</div>
-<div class="col-md-6">
-    <input type="number" max=5 min=1 step=1 value={{val}} name='engagement_value' class='engagement'/>
-    {#
-    <span class="glyphicon glyphicon-star"></span>
-    <span class="glyphicon glyphicon-star"></span>
-    <span class="glyphicon glyphicon-star"></span>
-    <span class="glyphicon glyphicon-star-empty"></span>
-    <span class="glyphicon glyphicon-star-empty"></span>
-    #}
+<div id="range{{filter['field']|string|slugify}}"></div>
+<div class="row">
+    <div class="col-md-6">
+        <div id="range-{{filter['field']|string|slugify}}-min" class="range-min pull-left">
+            {{values.get(filter['field'], [1])[0]}}
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div id="range-{{filter['field']|string|slugify}}-max" class="range-max pull-right">
+            {{values.get(filter['field'], [1, 5])[1]}}
+        </div>
+    </div>
 </div>
 <script>
-    $(".engagement").change(function(e){
-        filters["{{filter['field']}}"] = {
-            qualifier: $("select[name='engagement_qualifier']").val(),
-            value: $("input[name='engagement_value']").val(),
-        }
+var {{filter['field']|string|slugify}} = [{{values.get(filter['field'], 1)}}, {{values.get(filter['field'], 5)}}];
+$("#range{{filter['field']|string|slugify}}").slider({
+    animate:"fast",
+    max:5,
+    min:1,
+    range:true,
+    values:[{{values.get(filter['field'], [1])[0]}}, {{values.get(filter['field'], [1, 5])[1]}}],
+    slide:function(e, ui){
+        {{filter['field']|string|slugify}} = ui.values;
+        $("#range-{{filter['field']|string|slugify}}-min").html(ui.values[0]);
+        var val = ui.values[1];
+        $("#range-{{filter['field']|string|slugify}}-max").html(val);
+        filters["{{filter['field']}}"] = ui.values;
         console.log(filters);
         refresh(e);
-    });
+    }
+});
 </script>
