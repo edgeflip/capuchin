@@ -71,23 +71,7 @@ $(document).ready(function(){
 {% endblock %}
 
 {% block content %}
-    <div class="modal fade" id="grow-modal" tabindex="-1" role="dialog" aria-labelledby="Grow Audience" aria-hidden="true">
-        <div class="modal-dialog modal-sm">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="modal-title">Grow Audience</h4>
-                </div>
-                <div class="modal-body" id="modal-body" style="text-align: center;">
-                    <a href="#" class="btn btn-danger">Convert Facebook Fans</a><br />
-                    <a href="#" class="btn btn-default">Convert External List</a><br />
-                    <a href="#" class="btn btn-default">Smart Sharing Invite</a><br />
-                    <a href="#" class="btn btn-default">Generate Invite URL</a><br />
-                </div>
-            </div>
-        </div>
-    </div>
-    {% include "notifications/includes/modal.html" %}
+    {% include "audience/includes/modal.html" %}
     {% from "widgets/bucket.html" import bucket %}
     <div class="row buckets">
         <div class="col-md-3 right-carot">

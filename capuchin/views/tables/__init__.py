@@ -29,7 +29,7 @@ class Column(object):
                 dir=s_dir,
                 **kwargs
             )
-            v = "<a class=\"table_sort\" data-id=\"{}\" href=\"{}\">{}</a>".format(id, link, v)
+            v = u'<a class="table_sort" data-id="{}" href="{}">{}</a>'.format(id, link, v)
         return u"<th>{}</th>".format(v)
 
     def td(self, value, record):

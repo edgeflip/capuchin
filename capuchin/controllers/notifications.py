@@ -4,7 +4,6 @@ from flask.views import MethodView
 
 from capuchin import config
 from capuchin.models.segment import Segment
-from capuchin.models.post import Post
 from capuchin.models.notification import Notification
 from capuchin.workers.notifications import get_redirect_url, send_notifications
 
@@ -17,20 +16,6 @@ class NotificationsDefault(MethodView):
 
 
 class NotificationsCreate(MethodView):
-
-    def get(self):
-        posts = Post.records(client=current_user.client)
-        segment_id = request.args.get('segment')
-        post_id = request.args.get('post')
-        engage = request.args.get("engage")
-        return render_template(
-            "notifications/create.html",
-            segments=Segment.find({'name': {'$ne': None}}),
-            notification={'posts': posts, 'messages': config.MESSAGES},
-            segment_id=segment_id,
-            post_id=post_id,
-            engage=engage,
-        )
 
     def post(self):
         notification = Notification()
@@ -56,5 +41,4 @@ notifications = Blueprint(
 )
 
 notifications.add_url_rule("/notifications", view_func=NotificationsDefault.as_view('index'))
-notifications.add_url_rule("/notifications/create", view_func=NotificationsCreate.as_view('create'))
 notifications.add_url_rule("/notifications/save", view_func=NotificationsCreate.as_view('save'))

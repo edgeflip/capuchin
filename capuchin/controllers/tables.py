@@ -80,6 +80,7 @@ def render_table(cls):
     except ImportError as e:
         logging.exception(e)
 
+
 class TableOrder(MethodView):
 
     def get(self, cls):

@@ -1,16 +1,39 @@
-from flask import Flask, redirect, url_for, request, g
-from flask_pjax import PJAX
-from flask.ext.login import LoginManager, current_user
-from flask.ext.session import Session
-from capuchin.models.client import Admin
-from capuchin import db
-from capuchin.util import date_format, to_json
-from slugify import slugify
-import humongolus
-from capuchin import config
 import logging
 
+import humongolus
+from flask import Flask, redirect, url_for, request, g
+from flask.ext.login import LoginManager, current_user
+from flask.ext.session import Session
+from flask_pjax import PJAX
+from slugify import slugify
+
+from capuchin import config
+from capuchin import db
+from capuchin.models.client import Admin
+from capuchin.models.post import Post
+from capuchin.util import date_format, to_json
+
+
 logging.basicConfig(level=config.LOG_LEVEL)
+
+
+def load_user(id):
+    try:
+        logging.debug("Loading User: %s", id)
+        return Admin(id=id)
+    except Exception as e:
+        logging.exception(e)
+        return None
+
+
+def notification_context():
+    return {
+        'notification': {
+            'messages': config.MESSAGES,
+            'posts': Post.records(client=current_user.client, sort=('created_time', 'desc')),
+            'segments': current_user.client.segments(query={"name": {"$ne": None}}),
+        }
+    }
 
 
 class Capuchin(Flask):
@@ -39,19 +62,11 @@ class Capuchin(Flask):
         })
         return resp
 
-    def load_user(self, id):
-        try:
-            logging.info("Loading User: {}".format(id))
-            a = Admin(id=id)
-            return a
-        except Exception as e:
-            logging.exception(e)
-            return None
-
     def init_templates(self):
         self.jinja_env.filters['slugify'] = slugify
         self.jinja_env.filters['date_format'] = date_format
         self.jinja_env.filters['to_json'] = to_json
+        self.context_processor(notification_context)
 
     def init_session(self):
         self.config['SESSION_MONGODB'] = db.init_mongodb()
@@ -62,7 +77,7 @@ class Capuchin(Flask):
     def init_login(self):
         self.login_manager = LoginManager()
         self.login_manager.init_app(self)
-        self.login_manager.user_callback = self.load_user
+        self.login_manager.user_callback = load_user
         self.login_manager.login_view = "auth.login"
 
     def user_logged_in(self):

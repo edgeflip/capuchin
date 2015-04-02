@@ -442,7 +442,7 @@ form[role=search] .btn .glyphicon-search {
 .form-notification [class^=col-sm-] {
     padding-right: 0;
 }
-#boosted-post {
+.form-notification .static-control {
     border: 1px solid #8F8F8F;
     border-radius: 5px;
     color: #555;

@@ -1,10 +1,12 @@
+import logging
+import random
+
 from flask import current_app, url_for
-from capuchin.models.post import Post
+
 from capuchin.models.notification import Notification
+from capuchin.models.post import Post
 from capuchin.util import date_format
 from capuchin.views.tables import Column, Table, MongoTable
-import random
-import logging
 
 # TODO move all the html into templates and/or macros
 
@@ -43,7 +45,7 @@ def post_actions(val, record):
     return """\
 <div class="btn-group btn-group-xs" role="group" aria-label="...">
     <a class="btn btn-default" href="{view_href}">View</a>
-    <a class="btn btn-default" href="#boost-modal" data-toggle="modal" data-target="#boost-modal" data-post="{post_id}">Boost</a>
+    <a class="btn btn-default" href="#boost-modal" data-toggle="modal" data-target="#boost-modal" data-post="{post_id}" data-title="Boost a Post">Boost</a>
 </div>""".format(
         post_id=record.id,
         view_href=url_for('engagement.view', id=record.id),
@@ -58,7 +60,7 @@ def post_message(val, record):
         img = "<div class=\"col-md-2\"></div>"
     truncated_val = current_app.jinja_env.filters['truncate'](val, 120)
     logging.info(truncated_val)
-    mes = u"<div class=\"col-md-10\"><p>{}</p></div>".format(truncated_val)
+    mes = u'<div class="col-md-10"><p class="post-detail">{}</p></div>'.format(truncated_val)
     return u"{}{}".format(img, mes)
 
 

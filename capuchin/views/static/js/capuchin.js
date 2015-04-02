@@ -1,6 +1,5 @@
 $(document).ready(function () {
     register_table_sorting();
-    init_create_button();
     register_paging();
     init_table_rows();
 
@@ -13,43 +12,100 @@ $(document).ready(function () {
     /* Transform the boost modal for individual posts.
      */
     var modal = $('#boost-modal'),
-        engagement = $('#engagement');
+        // posts
+        posts = $('#posts'),
+        boostedPost = $('#boosted-post'),
+        postBooster = boostedPost.closest('.form-group'),
+        postDefaults = $('#engagement').children().not(postBooster),
+        // segments
+        segments = $('#segments'),
+        engagedSegment = $('#engaged-segment'),
+        segmentEngager = engagedSegment.closest('.form-group'),
+        segmentDefault = segments.closest('.form-group');
 
-    if (modal.length === 0 || engagement.length === 0) {
+    postBooster.hide();
+    segmentEngager.hide();
+
+    if (modal.length === 0) {
         return;
     }
 
-    var posts = $('#posts'),
-        boostedPost = $('#boosted-post'),
-        postBooster = boostedPost.closest('.boost-post'),
-        defaults = engagement.children().not(postBooster),
-        lastValue = null;
+    var modalTitle = $('#boost-title'),
+        options = ['title', 'post', 'segment'],
+        optionParser = function (attrs, key) {
+            attrs[key] = this.data(key);
+            return attrs;
+        },
+        lastValues = {};
 
-    postBooster.hide();
+    function truncate (text, size) {
+        var clean = text.trim();
+        if (clean.length <= size) {
+            return clean;
+        } else {
+            return clean.substring(0, size - 2).trim() + " \u2026"; 
+        }
+    }
 
     modal
     .on('show.bs.modal', function (event) {
+        /* Configure modal content given calling button's custom options
+         */
         var button = $(event.relatedTarget),
-            postId = button.data('post'),
-            postSnippet;
+            attrs = options.reduce(optionParser.bind(button), {}),
+            postSnippet,
+            segmentName;
 
-        if (postId) {
-            lastValue = posts.val();
-            postSnippet = posts.find('option[value="' + postId + '"]').text();
-            boostedPost.text(postSnippet);
-            posts.val(postId);
-            defaults.hide();
+        if (attrs.title) {
+            lastValues.title = modalTitle.text();
+            modalTitle.text(attrs.title);
+        } else {
+            lastValues.title = null;
+        }
+
+        if (attrs.post) {
+            // Set selected post text and set its id in the true form input
+            lastValues.post = posts.val();
+            posts.val(attrs.post);
+            postSnippet = posts.find('option[value="' + attrs.post + '"]').text();
+            if (!postSnippet) {
+                // Post isn't in default list;
+                // try to grab snippet from button's row in table
+                postSnippet = button.closest('tr').find('.post-detail').text();
+            }
+            boostedPost.text(truncate(postSnippet, 55));
+            postDefaults.hide();
             postBooster.show();
         } else {
-            lastValue = null;
+            lastValues.post = null;
+        }
+
+        if (attrs.segment) {
+            // Set the selected segment text and set its id in the true form input
+            lastValues.segment = segments.val();
+            segments.val(attrs.segment);
+            segmentName = segments.find('option[value="' + attrs.segment + '"]').text();
+            engagedSegment.text(segmentName);
+            segmentDefault.hide();
+            segmentEngager.show();
+        } else {
+            lastValues.segment = null;
         }
     })
     .on('hidden.bs.modal', function () {
-        if (lastValue) {
-            posts.val(lastValue);
+        /* Revert modal to initial state
+         */
+        if (lastValues.title) {
+            modalTitle.text(lastValues.title);
+        }
+        if (lastValues.post) {
+            posts.val(lastValues.post);
+        }
+        if (lastValues.segment) {
+            segments.val(lastValues.segment);
         }
         postBooster.hide();
-        defaults.show();
+        postDefaults.show();
     });
 });
 
@@ -77,13 +133,6 @@ function init_table_rows() {
     });
 };
 
-function init_create_button(){
-    $("ul.nav li a.create").click(function(e){
-        $("#modal-title").html(document.title);
-        $("#modal-body").html("This is the modal content for:<strong>"+ document.title +"</strong>");
-        $("#modal").modal({});
-    });
-};
 
 function register_table_sorting(){
     $(".table_sort").click(function(e){

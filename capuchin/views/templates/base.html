@@ -30,22 +30,8 @@
         {% block head %}{% endblock %}
     </head>
     <body>
-        <!-- Modal -->
-        <div class="modal fade bs-example-modal-lg" id="modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="modal-title">{% block modal_title %}MODAL!!!{% endblock %}</h4>
-                    </div>
-                    <div class="modal-body" id="modal-body">{% block modal_body %}You know you want to click this!{% endblock %}</div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">Save changes</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+    {% block body %}
+        {% include "notifications/includes/modal.html" %}
         {% block container %}
         <div class='container'>
             {% block menu %}
@@ -119,7 +105,7 @@
                             {% endfor %}
                         </ul>
                         <ul class="nav navbar-nav navbar-right">
-                            <li><a class="btn btn-default btn-action" href="#">Create</a></li>
+                            <li><a class="btn btn-default btn-action" href="#boost-modal" data-toggle=modal data-target="#boost-modal">Create</a></li>
                         </ul>
                     </div><!-- /#navbar-1 -->
                 </div><!-- /.container -->
@@ -165,5 +151,6 @@
             </div>
             {% endblock %}
         </footer>
+    {% endblock %}
     </body>
 </html>

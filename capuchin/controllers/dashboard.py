@@ -1,11 +1,11 @@
 from flask import Blueprint, render_template, request, jsonify
-from flask.views import MethodView
 from flask.ext.login import current_user
+from flask.views import MethodView
+
 from capuchin import config
-from capuchin.models.post import Post
 from capuchin.controllers.tables import render_table
+from capuchin.views import insights
 from capuchin.views.tables.dashboard import Posts
-from capuchin.views.insights import *
 
 
 db = Blueprint(
@@ -15,22 +15,9 @@ db = Blueprint(
 )
 
 
-@db.context_processor
-def notification_creation():
-    return {'notification': {
-        'posts': Post.records(client=current_user.client, sort=('created_time', 'desc')),
-        'messages': config.MESSAGES
-        }
-    }
-
-
 class DashboardDefault(MethodView):
 
     def get(self):
-        first = request.args.get("first")
-        lists = current_user.client.lists()
-        segments = current_user.client.segments(query={"name": {"$ne": None}})
-
         posts = render_table(Posts)
         if not posts:
             posts = Posts(current_user.client).render(size=5,
@@ -38,8 +25,8 @@ class DashboardDefault(MethodView):
                                                       sort=('created_time', 'desc'))
 
         try:
-            like_change = like_weekly_change()
-            engagement_change = engagement_weekly_change()
+            like_change = insights.like_weekly_change()
+            engagement_change = insights.engagement_weekly_change()
         except:
             like_change = {'change': 0, 'total': 0}
             engagement_change = {'change': 0, 'total': 0}
@@ -49,26 +36,24 @@ class DashboardDefault(MethodView):
             posts=posts,
             like_change=like_change,
             engagement_change=engagement_change,
-            lists=lists,
-            segments=segments,
-            first=first,
         )
 
 
 class DashboardChart(MethodView):
+
     charts = {
-        "page_by_type": page_by_type,
-        "engaged_users": engaged_users,
-        "country": country,
-        "online": online,
-        "notifications": notifications,
-        "likes": likes,
-        "like_gains": like_gains,
-        "city_population": city_population,
-        "referrers": referrers,
-        "top_words": top_words,
-        "top_likes": top_likes,
-        "total_growth_over_time": growth_over_time,
+        "page_by_type": insights.page_by_type,
+        "engaged_users": insights.engaged_users,
+        "country": insights.country,
+        "online": insights.online,
+        "notifications": insights.notifications,
+        "likes": insights.likes,
+        "like_gains": insights.like_gains,
+        "city_population": insights.city_population,
+        "referrers": insights.referrers,
+        "top_words": insights.top_words,
+        "top_likes": insights.top_likes,
+        "total_growth_over_time": insights.growth_over_time,
     }
 
     def get(self, chart_id):
