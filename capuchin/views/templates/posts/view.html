@@ -11,25 +11,24 @@ $(document).ready(function(){
         name:"2-Day Performance",
         data_url:"{{url_for('.chart', chart_id='engagement', post_id=post.id)}}",
         date_format:"%-m-%d %-I %p",
-        height:250,
-        legend_x:-20,
-        legend_y:190,
+        height:300,
         has_circles:false,
-    }).render(8, chartList);
-    $("#audience_charts").bar({
-        name:"Age",
+        leftmargin: 20,
+    }).render(4, chartList);
+    $("#charts").bar({
+        name:"Audience Age",
         data_url:"{{url_for('.chart', chart_id='age', post_id=post.id)}}",
         height: 300,
         yShowMaxMin: false,
         yformat: ',.0f',
     }).render(4, chartList);
-    $("#audience_charts").pie({
-        name: "Gender",
+    $("#charts").pie({
+        name: "Audience Gender",
         data_url:"{{url_for('.chart', chart_id='gender', post_id=post.id)}}",
         height: 300,
     }).render(4, chartList);
-    $("#audience_charts").horizontal_percent_multibar({
-        name:"Interests",
+    $("#charts").horizontal_percent_multibar({
+        name:"Audience Interests",
         data_url:"{{url_for('.chart', chart_id='interests', post_id=post.id)}}",
         height:300,
     }).render(4, chartList);
@@ -40,7 +39,7 @@ $(document).ready(function(){
 {% block content %}
 <div class="row">
     <ol class="breadcrumb">
-        <li>Measure</li>
+        <li>Engagement</li>
         <li>{{post.message|truncate(25)}}</li>
     </ol>
 </div>
@@ -58,13 +57,6 @@ $(document).ready(function(){
         <div class="fb-post post-preview" data-href="https://www.facebook.com/{{post.page_id}}/posts/{{post.fbid}}" data-width="350"></div>
     </div>
     <div id="charts"></div>
-</div>
-<div class="row">
-    <div id="audience_charts">
-        <h3>Audience Profiles</h3>
-    </div>
-</div>
-<div class="row">
     <h3>Activity</h3>
     {{notifications.render({"post_id": post.id})|safe}}
 </div>
