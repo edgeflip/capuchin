@@ -28,11 +28,17 @@ def load_user(id):
 
 
 def notification_context():
+    if current_user.is_authenticated():
+        posts = Post.records(client=current_user.client, sort=('created_time', 'desc'))
+        segments = LazySequence(current_user.client.segments(query={"name": {"$ne": None}}))
+    else:
+        posts = segments = ()
+
     return {
         'notification': {
             'messages': config.MESSAGES,
-            'posts': Post.records(client=current_user.client, sort=('created_time', 'desc')),
-            'segments': LazySequence(current_user.client.segments(query={"name": {"$ne": None}})),
+            'posts': posts,
+            'segments': segments,
         }
     }
 
