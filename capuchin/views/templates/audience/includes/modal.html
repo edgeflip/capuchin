@@ -1,15 +1,49 @@
-<div class="modal fade" id="grow-modal" tabindex="-1" role="dialog" aria-labelledby="Grow Audience" aria-hidden="true">
+<div class="modal modal-intermediary fade" id="grow-modal" tabindex="-1" role="dialog" aria-labelledby="Grow Audience" aria-hidden="true">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="modal-title">Grow Audience</h4>
+                <h4 class="modal-title" id="grow-title">Grow Audience</h4>
             </div>
-            <div class="modal-body" id="modal-body" style="text-align: center;">
-                <a href="#" class="btn btn-danger">Invite Facebook Fans</a><br />
-                <a href="#" class="btn btn-default">Invite External List</a><br />
-                <a href="#" class="btn btn-default">Smart Sharing Invite</a><br />
-                <a href="#" class="btn btn-default">Generate Invite URL</a><br />
+            <div class="modal-body text-center" id="grow-body">
+                <ul class="list-unstyled">
+                    <li><a href="#fans-modal" data-toggle=modal data-target="#fans-modal" data-dismiss=modal class="btn btn-danger">Invite Facebook Fans</a></li>
+                    <li><a href="#" class="btn btn-default">Invite External List</a></li>
+                    <li><a href="#share-modal" data-toggle=modal data-target="#share-modal" data-dismiss=modal class="btn btn-default">Smart Sharing Invite</a></li>
+                    <li><a href="#" class="btn btn-default">Generate Invite URL</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="fans-modal" tabindex="-1" role="dialog" aria-labelledby="Invite Facebook Fans" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="fans-title">Invite Facebook Fans</h4>
+            </div>
+            <div class="modal-body text-center" id="fans-body">
+                <img src="/static/img/EDF_App_FB_Post.jpg" />
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal modal-notification fade" id="share-modal" tabindex="-1" role="dialog" aria-labelledby="Grow Your Audience" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="share-title">Grow Your Audience</h4>
+            </div>
+            <div class="modal-body" id="share-body">
+                {% set engage=false %}
+                {% set smart_share=true %}
+                {% set form_label="share-" %}
+                {% set messages = ["{Name}, invite {friend1}, {friend2}, and {friend3} to use SociallyMinded!",
+                                   "{Name}, causes are more meaningful when they're shared. Invite your friends!",
+                                   "{Name}, invite {friend1}, {friend2}, and {friend3} to support your causes."] %}
+                {% include "notifications/includes/form.html" %}
             </div>
         </div>
     </div>

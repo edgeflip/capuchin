@@ -1,11 +1,11 @@
 <form class="form-notification" action="{{ url_for('notifications.save') }}" method="POST">
     {% if engage %}
-    <div id="engagement">
+    <div class="engagement switch on">
         <div class="form-group">
-            <label for="posts">Select a Post:</label>
+            <label for="{{form_label}}posts">Select a Post:</label>
             <div class="row">
                 <div class="col-sm-9">
-                    <select class="form-control" id="posts" tabindex="1" name="posts">
+                    <select class="form-control" id="{{form_label}}posts" tabindex="1" name="posts">
                         {% for s in notification['posts'].hits %}
                             <option value="{{s.id}}" {% if post_id == s.id %} selected{% endif %}>{{s.message|truncate(53)}}</option>
                         {% endfor %}
@@ -18,29 +18,39 @@
         </div>
         <p>OR</p>
         <div class="form-group">
-            <label for="url">Enter URL:</label>
+            <label for="{{form_label}}url">Enter URL:</label>
             <div class="row">
                 <div class="col-sm-9">
-                    <input class="form-control" type="text" name="url" id="url" tabindex="2" placeholder="http://my-site.com/" />
+                    <input class="form-control" type="text" name="url" id="{{form_label}}url" tabindex="2" placeholder="http://my-site.com/" />
                 </div>
             </div>
         </div>
-        <div class="form-group">
-            <label>We'll boost:</label>
-            <div class="row">
-                <div class="col-sm-9">
-                    <div id="boosted-post" class="static-control"></div>
-                </div>
+    </div>
+    {# Below hidden by default and replaces above when post is pre-selected #}
+    <div class="form-group post-booster switch">
+        <label>We'll boost:</label>
+        <div class="row">
+            <div class="col-sm-9">
+                <div id="{{form_label}}boosted-post" class="boosted-post static-control"></div>
+            </div>
+        </div>
+    </div>
+    {% elif smart_share %}
+    <div class="form-group">
+        <label>Let's grow via:</label>
+        <div class="row">
+            <div class="col-sm-9">
+                <div class="static-control">Smart Sharing</div>
             </div>
         </div>
     </div>
     {% endif %}
 
-    <div class="form-group">
-        <label for="segments">Select Audience:</label>
+    <div class="form-group audience switch on">
+        <label for="{{form_label}}segments">Select Audience:</label>
         <div class="row">
             <div class="col-sm-9">
-                <select class="form-control" id="segments" tabindex="3" name="segments">
+                <select class="form-control" id="{{form_label}}segments" tabindex="3" name="segments">
                     {% for s in notification['segments'] %}
                         <option value="{{s._id|string}}" {% if segment_id == s._id|string %} selected{% endif %}>{{s.name}} ({{s.count}})</option>
                     {% endfor %}
@@ -51,21 +61,22 @@
             </div>
         </div>
     </div>
-    <div class="form-group">
+    {# Below hidden by default and replaces above when segment is pre-selected #}
+    <div class="form-group segment-engager switch">
         <label>We'll engage:</label>
         <div class="row">
             <div class="col-sm-9">
-                <div id="engaged-segment" class="static-control"></div>
+                <div id="{{form_label}}engaged-segment" class="engaged-segment static-control"></div>
             </div>
         </div>
     </div>
 
     <div class="form-group">
-        <label for="messages">Select Message:</label>
+        <label for="{{form_label}}messages">Select Message:</label>
         <div class="row">
             <div class="col-sm-9">
-                <select class="form-control" id="messages" tabindex="4" name="messages">
-                    {% for s in notification['messages'] %}
+                <select class="form-control" id="{{form_label}}messages" tabindex="4" name="messages">
+                    {% for s in messages or notification['messages'] %}
                         <option value="{{s}}">{{s}}</option>
                     {% endfor %}
                 </select>
@@ -96,7 +107,7 @@
     <div class="form-group">
         <button type="submit" class="btn btn-default calendar" tabindex="6">
             Manual Schedule
-            <div id="dateinput"></div>
+            <div id="{{form_label}}dateinput"></div>
         </button>
         OR
         <button type="submit" class="btn btn-default" tabindex="7">Send Now</button>

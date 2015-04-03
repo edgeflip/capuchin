@@ -9,34 +9,64 @@ $(document).ready(function () {
         window.open(this.href);
     });
 }).ready(function () {
-    /* Transform the boost modal for individual posts.
+    /* Enable an "intermediary" modal to pass its invoking DOM element's
+     * attribute data to its target modal.
      */
-    var modal = $('#boost-modal'),
-        // posts
-        posts = $('#posts'),
-        boostedPost = $('#boosted-post'),
-        postBooster = boostedPost.closest('.form-group'),
-        postDefaults = $('#engagement').children().not(postBooster),
-        // segments
-        segments = $('#segments'),
-        engagedSegment = $('#engaged-segment'),
-        segmentEngager = engagedSegment.closest('.form-group'),
-        segmentDefault = segments.closest('.form-group');
-
-    postBooster.hide();
-    segmentEngager.hide();
-
-    if (modal.length === 0) {
-        return;
-    }
-
-    var modalTitle = $('#boost-title'),
+    $('.modal-intermediary').on('show.bs.modal', function (event) {
+        $(this).find('[data-toggle=modal]').data('showEvent', event);
+    });
+}).ready(function () {
+    /* Transform notification modals for individual posts and segments.
+     */
+    var modals = $('.modal-notification'),
         options = ['title', 'post', 'segment'],
-        optionParser = function (attrs, key) {
-            attrs[key] = this.data(key);
+        populateOption = function (attrs, key) {
+            var value = this.data(key);
+            if (value) attrs[key] = value;
             return attrs;
         },
-        lastValues = {};
+        populateOptions = function (attrs, caller) {
+            return options.reduce(populateOption.bind(caller), attrs);
+        },
+        parseOptions = function (caller) {
+            var callers = [caller],
+                intermediaryEvent;
+
+            // Traverse call chain backwards to collect callers,
+            // (so can then assign options traversing forwards)
+            while (intermediaryEvent = caller.data('showEvent')) {
+                caller = $(intermediaryEvent.relatedTarget);
+                callers.unshift(caller);
+            }
+
+            return callers.reduce(populateOptions, {});
+        };
+
+    var Modal = function (modal) {
+        var root = $(modal),
+            lastValues = root.data('lastValues');
+
+        if (!lastValues) {
+            lastValues = {};
+            root.data('lastValues', lastValues);
+        }
+
+        return {
+            root: root,
+            lastValues: lastValues,
+            title: root.find('.modal-title'),
+            // posts
+            posts: root.find('[name=posts]'),
+            postBooster: root.find('.post-booster'),
+            boostedPost: root.find('.boosted-post'),
+            postDefaults: root.find('.engagement'),
+            // segments
+            segments: root.find('[name=segments]'),
+            segmentEngager: root.find('.segment-engager'),
+            engagedSegment: root.find('.engaged-segment'),
+            segmentDefault: root.find('.audience')
+        };
+    };
 
     function truncate (text, size) {
         var clean = text.trim();
@@ -47,65 +77,73 @@ $(document).ready(function () {
         }
     }
 
-    modal
+    modals
     .on('show.bs.modal', function (event) {
         /* Configure modal content given calling button's custom options
          */
-        var button = $(event.relatedTarget),
-            attrs = options.reduce(optionParser.bind(button), {}),
+        var modal = Modal(this),
+            button = $(event.relatedTarget),
+            attrs = parseOptions(button),
             postSnippet,
             segmentName;
 
         if (attrs.title) {
-            lastValues.title = modalTitle.text();
-            modalTitle.text(attrs.title);
+            modal.lastValues.title = modal.title.text();
+            modal.title.text(attrs.title);
         } else {
-            lastValues.title = null;
+            modal.lastValues.title = null;
         }
 
         if (attrs.post) {
             // Set selected post text and set its id in the true form input
-            lastValues.post = posts.val();
-            posts.val(attrs.post);
-            postSnippet = posts.find('option[value="' + attrs.post + '"]').text();
+            modal.lastValues.post = modal.posts.val();
+            modal.posts.val(attrs.post);
+
+            postSnippet = modal.posts.find('option[value="' + attrs.post + '"]').text();
             if (!postSnippet) {
                 // Post isn't in default list;
                 // try to grab snippet from button's row in table
                 postSnippet = button.closest('tr').find('.post-detail').text();
             }
-            boostedPost.text(truncate(postSnippet, 70));
-            postDefaults.hide();
-            postBooster.show();
+            modal.boostedPost.text(truncate(postSnippet, 70));
+
+            modal.postDefaults.removeClass('on');
+            modal.postBooster.addClass('on');
         } else {
-            lastValues.post = null;
+            modal.lastValues.post = null;
         }
 
         if (attrs.segment) {
             // Set the selected segment text and set its id in the true form input
-            lastValues.segment = segments.val();
-            segments.val(attrs.segment);
-            segmentName = segments.find('option[value="' + attrs.segment + '"]').text();
-            engagedSegment.text(segmentName);
-            segmentDefault.hide();
-            segmentEngager.show();
+            modal.lastValues.segment = modal.segments.val();
+            modal.segments.val(attrs.segment);
+
+            segmentName = modal.segments.find('option[value="' + attrs.segment + '"]').text();
+            modal.engagedSegment.text(segmentName);
+
+            modal.segmentDefault.removeClass('on');
+            modal.segmentEngager.addClass('on');
         } else {
-            lastValues.segment = null;
+            modal.lastValues.segment = null;
         }
     })
     .on('hidden.bs.modal', function () {
         /* Revert modal to initial state
          */
-        if (lastValues.title) {
-            modalTitle.text(lastValues.title);
+        var modal = Modal(this);
+
+        if (modal.lastValues.title) {
+            modal.title.text(modal.lastValues.title);
         }
-        if (lastValues.post) {
-            posts.val(lastValues.post);
+        if (modal.lastValues.post) {
+            modal.posts.val(modal.lastValues.post);
         }
-        if (lastValues.segment) {
-            segments.val(lastValues.segment);
+        if (modal.lastValues.segment) {
+            modal.segments.val(modal.lastValues.segment);
         }
-        postBooster.hide();
-        postDefaults.show();
+
+        modal.postBooster.add(modal.segmentEngager).removeClass('on');
+        modal.postDefaults.add(modal.segmentDefault).addClass('on');
     });
 });
 

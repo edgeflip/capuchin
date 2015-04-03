@@ -52,7 +52,7 @@ def segment_count(v, r):
 def segment_actions(v, record):
     return """\
 <div class="btn-group btn-group-xs">
-    <a class="btn btn-default" href="#grow-modal" data-toggle=modal data-target="#grow-modal" role="button">Grow</a>
+    <a class="btn btn-default" href="#grow-modal" data-toggle=modal data-target="#grow-modal" data-segment="{segment_id}" role="button">Grow</a>
     <a class="btn btn-default" href="#boost-modal" data-toggle=modal data-target="#boost-modal" data-segment="{segment_id}" data-title="Engage a Segment" role="button">Engage</a>
 </div>""".format(
         segment_id=record._id,

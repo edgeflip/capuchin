@@ -12,6 +12,7 @@ from capuchin import db
 from capuchin.models.client import Admin
 from capuchin.models.post import Post
 from capuchin.util import date_format, to_json
+from capuchin.util.structs import LazySequence
 
 
 logging.basicConfig(level=config.LOG_LEVEL)
@@ -31,7 +32,7 @@ def notification_context():
         'notification': {
             'messages': config.MESSAGES,
             'posts': Post.records(client=current_user.client, sort=('created_time', 'desc')),
-            'segments': current_user.client.segments(query={"name": {"$ne": None}}),
+            'segments': LazySequence(current_user.client.segments(query={"name": {"$ne": None}})),
         }
     }
 
