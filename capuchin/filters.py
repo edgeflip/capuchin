@@ -166,7 +166,7 @@ FILTER_TYPES = {
     "age": age_filter,
     "first_activity": date_qualifier_filter,
     "interests": interests_filter,
-    "engagement": client_qualifier_filter,
+    "engagement": range_filter,
     "import_origins": client_term_filter,
     "gender": gender_list_filter,
 }
