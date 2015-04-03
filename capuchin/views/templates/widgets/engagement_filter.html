@@ -1,33 +1,30 @@
-{% set qualifier = values.get(filter['field'].replace(".", "___"), {}).get('qualifier') %}
-{% set val = values.get(filter['field'].replace(".", "___"), {}).get('value') %}
-<div id="range{{filter['field']|string|slugify}}"></div>
+{% set engagementFilter = filter['field']|string|slugify %}
+{% set engagementMin, engagementMax = values.get(filter['field'].replace(".", "___"), [1, 5]) %}
+<div id="range{{engagementFilter}}"></div>
 <div class="row">
     <div class="col-md-6">
-        <div id="range-{{filter['field']|string|slugify}}-min" class="range-min pull-left">
-            {{values.get(filter['field'], [1])[0]}}
+        <div id="range-{{engagementFilter}}-min" class="range-min pull-left">
+            {{engagementMin}}
         </div>
     </div>
     <div class="col-md-6">
-        <div id="range-{{filter['field']|string|slugify}}-max" class="range-max pull-right">
-            {{values.get(filter['field'], [1, 5])[1]}}
+        <div id="range-{{engagementFilter}}-max" class="range-max pull-right">
+            {{engagementMax}}
         </div>
     </div>
 </div>
 <script>
-var {{filter['field']|string|slugify}} = [{{values.get(filter['field'], 1)}}, {{values.get(filter['field'], 5)}}];
-$("#range{{filter['field']|string|slugify}}").slider({
+$("#range{{engagementFilter}}").slider({
     animate:"fast",
     max:5,
     min:1,
     range:true,
-    values:[{{values.get(filter['field'], [1])[0]}}, {{values.get(filter['field'], [1, 5])[1]}}],
+    values:[{{engagementMin}}, {{engagementMax}}],
     slide:function(e, ui){
-        {{filter['field']|string|slugify}} = ui.values;
-        $("#range-{{filter['field']|string|slugify}}-min").html(ui.values[0]);
+        $("#range-{{engagementFilter}}-min").html(ui.values[0]);
         var val = ui.values[1];
-        $("#range-{{filter['field']|string|slugify}}-max").html(val);
+        $("#range-{{engagementFilter}}-max").html(val);
         filters["{{filter['field']}}"] = ui.values;
-        console.log(filters);
         refresh(e);
     }
 });
