@@ -10,7 +10,7 @@ $(document).ready(function () {
     });
 }).ready(function () {
     /* Enable an "intermediary" modal to pass its invoking DOM element's
-     * attribute data to its target modal.
+     * attribute data to its target modal via the intermediary's "show" event.
      */
     $('.modal-intermediary').on('show.bs.modal', function (event) {
         $(this).find('[data-toggle=modal]').data('showEvent', event);
@@ -18,29 +18,34 @@ $(document).ready(function () {
 }).ready(function () {
     /* Transform notification modals for individual posts and segments.
      */
-    var modals = $('.modal-notification'),
-        options = ['title', 'post', 'segment'],
-        populateOption = function (attrs, key) {
-            var value = this.data(key);
-            if (value) attrs[key] = value;
-            return attrs;
-        },
-        populateOptions = function (attrs, caller) {
-            return options.reduce(populateOption.bind(caller), attrs);
-        },
-        parseOptions = function (caller) {
-            var callers = [caller],
-                intermediaryEvent;
+    function parseOptions (event, attrs, keys) {
+        var caller = $(event.relatedTarget),
+            intermediateEvent = caller.data('showEvent'),
+            remainder = [];
 
-            // Traverse call chain backwards to collect callers,
-            // (so can then assign options traversing forwards)
-            while (intermediaryEvent = caller.data('showEvent')) {
-                caller = $(intermediaryEvent.relatedTarget);
-                callers.unshift(caller);
+        if (attrs === undefined) attrs = {};
+        if (keys === undefined) keys = ['title', 'post', 'segment'];
+
+        var index, key, value;
+        for (index = 0; index < keys.length; index++) {
+            key = keys[index];
+            value = caller.data(key);
+            if (value) {
+                attrs[key] = value;
+            } else {
+                remainder.push(key);
             }
+        }
 
-            return callers.reduce(populateOptions, {});
-        };
+        // Continue (even if remainder empty) so as to discover call chain initiator.
+        if (intermediateEvent) {
+            return parseOptions(intermediateEvent, attrs, remainder);
+        }
+
+        // We've exhausted the call chain.
+        attrs.initiator = caller;
+        return attrs;
+    }
 
     var Modal = function (modal) {
         var root = $(modal),
@@ -77,13 +82,12 @@ $(document).ready(function () {
         }
     }
 
-    modals
+    $('.modal-notification')
     .on('show.bs.modal', function (event) {
         /* Configure modal content given calling button's custom options
          */
         var modal = Modal(this),
-            button = $(event.relatedTarget),
-            attrs = parseOptions(button),
+            attrs = parseOptions(event),
             postSnippet,
             segmentName;
 
@@ -103,7 +107,7 @@ $(document).ready(function () {
             if (!postSnippet) {
                 // Post isn't in default list;
                 // try to grab snippet from button's row in table
-                postSnippet = button.closest('tr').find('.post-detail').text();
+                postSnippet = attrs.initiator.closest('tr').find('.post-detail').text();
             }
             modal.boostedPost.text(truncate(postSnippet, 70));
 
