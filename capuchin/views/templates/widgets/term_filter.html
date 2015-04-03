@@ -2,6 +2,15 @@
     <input type="text" id="input{{filter['field']|string|slugify}}" class="term-input" data-field="{{filter['field']}}"/>
 </div>
 <script>
+    function fixSelectCallback(field) {
+        var instance = field.autocomplete("instance");
+        var old = instance.options.select;
+        instance.options.select = function(e, ui) {
+            old(e, ui);
+            refresh(e);
+            return false;
+        };
+    }
 
     $("#input{{filter['field']|string|slugify}}").autocomplete({
         minLength: 2,
@@ -10,11 +19,6 @@
         {% set val = values.get(filter['field'].replace('.', '___'), []) %}
         values:eval({{val|to_json}}),
 
-        change: function(e, ui){
-            filters["{{filter['field']}}"] = ui.item.value;
-            console.log(filters);
-            refresh(e);
-        },
         delete: function(e, ui){
             var val = $(e).data('value');
             delete ui.selectedItems[val];
@@ -23,7 +27,7 @@
             console.log("REMOVED", filters);
         }
     });
-
-    $("#input{{filter['field']|string|slugify}}").on("autocompleteselect", refresh);
-
+    fixSelectCallback(
+        $("#input{{filter['field']|string|slugify}}")
+    )
 </script>
