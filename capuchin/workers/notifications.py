@@ -40,6 +40,7 @@ def send_notifications(nid):
 
     # Raise formatting errors eagerly:
     formatted = notification.message.format(
+        Name="@[{fbid}]",
         Org=notification.client.name,
     )
 
@@ -63,14 +64,12 @@ class UnaffiliatedUserError(NotificationError):
 class UnauthorizedDemo(NotificationError):
 
     # FIXME: db apparently loaded legacy fbids in place of app-scoped
+    # (and these were merely fixed in place)
     WHITELIST = {
         100009535770088, # Jed 'One-Take' Bartlet, test user of SociallyMinded app
         10100552502193000, # Jesse
-        2904423, # Jesse (legacy fbid)
         10153076992186411, # Rayid
-        500876410, # Rayid (legacy fbid)
-        751, # Chris Synder (legacy fbid)
-        22924712, # Tristan (legacy fbid)
+        10102646865542260, # Tristan
     }
 
 
@@ -100,7 +99,7 @@ def send_notification(nid, efid, template):
             'https://graph.facebook.com/{}/notifications'.format(asid),
             data={
                 'access_token': '{}|{}'.format(config.FACEBOOK_APP_ID, config.FACEBOOK_APP_SECRET),
-                'template': template,
+                'template': template.format(fbid=asid),
                 'href': notification.redirect.path,
                 'ref': 'demo',
             }
