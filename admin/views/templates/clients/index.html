@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Clients{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Clients</h3>
+            <table class='table table-striped'>
+                <thead>
+                    <th>Name</th>
+                    <th>Users</th>
+                    <th>URL</th>
+                    <th></th>
+                </thead>
+                <tbody>
+                    {% for c in clients %}
+                    <tr>
+                        <td>{{c.name}}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
