@@ -19,7 +19,7 @@
     }
 
     function update_filters(refresh){
-        var name=$("#title").html();
+        var name=$("#title").val();
         var url = "{{ url_for('.filter_update', id=id, page=0) }}";
         var id = "records";
         var data = {"filters":JSON.stringify(filters), "name":name}
