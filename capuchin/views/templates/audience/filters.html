@@ -1,4 +1,11 @@
-<h3><div contenteditable='true' id="title">{{name}}</div></h3>
+<div class="col-md-12 segment-name">
+    <div class="col-md-6 form-horizontal">
+        <div class="form-group">
+            <div class="col-md-3 control-label"></div>
+            <div class="col-md-9"><input type="text" id="title" class="form-control" value="{{name}}"></div>
+        </div>
+    </div>
+</div>
 <div class="col-md-6 form-horizontal">
 {% for filter in filters[:5] %}
     <div class="form-group">

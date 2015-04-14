@@ -787,3 +787,8 @@ select {
 .audience_explorer a {
     color: white;
 }
+
+.segment-name {
+    margin: 1em 0;
+    padding: 0;
+}
