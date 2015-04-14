@@ -1,13 +1,11 @@
-from flask import Blueprint, render_template, request, g, jsonify, Response, current_app
+import time
+
+from flask import Blueprint, render_template, request, jsonify
 from flask.views import MethodView
 from flask.ext.login import current_user
+
 from capuchin import config
-from capuchin import db as dbs
 from capuchin.controllers.audience import Create as CreateSegment
-from capuchin.models.list import List
-from capuchin.models.post import Post
-from capuchin.models.segment import Segment
-from capuchin.views.tables.dashboard import Posts
 from capuchin.views.insights import *
 from capuchin.views.insights.charts import \
     FBInsightsPieChart,\
@@ -18,10 +16,6 @@ from capuchin.views.insights.charts import \
     WordBubble, \
     HorizontalBarChart
 
-import logging
-import json
-import time
-from bunch import Bunch
 
 reports = Blueprint(
     'reports',
@@ -39,7 +33,9 @@ class Index(MethodView):
             segments=current_user.client.segments(query={"name":{"$ne":None}}),
         )
 
+
 class Chart(MethodView):
+
     charts = {
         "growth_vs_competitors": growth_vs_competitors,
         "total_growth_over_time": growth_over_time,
@@ -74,10 +70,13 @@ class Chart(MethodView):
                 start_ts = time.time() - 86400*30
 
         res = self.charts[chart_id](start=start_ts, end=end_ts, request_args=request.args)
-        obj = {'data':res.data}
+
+        obj = {'data': res.data}
         try:
             obj['date_format'] = res.date_format
-        except:pass
+        except AttributeError:
+            pass
+
         return jsonify(**obj)
 
 reports.add_url_rule("/", view_func=Index.as_view('index'))
