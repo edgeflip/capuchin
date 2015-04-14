@@ -8,9 +8,10 @@ from slugify import slugify
 
 from admin import config
 from capuchin import db
-from capuchin.models.client import Admin
 from capuchin.models.post import Post
 from capuchin.util import date_format, to_json
+
+from admin.models.user import User
 
 logging.basicConfig(level=config.LOG_LEVEL)
 
@@ -18,7 +19,7 @@ logging.basicConfig(level=config.LOG_LEVEL)
 def load_user(id):
     try:
         logging.debug("Loading User: %s", id)
-        return Admin(id=id)
+        return User(id=id)
     except Exception as e:
         logging.exception(e)
         return None
@@ -39,6 +40,7 @@ class CapuchinAdmin(Flask):
             self.init_blueprints()
             self.init_pjax()
             self.init_templates()
+            self.init_super_user()
         except Exception as e:
             logging.exception(e)
 
@@ -49,6 +51,18 @@ class CapuchinAdmin(Flask):
             "Expires": "Sat, 26 Jul 1997 05:00:00 GMT"
         })
         return resp
+
+    def init_super_user(self):
+        logging.info("Checking super user account...")
+        su = User.find_one({'email':config.SUPER_USER_EMAIL})
+        if not su:
+            logging.info("Creating super user account")
+            su = User()
+            su.email = config.SUPER_USER_EMAIL
+            su.password = config.SUPER_USER_PASSWORD
+            su.name = "Super User"
+            su.save()
+        logging.info("Super User account created")
 
     def init_templates(self):
         self.jinja_env.filters['slugify'] = slugify
@@ -68,7 +82,6 @@ class CapuchinAdmin(Flask):
         self.login_manager.login_view = "auth.login"
 
     def user_logged_in(self):
-        logging.info(request.path)
         if not current_user.is_authenticated():
             return redirect(url_for("auth.login", next=request.path, _external=True))
 

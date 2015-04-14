@@ -5,6 +5,9 @@ from pymongo.errors import DuplicateKeyError
 from admin import config
 from capuchin.models.client import Client, Admin, Competitor
 from capuchin.util import password
+
+from admin.models.user import User
+
 import logging
 
 auth = Blueprint(
@@ -23,7 +26,7 @@ class AuthLogin(MethodView):
         form = request.form
         em = form['email']
         pw = form['password']
-        a = Admin.find_one({'email':em})
+        a = User.find_one({'email':em})
         logging.info(a)
         if a and a.verify_pwd(pw):
             rem = False

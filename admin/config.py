@@ -11,6 +11,9 @@ SOURCE_PORT = 5432
 SOURCE_USER = 'capuchin'
 SOURCE_PASSWORD = 'Yiiphae9'
 
+SUPER_USER_EMAIL = 'super@capuchin.dev'
+SUPER_USER_PASSWORD = '20WWacker'
+
 REDIRECTOR_URL = os.getenv("CHAPO_URL", "https://staging.edgeflip.com/canvas/r/")
 REDIRECTOR_AUTH = os.getenv("CHAPO_AUTH", "capuchin:693828ebddb5f5b7c6f528233fca9d21b4d92941")
 
