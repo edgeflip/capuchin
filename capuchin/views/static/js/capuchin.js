@@ -9,6 +9,17 @@ $(document).ready(function () {
         window.open(this.href);
     });
 }).ready(function () {
+    /* Fill in post tables' "Reach" column with data from the "post reach"
+     * dashboard chart endpoint.
+    */
+    function insertResult (result) {
+        this.text(result.data.post_impressions_unique);
+    }
+    $('.post-reach-chart').each(function () {
+        var $this = $(this);
+        $.getJSON('/chart/post_reach', {fbid: $this.data('post')}, insertResult.bind($this));
+    });
+}).ready(function () {
     /* Enable an "intermediary" modal to pass its invoking DOM element's
      * attribute data to its target modal via the intermediary's "show" event.
      */

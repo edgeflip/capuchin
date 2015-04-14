@@ -47,6 +47,7 @@ class DashboardChart(MethodView):
         "country": insights.country,
         "online": insights.online,
         "notifications": insights.notifications,
+        'post_reach': insights.post_reach,
         "likes": insights.likes,
         "like_gains": insights.like_gains,
         "city_population": insights.city_population,
@@ -59,7 +60,7 @@ class DashboardChart(MethodView):
     def get(self, chart_id):
         start_ts = request.args.get("start_ts", None)
         end_ts = request.args.get("end_ts", None)
-        res = self.charts[chart_id](start=start_ts, end=end_ts, request_args={})
+        res = self.charts[chart_id](start=start_ts, end=end_ts, request_args=request.args)
         obj = {'data': res.data}
         try:
             obj['date_format'] = res.date_format

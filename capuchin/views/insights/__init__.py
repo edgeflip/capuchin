@@ -336,6 +336,11 @@ def hours_active(start, end, request_args):
     )
 
 
+def post_reach(start, end, request_args):
+    reach = 'post.{fbid}.post_impressions_unique.lifetime'
+    return ScalarChart(current_user.client, reach.format(fbid=request_args['fbid']))
+
+
 def post_performance(start, end, request_args):
     posts = Post.records(current_user.client, "*", 0, 45, ('created_time', 'desc'))
     base_dataset = []
