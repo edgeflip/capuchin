@@ -1,5 +1,5 @@
 FROM ubuntu:14.04
-RUN apt-get update && apt-get install -y wget python-dev
+RUN apt-get update && apt-get install -y wget python-dev libpq-dev
 RUN wget https://bootstrap.pypa.io/get-pip.py
 RUN python ./get-pip.py
 ADD . /app

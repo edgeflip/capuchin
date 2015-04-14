@@ -69,7 +69,7 @@ class Client(orm.Document):
     social = SocialAccounts(type=SocialAccount)
     competitors = orm.List(type=Competitor)
     last_post = field.Date()
-
+    admin_email_temp = field.Char()
 
 
 class Admin(orm.Document):

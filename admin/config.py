@@ -71,3 +71,9 @@ POST_RECORD_FIELDS = ["id", "message", "picture", "link", "created_time", "from.
 
 FACEBOOK_APP_ID = "919803718054428"
 FACEBOOK_APP_SECRET = "76bab438d5d4a14b87468ddf3a39d4da"
+
+EMAIL_SOURCE = "noreply@edgeflip.com"
+
+AWS_SES_REGION = 'us-east-1'
+AWS_ACCESS_KEY_ID = 'AKIAJPF2ANS7F5SIYBSQ'
+AWS_SECRET_ACCESS_KEY = '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'
