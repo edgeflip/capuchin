@@ -1,23 +1,35 @@
 $(document).ready(function () {
-    register_table_sorting();
-    register_paging();
-    init_table_rows();
-
-    // Anchors with rel="external" open their href in a new window.
-    $('a[rel=external]').click(function (event) {
+    /* Anchors with rel="external" open their href in a new window.
+     */
+    $('body').on('click', 'a[rel=external]', function (event) {
         event.preventDefault();
         window.open(this.href);
     });
 }).ready(function () {
-    /* Fill in post tables' "Reach" column with data from the "post reach"
-     * dashboard chart endpoint.
+    /* Table rows with the data-url attribute act like anchors.
     */
+    $('body').on('click', '.table > tbody > tr[data-url]', function (event) {
+        if ($(event.target).data('toggle') !== 'modal') {
+            window.location.href = $(event.currentTarget).data('url');
+        }
+    });
+}).ready(function () {
+    /* Table header and "pager" anchors load new table data and trigger event "capuchin.table.load".
+     */
     function insertResult (result) {
-        this.text(result.data.post_impressions_unique);
+        var id = this.data('id'),
+            oldTable = $('#' + id),
+            newTable = $(result);
+
+        oldTable.replaceWith(newTable);
+        newTable.trigger('capuchin.table.load');
     }
-    $('.post-reach-chart').each(function () {
-        var $this = $(this);
-        $.getJSON('/chart/post_reach', {fbid: $this.data('post')}, insertResult.bind($this));
+    $('body').on('click', '.pager, .table_sort', function (event) {
+        event.preventDefault();
+        var target = $(event.target),
+            url = target.attr('href');
+
+        $.ajax({url: url, success: insertResult.bind(target)});
     });
 }).ready(function () {
     /* Enable an "intermediary" modal to pass its invoking DOM element's
@@ -162,6 +174,25 @@ $(document).ready(function () {
     });
 });
 
+$(document).on('capuchin.table.load ready', function (event) {
+    /* Can't delegate tooltip(), so reset each time a table is loaded.
+     */
+    $(event.target).find('[data-toggle=tooltip]').tooltip({
+        html: 'true',
+        container: 'body',
+        placement: 'bottom'
+    });
+}).on('capuchin.table.load ready', function (event) {
+    /* Fill in post tables' "Reach" column with data from the "post reach"
+     * dashboard chart endpoint.
+    */
+    $(event.target).find('.post-reach-chart').each(function () {
+        var $this = $(this);
+        $.getJSON('/chart/post_reach', {fbid: $this.data('post')}, function (result) {
+            $this.text(result.data.post_impressions_unique);
+        });
+    });
+});
 
 function notify(cls, message){
     $("#notifications").html("<div class=\"alert alert-"+cls+" alert-dismissible\" role=\"alert\"> \
@@ -172,53 +203,3 @@ function notify(cls, message){
         $(".alert").remove();
     }, 5000);
 }
-
-function init_table_rows() {
-    $(".table > tbody > tr[data-url]").click(function(event) {
-        if ($(event.target).data('toggle') !== 'modal') {
-            window.location.href = $(event.currentTarget).data('url');
-        }
-    });
-    $('[data-toggle="tooltip"]').tooltip({
-        html:'true',
-        container:'body',
-        placement:'bottom',
-    });
-};
-
-
-function register_table_sorting(){
-    $(".table_sort").click(function(e){
-        e.preventDefault();
-        var url = $(e.target).attr('href');
-        var id = $(e.target).data("id");
-        $.ajax({
-            url: url,
-            success: function(data){
-                $("#"+id).replaceWith(data);
-                register_table_sorting();
-                register_paging();
-                init_table_rows();
-            }
-        });
-        return false;
-    });
-};
-
-function register_paging(){
-    $(".pager").click(function(e){
-        e.preventDefault();
-        var url = $(e.target).attr('href');
-        var id = $(e.target).data("id");
-        $.ajax({
-            url: url,
-            success: function(data){
-                $("#"+id).replaceWith(data);
-                register_table_sorting();
-                register_paging();
-                init_table_rows();
-            }
-        });
-        return false;
-    });
-};
