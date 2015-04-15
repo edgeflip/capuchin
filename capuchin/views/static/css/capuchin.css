@@ -85,6 +85,9 @@ div.filters{
     margin-bottom: 20px;
     padding: 10px 20px 20px;
 }
+.filters .form-control {
+    border-radius: 10px;
+}
 
 .segment-name {
     margin: 1em 0;
@@ -100,6 +103,12 @@ div.filters{
     text-align: center;
     padding-left: 0;
     margin-bottom: 6px;
+}
+.segment-btns {
+    padding-left: 20px;
+}
+.segment-btns .btn {
+    margin-right: 10px;
 }
 
 .pipe {
