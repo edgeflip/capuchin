@@ -1,39 +1,33 @@
-<div class="filters">
-    <div class=row>
-        <div class="col-md-12 segment-name">
-            <div class="col-md-6 form-horizontal">
-                <div class="form-group">
-                    <div class="col-md-12">
-                        <input type="text" id="title" class="form-control" value="{{name}}">
-                    </div>
-                </div>
+<div class="col-md-12 segment-name">
+    <div class="col-md-6 form-horizontal">
+        <div class="form-group">
+            <div class="col-md-12">
+                <input type="text" id="title" class="form-control" value="{{name}}">
             </div>
         </div>
     </div>
-    <div class=row>
-        <div class="col-md-6 form-horizontal">
-        {% for filter in filters[:5] %}
-            <div class="form-group">
-                <label class="col-md-3 control-label"><span class="{{filter['icon']}}"></span> {{filter['display']}}</label>
-                <div class="col-md-9">
-                    {% include "widgets/{}_filter.html".format(filter['type']) %}
-                </div>
-            </div>
-        {% endfor %}
+</div>
+<div class="col-md-6 form-horizontal">
+{% for filter in filters[:5] %}
+    <div class="form-group">
+        <label class="col-md-3 control-label"><span class="{{filter['icon']}}"></span> {{filter['display']}}</label>
+        <div class="col-md-9">
+            {% include "widgets/{}_filter.html".format(filter['type']) %}
         </div>
-        <div class="col-md-6 form-horizontal">
-        {% for filter in filters[5:] %}
-            <div class="form-group">
-                <label for="location" class="col-md-3 control-label"><span class="{{filter['icon']}}"></span> {{filter['display']}}</label>
-                <div class="col-md-9">
-                    {% include "widgets/{}_filter.html".format(filter['type']) %}
-                </div>
-            </div>
-        {% endfor %}
-            <div>
-                <button id="segment-refresh" class="btn btn-primary">Refresh</button>
-                <button id="segment-save" class="btn btn-danger">Save Segment</button>
-            </div>
+    </div>
+{% endfor %}
+</div>
+<div class="col-md-6 form-horizontal">
+{% for filter in filters[5:] %}
+    <div class="form-group">
+        <label for="location" class="col-md-3 control-label"><span class="{{filter['icon']}}"></span> {{filter['display']}}</label>
+        <div class="col-md-9">
+            {% include "widgets/{}_filter.html".format(filter['type']) %}
         </div>
+    </div>
+{% endfor %}
+    <div>
+        <button id="segment-refresh" class="btn btn-primary">Refresh</button>
+        <button id="segment-save" class="btn btn-danger">Save Segment</button>
     </div>
 </div>
