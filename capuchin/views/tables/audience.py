@@ -39,7 +39,7 @@ class Users(Table):
 class SegmentUsers(Users):
 
     def get_records(self, q, from_, size, sort):
-        segment = Segment(id=self.obj)
+        segment = self.raw or Segment(id=self.obj)
         records = segment.records(q, from_, size, sort)
         total = records.total
         return records, total

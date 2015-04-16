@@ -41,10 +41,11 @@ class Table(object):
     cls = None
     columns = []
 
-    def __init__(self, client, obj=None, records=None):
+    def __init__(self, client, obj=None, records=None, raw=None):
         self.client = client
         self.records = records
         self.obj = obj
+        self.raw = raw
         self.total = len(self.records) if self.records else 0
 
     def build_pagination(self, cls, id, sort, from_, size, total, **kwargs):
