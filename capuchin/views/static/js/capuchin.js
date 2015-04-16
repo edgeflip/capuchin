@@ -203,3 +203,5 @@ function notify(cls, message){
         $(".alert").remove();
     }, 5000);
 }
+
+var capuchin = {};

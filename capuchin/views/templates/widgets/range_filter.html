@@ -24,7 +24,7 @@ $("#range{{filter['field']|string|slugify}}").slider({
         {{filter['field']}} = ui.values;
         $("#range-{{filter['field']|string|slugify}}-min").html(ui.values[0]);
         $("#range-{{filter['field']|string|slugify}}-max").html(ui.values[1]);
-        filters["{{filter['field']}}"] = ui.values;
+        capuchin.segment.filters["{{filter['field']}}"] = ui.values;
     }
 });
 </script>
