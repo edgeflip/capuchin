@@ -7,7 +7,7 @@ redirect = Blueprint(
     'redirect',
     __name__,
     template_folder=config.TEMPLATES,
-    subdomain="redirect"
+    url_prefix="/redirect",
 )
 
 class RedirectList(MethodView):

@@ -8,6 +8,7 @@ lists = Blueprint(
     'lists',
     __name__,
     template_folder=config.TEMPLATES,
+    url_prefix="/lists",
 )
 
 class ListsDefault(MethodView):
@@ -31,5 +32,5 @@ class ListsCreate(MethodView):
         return redirect(url_for('.index'))
 
 
-lists.add_url_rule("/lists", view_func=ListsDefault.as_view('index'))
-lists.add_url_rule("/lists/create", view_func=ListsCreate.as_view('create'))
+lists.add_url_rule("/", view_func=ListsDefault.as_view('index'))
+lists.add_url_rule("/create", view_func=ListsCreate.as_view('create'))

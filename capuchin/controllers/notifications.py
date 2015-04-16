@@ -38,7 +38,8 @@ notifications = Blueprint(
     'notifications',
     __name__,
     template_folder=config.TEMPLATES,
+    url_prefix="/notifications",
 )
 
-notifications.add_url_rule("/notifications", view_func=NotificationsDefault.as_view('index'))
-notifications.add_url_rule("/notifications/save", view_func=NotificationsCreate.as_view('save'))
+notifications.add_url_rule("/", view_func=NotificationsDefault.as_view('index'))
+notifications.add_url_rule("/save", view_func=NotificationsCreate.as_view('save'))

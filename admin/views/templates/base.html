@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>{% block title %}{% endblock %} | SociallyMinded</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <script src="/staticadmin/js/vendor/jquery-2.1.3.min.js"></script>
+        <link rel="stylesheet" href="/staticadmin/vendor/bootstrap/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/staticadmin/css/simple-line-icons.css">
+        <script src="/staticadmin/vendor/bootstrap/js/bootstrap.min.js"></script>
+        <script src="/staticadmin/vendor/d3.v3.js"></script>
+        <script src="/staticadmin/vendor/novus-nvd3-7ebd54c/nv.d3.min.js"></script>
+        <script src="/staticadmin/js/vendor/jquery.pjax.js"></script>
+        <script src="/staticadmin/vendor/jquery-ui-1.11.2.custom/jquery-ui.min.js"></script>
+        <link rel="stylesheet" href="/staticadmin/vendor/jquery-ui-1.11.2.custom/jquery-ui.min.css">
+        <link rel="stylesheet" href="/staticadmin/vendor/novus-nvd3-7ebd54c/nv.d3.min.css">
+        <link rel="stylesheet" href="/staticadmin/vendor/boostrap-table/bootstrap-table.css">
+        <script src="/staticadmin/vendor/boostrap-table/bootstrap-table.js"></script>
+        <link rel="stylesheet" href="/staticadmin/css/capuchin.css">
+        {% if config.DEBUG %}
+            <script type="text/javascript" src="/staticadmin/js/vendor/auto_update_css.js"></script>
+            <script>
+                //$.autoUpdateStylesheets();
+            </script>
+        {% endif %}
+        <script src="/staticadmin/js/capuchin.js"></script>
+        <link href='http://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+        {% block head %}{% endblock %}
+    </head>
+    <body>
+    {% block body %}
+        {% block container %}
+        <div class='container'>
+            <div class='content'>
+                <div id="notifications">
+                    {% with messages = get_flashed_messages(with_categories=True) %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                {% include "widgets/notification.html" %}
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                </div>
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+        {% endblock %}
+        <footer class="footer">
+            {% block footer %}
+            <div class="container"></div>
+            {% endblock %}
+        </footer>
+    {% endblock %}
+    </body>
+</html>

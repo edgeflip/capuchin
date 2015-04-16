@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Clients{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Clients <a href="{{url_for('clients.create')}}" class='btn btn-primary'>Create</a></h3>
+            <table class='table table-striped'>
+                <thead>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>On-Boarded</th>
+                    <th></th>
+                </thead>
+                <tbody>
+                    {% for c in clients %}
+                    <tr>
+                        <td>{{c.name}}</td>
+                        <td>{{c.admins()|join(', ', attribute='email')}}</td>
+                        <td>{% if c.social.facebook.id %}&#10003;{% else %}No{% endif %}</td>
+                        <td></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

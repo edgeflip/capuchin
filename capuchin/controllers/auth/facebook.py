@@ -16,7 +16,6 @@ facebook = Blueprint(
     "facebook",
     __name__,
     template_folder=config.TEMPLATES,
-    subdomain=config.AUTH_SUBDOMAIN,
     url_prefix="/auth/facebook",
 )
 
@@ -62,6 +61,7 @@ def authorized(resp):
     try:
         sa = current_user.social.facebook
         sa.token = resp.get('access_token')
+        sa.secret = config.FACEBOOK_APP_SECRET
         current_user.save()
     except Exception as e:
         logging.exception(e)
@@ -124,6 +124,7 @@ class LoadPages(MethodView):
     decorators = [ login_required, ]
     def get(self):
         sa = current_user.social.facebook
+        logging.info(sa._json())
         res = fb_app.get(
             "/debug_token",
             data={

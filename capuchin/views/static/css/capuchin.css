@@ -83,8 +83,32 @@ div.post-preview{
 div.filters{
     background-color: #eeeeee;
     margin-bottom: 20px;
-    padding: 20px;
-    padding-top: 0px;
+    padding: 10px 20px 20px;
+}
+.filters .form-control {
+    border-radius: 10px;
+}
+
+.segment-name {
+    margin: 1em 0;
+    padding: 0;
+}
+.segment-name .form-horizontal {
+    float: none;
+    margin: auto;
+}
+.segment-name .form-control {
+    font-size: 18px;
+    height: 150%;
+    text-align: center;
+    padding-left: 0;
+    margin-bottom: 6px;
+}
+.segment-btns {
+    padding-left: 20px;
+}
+.segment-btns .btn {
+    margin-right: 10px;
 }
 
 .pipe {

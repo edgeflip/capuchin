@@ -66,5 +66,5 @@ POST_RECORD_TYPE = "post"
 USER_RECORD_FIELDS = ["first_name", "last_name", "age", "efid", "location.location", "gender"]
 POST_RECORD_FIELDS = ["id", "message", "picture", "link", "created_time", "from.name", "shares.count", "comments.id", "likes.id"]
 
-FACEBOOK_APP_ID = "919803718054428"
-FACEBOOK_APP_SECRET = "76bab438d5d4a14b87468ddf3a39d4da"
+FACEBOOK_APP_ID = "954664671234999"
+FACEBOOK_APP_SECRET = "0e09fbe2f66e3465c1a94b093375582a"

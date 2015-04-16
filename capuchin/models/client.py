@@ -12,10 +12,6 @@ class Competitor(orm.EmbeddedDocument):
     id = field.Char()
     name = field.Char()
 
-class Competitor(orm.EmbeddedDocument):
-    id = field.Char()
-    name = field.Char()
-
 class PageCategory(orm.EmbeddedDocument):
     id = field.Char()
     name = field.Char()
@@ -75,7 +71,6 @@ class Client(orm.Document):
     last_post = field.Date()
 
 
-
 class Admin(orm.Document):
     _db = "capuchin"
     _collection = "client_admins"
@@ -117,3 +112,11 @@ class Admin(orm.Document):
     def get_id(self):
         self.logger.info(unicode(self._id))
         return unicode(self._id)
+
+class AccountToken(orm.Document):
+    _db = "capuchin"
+    _collection = "account_tokens"
+
+    admin = field.DocumentId(type=Admin)
+
+Client.admins = orm.Lazy(type=Admin, key='client')
