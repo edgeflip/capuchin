@@ -18,7 +18,7 @@
                     {% for c in clients %}
                     <tr>
                         <td>{{c.name}}</td>
-                        <td>{{c.admin_email_temp}}</td>
+                        <td>{{c.admins()|join(', ', attribute='email')}}</td>
                         <td>{% if c.social.facebook.id %}&#10003;{% else %}No{% endif %}</td>
                         <td></td>
                     </tr>

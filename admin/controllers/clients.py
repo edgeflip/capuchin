@@ -3,7 +3,7 @@ from flask.ext.login import current_user
 from flask.views import MethodView
 from admin import config
 from admin.util import email
-from capuchin.models.client import Client
+from capuchin.models.client import Client, Admin, AccountToken
 import logging
 
 clients = Blueprint(
@@ -12,6 +12,20 @@ clients = Blueprint(
     template_folder=config.TEMPLATES,
     url_prefix="/clients",
 )
+
+def create_client(name, email):
+    cl = Client()
+    cl.name = name
+    cl.save()
+    admin = Admin()
+    admin.email = email
+    admin.password = cl._id
+    admin.client = cl
+    admin.save()
+    at = AccountToken()
+    at.admin = admin
+    at.save()
+    return at._id
 
 class ClientsDefault(MethodView):
 
@@ -27,21 +41,19 @@ class ClientsCreate(MethodView):
     def post(self):
         form = request.form
         org = form['org']
-        temp_email = form['email']
-        cl = Client()
-        cl.name = org
-        cl.admin_email_temp = temp_email
+        em = form['email']
+        token = create_client(org, em)
+        nex = url_for('frontend.facebook_login')
         try:
-            cl.save()
             email.send(
-                temp_email,
+                em,
                 'welcome',
-                link='http://test.com/asdasda8s0d98a09s'
+                link=url_for('frontend.token', token=token, next=nex, _external=True)
             )
             return redirect(url_for('clients.index'))
         except Exception as e:
             logging.exception(e)
-            flash("Organization name already in use.", "danger")
+            flash(e.message, "danger")
 
         return render_template("clients/create.html")
 

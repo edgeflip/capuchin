@@ -99,6 +99,8 @@ class CapuchinAdmin(Flask):
     def init_blueprints(self):
         from controllers.auth import auth
         from controllers.clients import clients
+        from controllers.frontend import frontend
         clients.before_request(self.user_logged_in)
         self.register_blueprint(auth)
         self.register_blueprint(clients)
+        self.register_blueprint(frontend)

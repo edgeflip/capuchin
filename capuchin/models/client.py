@@ -69,7 +69,6 @@ class Client(orm.Document):
     social = SocialAccounts(type=SocialAccount)
     competitors = orm.List(type=Competitor)
     last_post = field.Date()
-    admin_email_temp = field.Char()
 
 
 class Admin(orm.Document):
@@ -113,3 +112,11 @@ class Admin(orm.Document):
     def get_id(self):
         self.logger.info(unicode(self._id))
         return unicode(self._id)
+
+class AccountToken(orm.Document):
+    _db = "capuchin"
+    _collection = "account_tokens"
+
+    admin = field.DocumentId(type=Admin)
+
+Client.admins = orm.Lazy(type=Admin, key='client')
