@@ -134,7 +134,7 @@ class Create(MethodView):
 
         users = render_table(SegmentUsers)
         if not users:
-            users = SegmentUsers(current_user.client, segment).render()
+            users = SegmentUsers(current_user.client, str(_id), raw=segment).render()
 
         tmpl = template if template else "audience/create.html"
         lists = segment.get_lists()
