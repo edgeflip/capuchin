@@ -23,6 +23,24 @@ class AuthToken(MethodView):
         nex = nex if nex else url_for('dashboard.index')
         return redirect(nex)
 
+class AuthPassword(MethodView):
+
+    def get(self):
+        return render_template("auth/password.html")
+
+    def post(self):
+        form = request.form
+        pwd = form['password']
+        cpwd = form['confirm_password']
+        if not Admin.passwords_match(pwd, cpwd):
+            flash("Passwords do not match", "danger")
+            return render_template("auth/password.html", form=form)
+
+        a = Admin(id=current_user._id)
+        a.password = pwd
+        a.save()
+        return redirect(url_for('dashboard.index'))
+
 
 class AuthLogin(MethodView):
 
@@ -100,3 +118,4 @@ auth.add_url_rule("/login", view_func=AuthLogin.as_view('login'))
 auth.add_url_rule("/logout", view_func=AuthLogout.as_view('logout'))
 auth.add_url_rule("/register", view_func=AuthRegister.as_view('register'))
 auth.add_url_rule("/token/<token>", view_func=AuthToken.as_view('token'))
+auth.add_url_rule("/password", view_func=AuthPassword.as_view('password'))
