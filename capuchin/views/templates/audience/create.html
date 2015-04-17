@@ -4,70 +4,77 @@
 {% block head %}
 <script src="/static/js/vendor/jquery.autocomplete.multiselect.js"></script>
 <script>
-    var id = "{{id}}";
-    var filters = eval({{filters_json|safe}});
-    var values = {{values|to_json}};
+    capuchin.segment = (function () {
+        var self = {
+            id: '{{id}}',
+            filters: {{filters_json|safe}}
+        };
 
-    function collect_filters(){
-        $(".term-input").each(function(i, el){
-            var vals = [];
-            for(v in $(el).autocomplete("instance").selectedItems){
-                vals.push(v);
-            }
-            filters[$(el).data("field")] = vals;
-        });
-    }
+        function _collect_term_filters () {
+            var $this = $(this),
+                items = $this.autocomplete('instance').selectedItems;
 
-    function update_filters(refresh){
-        var name=$("#title").val();
-        var url = "{{ url_for('.filtered_users', id=id, page=0) }}";
-        var id = "records";
-        var data = {"filters":JSON.stringify(filters), "name":name}
-        if(refresh) data.refresh = 1;
-        $.ajax({
-            url: url,
-            type:"POST",
-            data:data,
-            success: function(data){
-                $("#"+id).html(data);
-                register_table_sorting();
-                register_paging();
-                init_table_rows();
-                if(!refresh){
-                    notify(
-                        "info",
-                        "Segment Saved. \
-                        <a href='#'' class='btn btn-default' data-toggle='modal' data-target='#boost-modal'>Create</a> a Notification."
-                    );
-                }
-            }
-        });
-        if(refresh) {
-            $.ajax({
-                url:"{{ url_for('.filtered_summary', id=id, page=0) }}",
-                type:"POST",
-                data:data,
-                success: function(data){
-                    $('#segment-summary .member-count').text(data.member_count);
-                    $('#segment-summary .engagement-count').text(data.engagement);
-                }
-            });
+            self.filters[$this.data('field')] = Object.keys(items);
         }
-    }
 
-    var refresh = function(e){
-        collect_filters();
-        update_filters(true);
-        return false;
-    }
+        function collect_term_filters () {
+            $(".term-input").each(_collect_term_filters);
+        }
 
-    $(document).ready(function(){
-        $("#segment-refresh").click(refresh);
+        function _update_filters (refresh, data) {
+            $('#records').html(data).trigger('capuchin.table.load');
 
-        $("#segment-save").click(function(e){
-            collect_filters();
-            update_filters();
-            return false;
+            if (!refresh) {
+                notify('info',
+                    "Segment Saved. " +
+                    '<a href="#" class="btn btn-default" data-toggle="modal" data-target="#boost-modal">Create</a> a Notification.');
+            }
+        }
+
+        function update_filters (refresh) {
+            var name = $("#title").val(),
+                data = {
+                    name: name,
+                    filters: JSON.stringify(self.filters),
+                    refresh: refresh ? 1 : undefined
+                };
+
+            $.ajax({
+                url: "{{ url_for('.filtered_users', id=id, page=0) }}",
+                type: 'POST',
+                data: data,
+                success: _update_filters.bind(undefined, refresh)
+            });
+
+            if (refresh) {
+                $.ajax({
+                    url: "{{ url_for('.filtered_summary', id=id, page=0) }}",
+                    type: 'POST',
+                    data: data,
+                    success: function (data) {
+                        $('#segment-summary .member-count').text(data.member_count);
+                        $('#segment-summary .engagement-count').text(data.engagement);
+                    }
+                });
+            }
+        }
+
+        self.refresh = function (event, refresh) {
+            collect_term_filters();
+            update_filters(refresh != undefined ? refresh : true);
+            if (event) {
+                event.preventDefault();
+            }
+        };
+
+        return self;
+    })();
+
+    $(document).ready(function () {
+        $("#segment-refresh").click(capuchin.segment.refresh);
+
+        $("#segment-save").click(function (event) {
+            capuchin.segment.refresh(event, false);
         });
 
 
@@ -75,8 +82,6 @@
             $("#segment-summary .segment-title").text($(this).val());
         });
     });
-
-
 </script>
 {% endblock %}
 

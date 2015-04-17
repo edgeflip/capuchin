@@ -181,6 +181,9 @@ class Create(MethodView):
             page=page
         )
 
+    # FIXME: This must be combined with table rendering (sorting) or otherwise
+    # allow the two to communicate. Filters sent to this controller are not
+    # maintained on table sort.
     def post(self, id, page=0):
         filters = json.loads(request.form.get('filters', '{}'))
         logging.info(filters)

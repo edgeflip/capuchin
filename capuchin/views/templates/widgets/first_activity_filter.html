@@ -22,11 +22,10 @@
     });
 
     $(".joined").change(function(e){
-        filters["{{filter['field']}}"] = {
+        capuchin.segment.filters["{{filter['field']}}"] = {
             qualifier: $("select[name='joined_qualifier']").val(),
             value: $("input[name='joined_value']").val(),
         }
-        console.log(filters);
-        refresh(e);
+        capuchin.segment.refresh();
     });
 </script>
