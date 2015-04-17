@@ -186,6 +186,7 @@ $(document).ready(function () {
         }
 
         valueBox = $('<span></span>', {'class': 'reach-value'}).css({
+            width: '50%',
             display: 'inline-block',
         }).text(value);
 
@@ -196,8 +197,9 @@ $(document).ready(function () {
         });
 
         barBox = $('<span></span>', {'class': 'bar'}).css({
-            display: 'inline-block',
-            width: '50%'
+            'float': 'right',
+            'min-height': '1px',
+            'width': '50%'
         }).append(barValue);
 
         this.html(valueBox).append(barBox);

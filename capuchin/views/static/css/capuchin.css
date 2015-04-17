@@ -443,9 +443,10 @@ table td img.table-image{
 }
 
 .post-reach-chart .reach-value {
-    margin-right: 2px;
-    min-width: 1.5em;
-    vertical-align: super;
+    padding-right: 2px;
+    text-align: right;
+    vertical-align: sub;
+    vertical-align: -webkit-baseline-middle;
 }
 .post-reach-chart .bar {
     height: 25px;
