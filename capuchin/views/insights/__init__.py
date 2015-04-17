@@ -337,8 +337,14 @@ def hours_active(start, end, request_args):
 
 
 def post_reach(start, end, request_args):
-    reach = 'post.{fbid}.post_impressions_unique.lifetime'
-    return ScalarChart(current_user.client, reach.format(fbid=request_args['fbid']))
+    if 'fbid' in request_args:
+        fbids = request_args['fbid']
+    else:
+        fbids = '|'.join(request_args.getlist('fbid[]'))
+
+    # FIXME: escaping query input (possible attack vector)?
+    reach = 'post\.({fbids})\.post_impressions_unique\.lifetime'
+    return MultiScalarChart(current_user.client, reach.format(fbids=fbids))
 
 
 def post_performance(start, end, request_args):

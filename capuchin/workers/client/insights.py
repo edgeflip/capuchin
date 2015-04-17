@@ -21,7 +21,7 @@ class Insights():
         self.client = client
         self.since = since
         self.INFLUX = db.init_influxdb()
-        logging.info(client.social.facebook._json())
+        logging.debug(client.social.facebook._json())
         self.fb_app = self.oauth.remote_app(
             'facebook',
             base_url='https://graph.facebook.com/',
@@ -91,9 +91,9 @@ class Insights():
                 'points': points,
             }
         ]
-        logging.info("Writing: {}".format(data))
+        logging.debug("Writing: {}".format(data))
         try:
             res = self.INFLUX.write_points(data)
-            logging.info(res)
+            logging.debug(res)
         except Exception as exc:
             logging.warning(exc, exc_info=True)

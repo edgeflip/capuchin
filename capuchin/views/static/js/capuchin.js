@@ -176,30 +176,37 @@ $(document).ready(function () {
 
 (function () {
 
-    function insertReachChart (result) {
-        var value = result.data.post_impressions_unique,
-            valueBox, barValue, barBox;
+    function insertReachCharts (result) {
+        var data = result.data,
+            element, key, values, value, valueBox, barValue, barBox;
 
-        if (!value) {
-            this.addClass('text-center').html("&ndash;");
-            return;
+        for (var index = 0; index < this.length; index++) {
+            element = this.eq(index),
+            key = 'post.' + element.data('post') + '.post_impressions_unique.lifetime',
+            values = data[key],
+            value = values ? values['post_impressions_unique'] : undefined;
+
+            if (value === undefined) {
+                element.addClass('text-center').html("&ndash;");
+                continue;
+            }
+
+            valueBox = $('<span></span>', {'class': 'reach-value', 'text': value});
+
+            barValue = $('<span></span>', {'class': 'bar-value'}).css({
+                display: 'inline-block',
+                height: '100%',
+                width: (2 * Math.atan(value / 1000) / Math.PI) * 100 + '%' // TODO: tweak? according to global?
+            });
+
+            barBox = $('<span></span>', {'class': 'bar'}).css({
+                'float': 'right',
+                'min-height': '1px',
+                'text-align': 'left',
+            }).append(barValue);
+
+            element.addClass('text-right').html(valueBox).append(barBox);
         }
-
-        valueBox = $('<span></span>', {'class': 'reach-value', 'text': value});
-
-        barValue = $('<span></span>', {'class': 'bar-value'}).css({
-            display: 'inline-block',
-            height: '100%',
-            width: (2 * Math.atan(value / 100) / Math.PI) * 100 + '%' // TODO: tweak? according to global?
-        });
-
-        barBox = $('<span></span>', {'class': 'bar'}).css({
-            'float': 'right',
-            'min-height': '1px',
-            'text-align': 'left',
-        }).append(barValue);
-
-        this.addClass('text-right').html(valueBox).append(barBox);
     }
 
     $(document).on('capuchin.table.load ready', function (event) {
@@ -216,10 +223,18 @@ $(document).ready(function () {
         /* Fill in post tables' "Reach" column with data from the "post reach"
         * dashboard chart endpoint.
         */
-        target.find('.post-reach-chart').each(function () {
-            var $this = $(this);
-            $.getJSON('/chart/post_reach', {fbid: $this.data('post')}, insertReachChart.bind($this));
-        });
+        var reachCharts = target.find('.post-reach-chart');
+        if (reachCharts.length > 0) {
+            $.getJSON(
+                '/chart/post_reach',
+                {
+                    fbid: reachCharts.map(function () {
+                        return $(this).data('post');
+                    }).get()
+                },
+                insertReachCharts.bind(reachCharts)
+            );
+        }
     });
 
 })();

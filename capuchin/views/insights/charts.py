@@ -1,11 +1,14 @@
+import datetime
+import json
+import logging
+import random
+import re
+import time
+
 from capuchin import db
 from capuchin import config
 from capuchin.models.city import City
-import logging
-import json
-import random
-import time
-import datetime
+
 
 class InfluxChart(object):
 
@@ -59,6 +62,34 @@ class ScalarChart(InfluxChart):
         (point,) = record['points']
         (_time, value, type_) = point
         return {type_: value}
+
+
+class MultiScalarChart(InfluxChart):
+
+    def get_query(self):
+        return 'SELECT LAST(value), type FROM /^{}\.{}\.{}$/ {} GROUP BY type'.format(
+            self.prefix,
+            self.client._id,
+            self.typ,
+            self.where
+        )
+
+    def xmassage(self, data):
+        header = re.compile('^{}\.{}\.'.format(self.prefix, self.client._id))
+        for record in data:
+            name = record['name']
+            (point,) = record['points']
+            (_time, value, type_) = point
+            yield (
+                header.sub('', name),
+                {type_: value},
+            )
+
+    def massage(self, data):
+        return {
+            key: values
+            for (key, values) in self.xmassage(data)
+        }
 
 
 class FBInsightsPieChart(InfluxChart):
