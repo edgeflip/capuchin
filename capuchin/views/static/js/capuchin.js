@@ -174,25 +174,56 @@ $(document).ready(function () {
     });
 });
 
-$(document).on('capuchin.table.load ready', function (event) {
-    /* Can't delegate tooltip(), so reset each time a table is loaded.
-     */
-    $(event.target).find('[data-toggle=tooltip]').tooltip({
-        html: 'true',
-        container: 'body',
-        placement: 'bottom'
-    });
-}).on('capuchin.table.load ready', function (event) {
-    /* Fill in post tables' "Reach" column with data from the "post reach"
-     * dashboard chart endpoint.
-    */
-    $(event.target).find('.post-reach-chart').each(function () {
-        var $this = $(this);
-        $.getJSON('/chart/post_reach', {fbid: $this.data('post')}, function (result) {
-            $this.text(result.data.post_impressions_unique);
+(function () {
+
+    function insertReachChart (result) {
+        var value = result.data.post_impressions_unique,
+            valueBox, barValue, barBox;
+
+        if (!value) {
+            this.html("&ndash;");
+            return;
+        }
+
+        valueBox = $('<span></span>', {'class': 'reach-value'}).css({
+            display: 'inline-block',
+        }).text(value);
+
+        barValue = $('<span></span>', {'class': 'bar-value'}).css({
+            display: 'inline-block',
+            height: '100%',
+            width: (2 * Math.atan(value / 100) / Math.PI) * 100 + '%' // TODO: tweak? according to global?
+        });
+
+        barBox = $('<span></span>', {'class': 'bar'}).css({
+            display: 'inline-block',
+            width: '50%'
+        }).append(barValue);
+
+        this.html(valueBox).append(barBox);
+    }
+
+    $(document).on('capuchin.table.load ready', function (event) {
+        var target = $(event.target);
+
+        /* Can't delegate tooltip(), so reset each time a table is loaded.
+         */
+        target.find('[data-toggle=tooltip]').tooltip({
+            html: 'true',
+            container: 'body',
+            placement: 'bottom'
+        });
+
+        /* Fill in post tables' "Reach" column with data from the "post reach"
+        * dashboard chart endpoint.
+        */
+        target.find('.post-reach-chart').each(function () {
+            var $this = $(this);
+            $.getJSON('/chart/post_reach', {fbid: $this.data('post')}, insertReachChart.bind($this));
         });
     });
-});
+
+})();
 
 function notify(cls, message){
     $("#notifications").html("<div class=\"alert alert-"+cls+" alert-dismissible\" role=\"alert\"> \

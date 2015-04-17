@@ -442,6 +442,20 @@ table td img.table-image{
     padding-bottom: 20px;
 }
 
+.post-reach-chart .reach-value {
+    margin-right: 2px;
+    min-width: 1.5em;
+    vertical-align: super;
+}
+.post-reach-chart .bar {
+    height: 25px;
+    border: solid 1px darkgray;
+    border-radius: 3px;
+}
+.post-reach-chart .bar-value {
+    background-color: orange;
+}
+
 .heading-embedded {
     padding-top: 20px;
 }

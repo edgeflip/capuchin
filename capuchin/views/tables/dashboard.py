@@ -68,7 +68,7 @@ def post_message(val, record):
 
 
 def post_reach(value, record):
-    return u'<span data-post="{post_id}" class=post-reach-chart>&hellip;</span>'.format(post_id=record.id)
+    return u'<p data-post="{post_id}" class=post-reach-chart>&hellip;</p>'.format(post_id=record.id)
 
 
 def date_formatter(v, r):
