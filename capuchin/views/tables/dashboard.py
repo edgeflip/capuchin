@@ -56,13 +56,13 @@ def post_message(val, record):
     logging.debug(val)
 
     try:
-        img = u'<div class=col-md-2><img class=table-image src="{}"></div>'.format(record.picture)
+        img = u'<img class="table-image pull-left" src="{}">'.format(record.picture)
     except AttributeError:
-        img = u'<div class=col-md-2></div>'
+        img = u''
 
     truncated_val = current_app.jinja_env.filters['truncate'](val, 120)
     logging.debug(truncated_val)
-    message = u'<div class=col-md-10><p class=post-detail>{}</p></div>'.format(truncated_val)
+    message = u'<p class=post-detail>{}</p>'.format(truncated_val)
 
     return img + message
 
@@ -82,7 +82,7 @@ class Posts(Table):
         Column('created_time', "Published", formatter=date_formatter, sortable=True),
         Column('message', "Post", formatter=post_message, sortable=True),
         Column('', "Type", formatter=post_type),
-        Column('', "Targeting", formatter=post_targeting),
+        # Column('', "Targeting", formatter=post_targeting), # FIXME: do we need this?
         Column('', "Reach", formatter=post_reach),
         Column('', "Engagment", formatter=post_engagement),
         Column('', '', formatter=post_actions, cls="actions"),

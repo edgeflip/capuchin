@@ -431,8 +431,12 @@ div.smart-segment svg .nv-legendWrap {
     margin: 0 5px;
 }
 
-table td img.table-image{
-    width: 60px;
+table td img.table-image {
+    max-height: 60px;
+    max-width: 60px;
+}
+.post-detail {
+    padding-left: 68px;
 }
 
 .dash-chart svg {
@@ -442,9 +446,11 @@ table td img.table-image{
     padding-bottom: 20px;
 }
 
+.post-reach-chart {
+    width: 100px;
+}
 .post-reach-chart .reach-value {
-    padding-right: 2px;
-    text-align: right;
+    padding-right: 6px;
     vertical-align: sub;
     vertical-align: -webkit-baseline-middle;
 }
@@ -452,6 +458,8 @@ table td img.table-image{
     height: 25px;
     border: solid 1px darkgray;
     border-radius: 3px;
+    margin-right: 1px;
+    width: 60%;
 }
 .post-reach-chart .bar-value {
     background-color: #EEC03C;

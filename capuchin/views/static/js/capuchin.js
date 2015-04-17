@@ -181,14 +181,11 @@ $(document).ready(function () {
             valueBox, barValue, barBox;
 
         if (!value) {
-            this.html("&ndash;");
+            this.addClass('text-center').html("&ndash;");
             return;
         }
 
-        valueBox = $('<span></span>', {'class': 'reach-value'}).css({
-            width: '50%',
-            display: 'inline-block',
-        }).text(value);
+        valueBox = $('<span></span>', {'class': 'reach-value', 'text': value});
 
         barValue = $('<span></span>', {'class': 'bar-value'}).css({
             display: 'inline-block',
@@ -199,10 +196,10 @@ $(document).ready(function () {
         barBox = $('<span></span>', {'class': 'bar'}).css({
             'float': 'right',
             'min-height': '1px',
-            'width': '50%'
+            'text-align': 'left',
         }).append(barValue);
 
-        this.html(valueBox).append(barBox);
+        this.addClass('text-right').html(valueBox).append(barBox);
     }
 
     $(document).on('capuchin.table.load ready', function (event) {
