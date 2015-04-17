@@ -1,16 +1,16 @@
-from capuchin.app import Capuchin
-from capuchin import config
-from capuchin import db
-from flask_oauth import OAuth
-import urlparse
+import datetime
 import logging
 import time
-import requests
-import datetime
-from slugify import slugify
-from pprint import pprint
 
-date_format = "%Y-%m-%dT%H:%M:%S+0000"
+import requests
+from flask_oauth import OAuth
+from slugify import slugify
+
+from capuchin import db
+
+
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%S+0000"
+
 
 class Insights():
 
@@ -21,7 +21,7 @@ class Insights():
         self.client = client
         self.since = since
         self.INFLUX = db.init_influxdb()
-        logging.info(client.social.facebook._json())
+        logging.debug(client.social.facebook._json())
         self.fb_app = self.oauth.remote_app(
             'facebook',
             base_url='https://graph.facebook.com/',
@@ -37,28 +37,32 @@ class Insights():
     def get_token(self):
         return (self.client.social.facebook.token, self.client.social.facebook.secret)
 
-    def write_data(self, data):
-        for insight in data.get("data", []):
-            if insight.get("period") not in ["day", "lifetime"]: continue
+    def write_data(self, record):
+        for insight in record.get('data', ()):
             period = insight.get("period")
-            url = "{}.{}".format(insight.get("name"), period)
+            if period != 'day' and period != 'lifetime':
+                continue
+
+            name = insight['name']
+            url = '{}.{}'.format(name, period)
             if self.type:
-                url = "{}.{}.{}".format(self.type, self.id, url)
+                url = '{}.{}.{}'.format(self.type, self.id, url)
 
             points = []
-            for event in insight.get("values"):
-                if event.get("end_time"):
-                    tm = time.mktime(time.strptime(event.get("end_time"), date_format))
+            for event in insight.get('values', ()):
+                value = event.get('value')
+                if not value:
+                    continue
+
+                end_time = event.get('end_time')
+                tm = time.mktime(time.strptime(end_time, DATE_FORMAT)) if end_time else time.time()
+
+                if isinstance(value, dict):
+                    points.extend((tm, value1, slugify(key1))
+                                  for (key1, value1) in value.iteritems())
                 else:
-                    tm = time.time()
-                val = event.get("value")
-                if val == []: continue
-                if isinstance(val, dict):
-                    for k,v in val.iteritems():
-                        t = slugify(k)
-                        points.append((tm, v, t))
-                else:
-                    points.append((tm, val, insight.get("name")))
+                    points.append((tm, value, name))
+
             if points:
                 self.write_influx(points, url)
 
@@ -67,35 +71,29 @@ class Insights():
         data = {}
         data['since'] = time.mktime(self.since.timetuple())
         data['until'] = time.mktime(datetime.datetime.utcnow().timetuple())
-        res = self.fb_app.get(
-            "/v2.2/{}/insights".format(id),
-            data=data,
-        )
+        res = self.fb_app.get('/v2.2/{}/insights'.format(id), data=data)
         self.write_data(res.data)
         self.page(res.data)
 
     def page(self, data):
-        nex = data.get("paging", {}).get("next")
-        last = nex
-        while nex:
-            res = requests.get(nex)
-            data = res.json()
+        next_ = data.get('paging', {}).get('next')
+        while next_:
+            response = requests.get(next_)
+            data = response.json()
             self.write_data(data)
-            nex = data.get("paging", {}).get("nex")
-
-        return True
+            next_ = data.get('paging', {}).get('next')
 
     def write_influx(self, points, url):
         data = [
-            dict(
-                name = "insights.{}.{}".format(self.client._id, url),
-                columns = ["time", "value", "type"],
-                points = points
-            )
+            {
+                'name': 'insights.{}.{}'.format(self.client._id, url),
+                'columns': ['time', 'value', 'type'],
+                'points': points,
+            }
         ]
-        logging.info("Writing: {}".format(data))
+        logging.debug("Writing: {}".format(data))
         try:
             res = self.INFLUX.write_points(data)
-            logging.info(res)
-        except Exception as e:
-            logging.warning(e)
+            logging.debug(res)
+        except Exception as exc:
+            logging.warning(exc, exc_info=True)

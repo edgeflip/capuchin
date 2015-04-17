@@ -5,10 +5,10 @@
     function fixSelectCallback(field) {
         var instance = field.autocomplete("instance");
         var old = instance.options.select;
-        instance.options.select = function(e, ui) {
-            old(e, ui);
-            refresh(e);
-            return false;
+        instance.options.select = function(event, ui) {
+            old(event, ui);
+            capuchin.segment.refresh();
+            event.preventDefault();
         };
     }
 
@@ -22,8 +22,8 @@
         delete: function(e, ui){
             var val = $(e).data('value');
             delete ui.selectedItems[val];
-            delete filters["{{filter['field']}}"];
-            refresh(e);
+            delete capuchin.segment.filters["{{filter['field']}}"];
+            capuchin.segment.refresh();
             console.log("REMOVED", filters);
         }
     });

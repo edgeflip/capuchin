@@ -336,6 +336,17 @@ def hours_active(start, end, request_args):
     )
 
 
+def post_reach(start, end, request_args):
+    if 'fbid' in request_args:
+        fbids = request_args['fbid']
+    else:
+        fbids = '|'.join(request_args.getlist('fbid[]'))
+
+    # FIXME: escaping query input (possible attack vector)?
+    reach = 'post\.({fbids})\.post_impressions_unique\.lifetime'
+    return MultiScalarChart(current_user.client, reach.format(fbids=fbids))
+
+
 def post_performance(start, end, request_args):
     posts = Post.records(current_user.client, "*", 0, 45, ('created_time', 'desc'))
     base_dataset = []

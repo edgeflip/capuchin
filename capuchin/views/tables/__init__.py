@@ -37,6 +37,7 @@ class Column(object):
         return u"<td {}>{}</td>".format(c, self.formatter(value, record))
 
 class Table(object):
+
     cls = None
     columns = []
 
@@ -107,9 +108,9 @@ class Table(object):
         for r in records.hits:
             td = [u"<tr data-url=\"{}\">".format(r.url())]
             for c in self.columns:
-                levels = c.field.split(".")
                 val = r
-                for i in levels: val = val.get(i, {})
+                for level in c.field.split("."):
+                    val = val.get(level, {})
                 td.append(c.td(val, r))
             td.append(u"</tr>")
             tr.append(u"".join(td))
@@ -125,18 +126,26 @@ class Table(object):
             self.__class__.__name__
         ).split(".")[3:])
         id = u"{}{}".format("table", random.randint(9999, 99999999))
-        th = [c.th(me, id, sort, obj=self.obj, q=json.dumps(q, cls=JavascriptEncoder), from_=0, size=size, pagination=pagination, url=url) for c in self.columns]
+        th = [c.th(me, id, sort,
+                   obj=self.obj,
+                   q=json.dumps(q, cls=JavascriptEncoder),
+                   from_=0,
+                   size=size,
+                   pagination=pagination,
+                   url=url) for c in self.columns]
         tr = self.build_rows(records)
         to = from_+size if total >= from_+size else total
-        info = "<div class='table-info'><span class='total'><span class='pagination-info'>{} - {} of {}</span></div>".format(
-            from_+1,
+        info = u'<div class="table-info"><span class="total"><span class="pagination-info">{} - {} of {}</span></div>'.format(
+            from_ + 1,
             to,
             total
         )
-        table =  u"{} <table class=\"table table-striped table-hover table-compact\"><thead><tr>{}</tr></thead><tbody>{}</tbody></table>".format(
-            info,
-            u"".join(th),
-            u"".join(tr)
+        table = info + (
+            u'<div class=table-responsive>'
+            u'<table class="table table-striped table-hover table-compact">'
+            u'<thead><tr>{}</tr></thead><tbody>{}</tbody></table></div>'.format(
+                u"".join(th),
+                u"".join(tr))
         )
         pagination = self.build_pagination(me, id, sort, from_=from_, size=size, total=total, q=json.dumps(q, cls=JavascriptEncoder), pagination=self.pagination, url=url)
         return u"<div id=\"{}\">{}{}</div>".format(id, table, pagination)

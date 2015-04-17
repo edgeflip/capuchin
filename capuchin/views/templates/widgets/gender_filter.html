@@ -5,10 +5,9 @@
     <label type="button" class="btn btn-default {% if val == 'male' %}active{% endif %}"><input type='radio' name='gender' value='male' {% if val == 'male' %}selected{% endif %}/>Male</label>
 </div>
 <script>
-    $("input[value='"+filters["{{filter['field']}}"]+"']").attr("selected", true);
+    $("input[value='"+capuchin.segment.filters["{{filter['field']}}"]+"']").attr("selected", true);
     $("input[name='gender']").change(function(e){
-        filters["{{filter['field']}}"] = e.target.value;
-        console.log(filters);
-        refresh(e);
+        capuchin.segment.filters["{{filter['field']}}"] = e.target.value;
+        capuchin.segment.refresh();
     });
 </script>

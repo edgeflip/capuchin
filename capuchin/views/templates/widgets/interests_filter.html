@@ -6,8 +6,7 @@
 </select>
 <script>
     $("#interest{{filter['field']|string|slugify}}").change(function(e){
-        filters["{{filter['field']}}"] = e.target.value;
-        console.log(filters);
-        refresh(e);
+        capuchin.segment.filters["{{filter['field']}}"] = e.target.value;
+        capuchin.segment.refresh();
     });
 </script>
