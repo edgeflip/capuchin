@@ -39,10 +39,7 @@ def send_notifications(nid):
     notification = Notification(id=nid)
 
     # Raise formatting errors eagerly:
-    formatted = notification.message.format(
-        Name="@[{fbid}]",
-        Org=notification.client.name,
-    )
+    formatted = notification.format()
 
     for user in notification.segment.records().hits:
         send_notification.delay(nid, user.efid, formatted)
@@ -114,7 +111,7 @@ def send_notification(nid, efid, template):
         send_notification.retry(exc=exc)
 
     user.last_notification = datetime.datetime.utcnow()
-    User.save(data=user)
+    user.save()#User.save(data=user)
 
     result = response.json()
     event_type = 'notification_sent' if result.get('success') else 'notification_failure'

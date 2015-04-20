@@ -3,7 +3,7 @@ import random
 import humongolus as orm
 from humongolus import field
 
-from capuchin.models.client import Client
+from capuchin.models.client import Client, Admin
 from capuchin.models.post import Post
 from capuchin.models.segment import Segment
 
@@ -33,6 +33,12 @@ class Notification(orm.Document):
     redirect = Redirect()
     smart = field.Boolean(default=False)
 
+    def format(self):
+        return self.message.format(
+            Name="@[{fbid}]",
+            Org=self.client.name,
+        )
+
     @property
     def clicks(self):
         return random.randint(1000, 9999999)
@@ -42,6 +48,10 @@ class Notification(orm.Document):
 
     def get_url(self):
         return Post.make_fb_url(self.post_id) if self.post_id else self.url
+
+class UserNotification(Notification):
+
+    user = field.Char()
 
 
 Segment.notifications = orm.Lazy(type=Notification, key='segment')

@@ -4,11 +4,24 @@ from capuchin import config
 from capuchin import db
 from capuchin.models.user import User, UserImport
 from capuchin.models.client import Client
+from capuchin.models.notification import UserNotification
 from capuchin.workers import app
+from capuchin.workers.notifications import send_notification
 from capuchin.celeryconfig import efid_q
 import time
 import datetime
 import logging
+
+@app.task
+def new_user_notification(uid, cid):
+    notif = UserNotification()
+    notif.user = uid
+    notif.client = Client(id=cid)
+    notif.message = notif.client.settings.new_user.message
+    notif.post_id = notif.client.settings.new_user.post_id
+    notif.url = notif.client.settings.new_user.url
+    notif.save()
+    send_notification(uid, str(notif._id), notif.format())
 
 class BatchEFID(bootsteps.ConsumerStep):
 
@@ -23,11 +36,13 @@ class BatchEFID(bootsteps.ConsumerStep):
         ES = db.init_elasticsearch()
         for id in data:
             logging.info("Processing EFID: {}".format(id))
-            #ES.delete(index=config.ES_INDEX, doc_type=config.USER_RECORD_TYPE, id=id)
             new_user = UserImport(id)
             logging.info("Successfully processed User: {}".format(new_user))
             ES.index(index=config.ES_INDEX, doc_type=config.USER_RECORD_TYPE, body=new_user, id=id)
             logging.info("Successfully indexed")
+            #TODO is this a new user or just an update?
+            new_user_notification.delay(new_user.id, str(new_user.client._id))
+
         message.ack()
 
 
