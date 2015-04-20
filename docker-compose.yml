@@ -19,7 +19,7 @@ rabbitdata:
         - /data/mnesia
 
 rabbitmq:
-    image: dockerfile/rabbitmq
+    image: rabbitmq
     hostname: rabbitmq
     expose:
         - "5672"
