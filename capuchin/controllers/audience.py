@@ -121,18 +121,10 @@ class View(MethodView):
 
 
 class Summary(MethodView):
-    def post(self, id=None, page=0):
+    def post(self, id, page=0):
         filters = json.loads(request.form.get('filters', '{}'))
         name = request.form.get('name')
-        if id != 'all':
-            segment = update_segment(id, filters, name, refresh=True)
-        if segment:
-            _id = id
-        else:
-            (segment, _id) = get_segment(id)
-
-        if not id:
-            return redirect(url_for(".id", id=_id))
+        segment = update_segment(id, filters, name, refresh=True)
 
         return jsonify(
             member_count=segment.count,
