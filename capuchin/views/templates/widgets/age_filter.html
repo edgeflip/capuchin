@@ -26,9 +26,8 @@ $("#range{{filter['field']|string|slugify}}").slider({
         var val = ui.values[1];
         if(ui.values[1] == 65) val = "65+";
         $("#range-{{filter['field']|string|slugify}}-max").html(val);
-        filters["{{filter['field']}}"] = ui.values;
-        console.log(filters);
-        refresh(e);
+        capuchin.segment.filters["{{filter['field']}}"] = ui.values;
+        capuchin.segment.refresh();
     }
 });
 var val = parseInt($("#range-{{filter['field']|string|slugify}}-max").html());

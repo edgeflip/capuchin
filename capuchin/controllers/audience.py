@@ -134,7 +134,7 @@ class Create(MethodView):
 
         users = render_table(SegmentUsers)
         if not users:
-            users = SegmentUsers(current_user.client, segment).render()
+            users = SegmentUsers(current_user.client, str(_id), raw=segment).render()
 
         tmpl = template if template else "audience/create.html"
         lists = segment.get_lists()
@@ -159,6 +159,9 @@ class Create(MethodView):
             page=page
         )
 
+    # FIXME: This must be combined with table rendering (sorting) or otherwise
+    # allow the two to communicate. Filters sent to this controller are not
+    # maintained on table sort.
     def post(self, id, page=0):
         filters = json.loads(request.form.get('filters', '{}'))
         logging.info(filters)

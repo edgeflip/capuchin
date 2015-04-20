@@ -53,35 +53,40 @@ def post_actions(val, record):
 
 
 def post_message(val, record):
-    logging.info(val)
+    logging.debug(val)
+
     try:
-        img = "<div class=\"col-md-2\"><img class=\"table-image\" src=\"{}\" /></div>".format(record.picture)
-    except:
-        img = "<div class=\"col-md-2\"></div>"
+        img = u'<img class="table-image pull-left" src="{}">'.format(record.picture)
+    except AttributeError:
+        img = u''
+
     truncated_val = current_app.jinja_env.filters['truncate'](val, 120)
-    logging.info(truncated_val)
-    mes = u'<div class="col-md-10"><p class="post-detail">{}</p></div>'.format(truncated_val)
-    return u"{}{}".format(img, mes)
+    logging.debug(truncated_val)
+    message = u'<p class=post-detail>{}</p>'.format(truncated_val)
+
+    return img + message
+
+
+def post_reach(value, record):
+    return u'<p data-post="{post_id}" class=post-reach-chart>&hellip;</p>'.format(post_id=record.id)
 
 
 def date_formatter(v, r):
     return date_format(r.created_time)
 
 
-post_columns = [
-    Column('created_time', "Published", formatter=date_formatter, sortable=True),
-    Column('message', "Post", formatter=post_message, sortable=True),
-    Column('', "Type", formatter=post_type),
-    Column('', "Targeting", formatter=post_targeting),
-    Column('', "Reach", formatter=lambda v, r: "1,090"),
-    Column('', "Engagment", formatter=post_engagement),
-    Column('', '', formatter=post_actions, cls="actions"),
-]
-
-
 class Posts(Table):
+
     cls = Post
-    columns = post_columns
+    columns = [
+        Column('created_time', "Published", formatter=date_formatter, sortable=True),
+        Column('message', "Post", formatter=post_message, sortable=True),
+        Column('', "Type", formatter=post_type),
+        # Column('', "Targeting", formatter=post_targeting), # FIXME: do we need this?
+        Column('', "Reach", formatter=post_reach),
+        Column('', "Engagment", formatter=post_engagement),
+        Column('', '', formatter=post_actions, cls="actions"),
+    ]
 
 
 def notif_message(v, r):
@@ -115,7 +120,6 @@ class Notifications(MongoTable):
             td.append(u"</tr>")
             real_rows.append(u"".join(td))
         return real_rows
-
 
     def get_records(self, q, from_, size, sort):
         records, total = super(Notifications, self).get_records(q, from_, size, sort)
