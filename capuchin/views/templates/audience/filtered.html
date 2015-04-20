@@ -1,5 +1,10 @@
-<div class="row filters">
-    {% include "audience/filters.html" %}
+<div class="row">
+    <div class="col-md-9 filters">
+        {% include "audience/filters.html" %}
+    </div>
+    <div class="col-md-3 sidebar" id="segment-summary">
+        {% include "audience/summary.html" %}
+    </div>
 </div>
 <div class="row">
     <div id="records">

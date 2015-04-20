@@ -834,3 +834,21 @@ select {
 .audience_explorer a {
     color: white;
 }
+
+#segment-summary p {
+    font-size: 133%;
+}
+
+#joined-qualifier-container {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+#joined-qualifier-container select {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+#joined-picker-container {
+    padding-right: 0;
+}

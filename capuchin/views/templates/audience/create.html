@@ -40,11 +40,23 @@
                 };
 
             $.ajax({
-                url: "{{ url_for('.filter_update', id=id, page=0) }}",
+                url: "{{ url_for('.filtered_users', id=id, page=0) }}",
                 type: 'POST',
                 data: data,
                 success: _update_filters.bind(undefined, refresh)
             });
+
+            if (refresh) {
+                $.ajax({
+                    url: "{{ url_for('.filtered_summary', id=id, page=0) }}",
+                    type: 'POST',
+                    data: data,
+                    success: function (data) {
+                        $('#segment-summary .member-count').text(data.member_count);
+                        $('#segment-summary .engagement-count').text(data.engagement);
+                    }
+                });
+            }
         }
 
         self.refresh = function (event, refresh) {
@@ -63,6 +75,11 @@
 
         $("#segment-save").click(function (event) {
             capuchin.segment.refresh(event, false);
+        });
+
+
+        $("#title").keyup(function() {
+            $("#segment-summary .segment-title").text($(this).val());
         });
     });
 </script>
