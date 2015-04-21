@@ -258,6 +258,9 @@ ul.navbar-right.dropdown {
     content: '';
 }
 
+.btn-group-xs:not(:first-child) {
+    margin-left: 1em;
+}
 .btn-group-xs>.btn {
     border-radius: 10px;
 }

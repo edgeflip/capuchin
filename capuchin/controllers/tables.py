@@ -1,14 +1,8 @@
-from flask import Blueprint, render_template, current_app, redirect, url_for, request, Response, g, session
+from flask import Blueprint, request, Response, session
 from flask.views import MethodView
 from flask.ext.login import current_user
 from capuchin import config
-from capuchin import filters
-from capuchin.models.segment import Segment
-from capuchin.views.tables import Table
-import urllib
 import logging
-import slugify
-import math
 import json
 
 tables = Blueprint(
@@ -20,12 +14,14 @@ tables = Blueprint(
 
 table_module = "capuchin.views.tables"
 
+
 def get_table(cls):
     parts = "{}.{}".format(table_module, cls).split(".")
     logging.info(parts)
     mod = __import__(".".join(parts[:-1]), globals(), locals(), fromlist=[parts[-1]])
     table = getattr(mod, parts[-1])
     return table
+
 
 def get_args(cls_name):
     obj = request.args.get('url', request.base_url)

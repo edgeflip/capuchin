@@ -14,7 +14,8 @@ $(document).ready(function () {
         }
     });
 }).ready(function () {
-    /* Table header and "pager" anchors load new table data and trigger event "capuchin.table.load".
+    /* Table header and "pager" anchors, and table-mutating buttons, load new table
+     * data and trigger event "capuchin.table.load".
      */
     function insertResult (result) {
         var id = this.data('id'),
@@ -24,10 +25,10 @@ $(document).ready(function () {
         oldTable.replaceWith(newTable);
         newTable.trigger('capuchin.table.load');
     }
-    $('body').on('click', '.pager, .table_sort', function (event) {
+    $('body').on('click', '.pager, .table_sort, .table-change', function (event) {
         event.preventDefault();
         var target = $(event.target),
-            url = target.attr('href');
+            url = target.data('refresh') || target.attr('href');
 
         $.ajax({url: url, success: insertResult.bind(target)});
     });
@@ -171,6 +172,60 @@ $(document).ready(function () {
 
         modal.postBooster.add(modal.segmentEngager).removeClass('on');
         modal.postDefaults.add(modal.segmentDefault).addClass('on');
+    });
+}).ready(function () {
+    /* Transform deletion modals for individual objects.
+     */
+    $('.modal-remove')
+    .on('show.bs.modal', function (event) {
+        var modal = $(this),
+            caller = $(event.relatedTarget),
+            object = caller.closest('[data-object]'),
+            objectId = object.data('object'),
+            columns = object.find('td'),
+            name = columns.first().text(),
+            table = caller.closest('[data-source]'),
+            refreshUrl = table.data('source'),
+            tableWrapper = table.closest('[id^=table]'),
+            tableId = tableWrapper.attr('id');
+
+        modal.find('.object-name').text(name);
+        modal.find('[data-action=delete-object]').data({
+            target: objectId,
+
+            // Below data attrs for .table-change handler:
+            id: tableId,
+            refresh: refreshUrl
+        });
+    })
+    .on('hidden.bs.modal', function () {
+        var modal = $(this);
+
+        modal.find('.object-name').text('');
+        modal.find('[data-action=delete-object]').data({
+            target: '',
+            id: '',
+            refresh: ''
+        });
+    });
+
+    function hideModal () {
+        /* Close modal
+         */
+        this.closest('.modal-remove').modal('hide');
+    }
+
+    $('[data-action=delete-object]').click(function () {
+        var $this = $(this),
+            objectId = $this.data('target'),
+            postUrl = objectId && '/audience/segment/' + objectId + '/delete';
+
+        if (objectId) {
+            // FIXME: Would be better, e.g., to pause only event propagation, until this
+            // (async) call is complete, rather than lock the entire process (sync).
+            $.ajax(postUrl, {async: false, method: 'POST', complete: hideModal.bind($this)});
+        }
+        // table refresh will be taken care of by .table-change handler
     });
 });
 

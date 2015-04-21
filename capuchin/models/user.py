@@ -1,13 +1,16 @@
 import logging
-from capuchin import config
-from capuchin.models.client import Client
-from capuchin.models.interest import Interest
-from capuchin.models.imports import ImportOrigin
-from capuchin.models import ESObject
+import random
+
 import psycopg2
 import psycopg2.extras
 from flask import url_for
-import random
+
+from capuchin import config
+from capuchin.models import ESObject
+from capuchin.models.client import Client
+from capuchin.models.imports import ImportOrigin
+from capuchin.models.interest import Interest
+
 
 class User(ESObject):
     TYPE = config.USER_RECORD_TYPE
@@ -23,6 +26,10 @@ class User(ESObject):
             "sort":sort
         }
         return q
+
+    @property
+    def id(self):
+        return self.efid
 
     def url(self):
         return url_for('audience.view', id=self.efid)
