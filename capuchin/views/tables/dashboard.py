@@ -89,11 +89,10 @@ class Posts(Table):
     ]
 
 
-def notif_message(v, r):
-    return current_app.jinja_env.filters['truncate'](v, 25)
-
-
 class Notifications(MongoTable):
+    def notif_message(v, r):
+        return current_app.jinja_env.filters['truncate'](v, 25)
+
     cls = Notification
     columns = [
         Column('created', 'Date', formatter=lambda v, r: date_format(v), sortable=True),
