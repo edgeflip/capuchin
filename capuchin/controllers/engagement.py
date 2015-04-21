@@ -45,7 +45,7 @@ class Index(MethodView):
         notifications = render_table(Notifications)
         if not notifications:
             notifications = Notifications(current_user.client).render(
-                q=query,
+                q='*',
                 sort=('created_time', 'desc'),
             )
 
