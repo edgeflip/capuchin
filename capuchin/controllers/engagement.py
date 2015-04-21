@@ -32,7 +32,7 @@ def create_pagination(total_records, current_page=0):
 
 class Index(MethodView):
 
-    def get(self, page=0, template='posts/index.html'):
+    def get(self, page=0, template='engagement/index.html'):
         query = request.args.get('q') or '*'
 
         posts = render_table(Posts)
@@ -42,9 +42,17 @@ class Index(MethodView):
                 sort=('created_time', 'desc'),
             )
 
+        notifications = render_table(Notifications)
+        if not notifications:
+            notifications = Notifications(current_user.client).render(
+                q=query,
+                sort=('created_time', 'desc'),
+            )
+
         return render_template(
             template,
             posts=posts,
+            notifications=notifications,
             page=page,
             q=query,
         )

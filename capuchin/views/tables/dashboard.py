@@ -92,26 +92,24 @@ class Posts(Table):
 def notif_message(v, r):
     return current_app.jinja_env.filters['truncate'](v, 25)
 
-notification_columns = [
-    Column('created', 'Date', formatter=lambda v, r: date_format(v)),
-    Column('', 'Notification', formatter=lambda v, r: 'Notification'),
-    Column('', 'Segment', formatter=lambda v, r: r.segment.name),
-    Column('message', 'Description', formatter=notif_message),
-    Column('engagement', 'Click %', formatter=lambda v, r: "{}%".format(random.randint(2, 99)))
-]
-
 
 class Notifications(MongoTable):
     cls = Notification
-    columns = notification_columns
+    columns = [
+        Column('created', 'Date', formatter=lambda v, r: date_format(v), sortable=True),
+        Column('message', 'Description', formatter=notif_message, sortable=True),
+        Column('segment', 'Segment', formatter=lambda v, r: r.segment.name, sortable=True),
+        Column('post', 'Content', formatter=lambda v, r: current_app.jinja_env.filters['truncate'](r.get_content(), 25), sortable=True),
+        Column('engagement', 'Click %', formatter=lambda v, r: "{}%".format(random.randint(2, 99)))
+    ]
 
     def build_rows(self, records):
         real_rows = super(Notifications, self).build_rows(records)
 
         data = (
-            ('3/19/2015', 'Notification', 'Urban 18-35', '{Name}, take five minutes to watch this video.', '54%'),
-            ('3/18/2015', 'Notification', 'Politically Active', '{Name}, help us move the political needle on this important issue!', '63%'),
-            ('3/17/2015', 'Notification', 'All Supporters', '{Name}, you need to see this...', '41%'),
+            ('03/19/2015', '{Name}, take five minutes to watch this video.', 'Urban 18-35', 'http://www.yourdomain.org/important_video', '54%'),
+            ('03/18/2015', '{Name}, help us move the political needle on this important issue!', 'Politically Active', 'http://www.yourdomain.org/issue-page', '63%'),
+            ('03/17/2015', '{Name}, you need to see this...', 'All Supporters', 'http://www.yourdomain.org/a-story', '41%'),
         )
         for row in data:
             td = [u"<tr data-url=\"None\">"]
