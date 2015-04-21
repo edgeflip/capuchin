@@ -147,20 +147,18 @@ class UserImport(dict):
         """
         self.cur.execute(query, (efid,))
         rows = self.cur.fetchall()
-        #FIXME demo hack, users should be imported based on the client, we are just grabbing everyone and assigning them to all clients.
-        user_client = rows[0]
         interest = interests[random.randint(0, len(interests)-1)]
         imp = imports[random.randint(0, len(imports)-1)]
         self['interests'] = [interest]
 
         self['clients'] = [
             {
-                'asid':user_client['fbid'],
-                'id':str(c._id),
+                'asid':row['fbid'],
+                'id':str(Client.find_one({ 'slug': row['codename']})._id),
                 'engagement':random.randint(1, 5),
                 'import_origins': [imp],
             }
-            for c in Client.find()
+            for row in rows
         ]
 
     def parse(self, obj):
