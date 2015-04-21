@@ -75,6 +75,9 @@ def date_formatter(v, r):
     return date_format(r.created_time)
 
 
+def truncate(v, chars):
+    return current_app.jinja_env.filters['truncate'](v, chars)
+
 class Posts(Table):
 
     cls = Post
@@ -90,30 +93,31 @@ class Posts(Table):
 
 
 class Notifications(MongoTable):
-    def notif_message(v, r):
-        return current_app.jinja_env.filters['truncate'](v, 25)
-
     cls = Notification
     columns = [
         Column('created', 'Date', formatter=lambda v, r: date_format(v), sortable=True),
-        Column('message', 'Description', formatter=notif_message, sortable=True),
+        Column('message', 'Description', formatter=lambda v, r: truncate(v, 25), sortable=True),
         Column('segment', 'Segment', formatter=lambda v, r: r.segment.name, sortable=True),
         Column('post', 'Content', formatter=lambda v, r: current_app.jinja_env.filters['truncate'](r.get_content(), 25), sortable=True),
         Column('engagement', 'Click %', formatter=lambda v, r: "{}%".format(random.randint(2, 99)))
     ]
 
+    fake_data = (
+            ['03/19/2015', '{Name}, take five minutes to watch this video.', 'Urban 18-35', '54%'],
+            ['03/18/2015', '{Name}, help us move the political needle on this important issue!', 'Politically Active', '63%'],
+            ['03/17/2015', '{Name}, you need to see this...', 'All Supporters', '41%'],
+    )
+
     def build_rows(self, records):
         real_rows = super(Notifications, self).build_rows(records)
 
-        data = (
-            ('03/19/2015', '{Name}, take five minutes to watch this video.', 'Urban 18-35', 'http://www.yourdomain.org/important_video', '54%'),
-            ('03/18/2015', '{Name}, help us move the political needle on this important issue!', 'Politically Active', 'http://www.yourdomain.org/issue-page', '63%'),
-            ('03/17/2015', '{Name}, you need to see this...', 'All Supporters', 'http://www.yourdomain.org/a-story', '41%'),
-        )
-        for row in data:
+        for row in self.fake_data:
             td = [u"<tr data-url=\"None\">"]
-            for field in row:
-                td.append(u"<td>{}</td>".format(field))
+            td.append(u"<td>{}</td>".format(row[0]))
+            td.append(u"<td>{}</td>".format(row[1]))
+            td.append(u"<td>{}</td>".format(row[2]))
+            td.append(u"<td>{}</td>".format("Merchants of Doubt, a new documentary..."))
+            td.append(u"<td>{}</td>".format(row[3]))
             td.append(u"</tr>")
             real_rows.append(u"".join(td))
         return real_rows
@@ -121,3 +125,23 @@ class Notifications(MongoTable):
     def get_records(self, q, from_, size, sort):
         records, total = super(Notifications, self).get_records(q, from_, size, sort)
         return records, total+3
+
+
+class PostNotifications(Notifications):
+    columns = [
+        Column('created', 'Date', formatter=lambda v, r: date_format(v), sortable=True),
+        Column('message', 'Description', formatter=lambda v, r: truncate(v, 25), sortable=True),
+        Column('segment', 'Segment', formatter=lambda v, r: r.segment.name, sortable=True),
+        Column('engagement', 'Click %', formatter=lambda v, r: "{}%".format(random.randint(2, 99)))
+    ]
+
+    def build_rows(self, records):
+        real_rows = super(Notifications, self).build_rows(records)
+
+        for row in self.fake_data:
+            td = [u"<tr data-url=\"None\">"]
+            for field in row:
+                td.append(u"<td>{}</td>".format(field))
+            td.append(u"</tr>")
+            real_rows.append(u"".join(td))
+        return real_rows

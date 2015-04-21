@@ -5,7 +5,7 @@ from capuchin import config
 from capuchin.models.post import Post
 from capuchin.views.insights.charts import DualAxisTimeChart
 from capuchin.views.insights import age, gender, interests
-from capuchin.views.tables.dashboard import Posts, Notifications
+from capuchin.views.tables.dashboard import Posts, Notifications, PostNotifications
 from capuchin.controllers.tables import render_table
 import logging
 from collections import OrderedDict
@@ -64,7 +64,7 @@ class View(MethodView):
 
     def get(self, id):
         post = Post(id=id)
-        notifications = Notifications(current_user.client)
+        notifications = PostNotifications(current_user.client)
         logging.info(post)
         return render_template(
             "posts/view.html",
