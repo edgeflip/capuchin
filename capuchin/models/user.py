@@ -24,6 +24,7 @@ class User(ESObject):
         }
         return q
 
+    @property
     def url(self):
         return url_for('audience.view', id=self.efid)
 

@@ -118,7 +118,7 @@ class ClientNotifications(Notifications):
         real_rows = super(ClientNotifications, self).build_rows(records)
 
         for row in self.fake_data:
-            td = [u"<tr data-url=\"None\">"]
+            td = [u"<tr>"]
             td.append(u"<td>{}</td>".format(row[0]))
             td.append(u"<td>{}</td>".format(row[1]))
             td.append(u"<td>{}</td>".format(row[2]))
@@ -141,7 +141,7 @@ class PostNotifications(Notifications):
         real_rows = super(PostNotifications, self).build_rows(records)
 
         for row in self.fake_data:
-            td = [u"<tr data-url=\"None\">"]
+            td = [u"<tr>"]
             for field in row:
                 td.append(u"<td>{}</td>".format(field))
             td.append(u"</tr>")
