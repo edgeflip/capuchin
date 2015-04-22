@@ -71,6 +71,7 @@ $(document).ready(function(){
 {% endblock %}
 
 {% block content %}
+    {% set grow_highlights = ["invite-url"] %}
     {% include "audience/includes/modal.html" %}
     {% from "widgets/bucket.html" import bucket %}
     <div class="row buckets">

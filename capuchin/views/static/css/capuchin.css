@@ -486,6 +486,9 @@ table td img.table-image {
 #grow-modal .btn {
     min-width: 190px;
 }
+#grow-body ul {
+    margin-top: 15px;
+}
 #grow-body li {
     margin-bottom: 30px;
 }

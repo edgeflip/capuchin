@@ -7,10 +7,10 @@
             </div>
             <div class="modal-body text-center" id="grow-body">
                 <ul class="list-unstyled">
-                    <li><a href="#fans-modal" data-toggle=modal data-target="#fans-modal" data-dismiss=modal class="btn btn-default btn-action">Invite Facebook Fans</a></li>
-                    <li><a href="#" class="btn btn-default">Invite External List</a></li>
-                    <li><a href="#share-modal" data-toggle=modal data-target="#share-modal" data-dismiss=modal class="btn btn-default">Smart Sharing Invite</a></li>
-                    <li><a href="#" class="btn btn-default">Generate Invite URL</a></li>
+                    <li><a href="#" class="btn btn-default{% if 'invite-url' in grow_highlights %} btn-action{% endif %}">Generate Invite URL</a></li>
+                    <li><a href="#share-modal" data-toggle=modal data-target="#share-modal" data-dismiss=modal class="btn btn-default{% if 'smart-share' in grow_highlights %} btn-action{% endif %}">Smart Sharing Invite</a></li>
+                    <li><a href="#fans-modal" data-toggle=modal data-target="#fans-modal" data-dismiss=modal class="btn btn-default{% if 'invite-fans' in grow_highlights %} btn-action{% endif %}">Invite Facebook Fans</a></li>
+                    <li><a href="#" class="btn btn-default{% if 'invite-list' in grow_highlights %} btn-action{% endif %}">Invite External List</a></li>
                 </ul>
             </div>
         </div>
