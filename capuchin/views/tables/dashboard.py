@@ -98,7 +98,7 @@ class Notifications(MongoTable):
         Column('created', 'Date', formatter=lambda v, r: date_format(v), sortable=True),
         Column('message', 'Description', formatter=lambda v, r: truncate(v, 25), sortable=True),
         Column('segment', 'Segment', formatter=lambda v, r: r.segment.name, sortable=True),
-        Column('post', 'Content', formatter=lambda v, r: current_app.jinja_env.filters['truncate'](r.get_content(), 25), sortable=True),
+        Column('post', 'Content', formatter=lambda v, r: truncate(r.get_content(), 25), sortable=True),
         Column('engagement', 'Click %', formatter=lambda v, r: "{}%".format(random.randint(2, 99)))
     ]
 
@@ -108,8 +108,14 @@ class Notifications(MongoTable):
             ['03/17/2015', '{Name}, you need to see this...', 'All Supporters', '41%'],
     )
 
+    def get_records(self, q, from_, size, sort):
+        records, total = super(Notifications, self).get_records(q, from_, size, sort)
+        return records, total+3
+
+
+class ClientNotifications(Notifications):
     def build_rows(self, records):
-        real_rows = super(Notifications, self).build_rows(records)
+        real_rows = super(ClientNotifications, self).build_rows(records)
 
         for row in self.fake_data:
             td = [u"<tr data-url=\"None\">"]
@@ -122,10 +128,6 @@ class Notifications(MongoTable):
             real_rows.append(u"".join(td))
         return real_rows
 
-    def get_records(self, q, from_, size, sort):
-        records, total = super(Notifications, self).get_records(q, from_, size, sort)
-        return records, total+3
-
 
 class PostNotifications(Notifications):
     columns = [
@@ -136,7 +138,7 @@ class PostNotifications(Notifications):
     ]
 
     def build_rows(self, records):
-        real_rows = super(Notifications, self).build_rows(records)
+        real_rows = super(PostNotifications, self).build_rows(records)
 
         for row in self.fake_data:
             td = [u"<tr data-url=\"None\">"]

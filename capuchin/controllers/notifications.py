@@ -5,7 +5,7 @@ from flask.views import MethodView
 from capuchin import config
 from capuchin.models.notification import Notification
 from capuchin.models.segment import Segment
-from capuchin.views.tables.dashboard import Notifications
+from capuchin.views.tables.dashboard import ClientNotifications
 from capuchin.controllers.tables import render_table
 from capuchin.workers.notifications import get_redirect_url, send_notifications
 
@@ -13,9 +13,9 @@ from capuchin.workers.notifications import get_redirect_url, send_notifications
 class NotificationsDefault(MethodView):
 
     def get(self):
-        notifications = render_table(Notifications)
+        notifications = render_table(ClientNotifications)
         if not notifications:
-            notifications = Notifications(current_user.client).render(
+            notifications = ClientNotifications(current_user.client).render(
                 q='*',
                 sort=('created_time', 'desc'),
             )
