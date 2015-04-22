@@ -18,7 +18,7 @@ def create_client(name, email):
     cl = Client()
     cl.name = name
     cl.save()
-    magnus.get_or_create_magnus_client(name, cl.slug)
+    magnus.get_or_create_magnus_client(cl.slug, name)
     admin = Admin()
     admin.email = email
     admin.password = cl._id
