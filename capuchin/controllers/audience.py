@@ -3,7 +3,16 @@ import logging
 import math
 
 from bson.objectid import InvalidId
-from flask import Blueprint, jsonify, render_template, redirect, url_for, request, Response, g
+from flask import (
+    Blueprint,
+    Response,
+    g,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
 from flask.ext.login import current_user
 from flask.views import MethodView
 
@@ -121,6 +130,19 @@ class View(MethodView):
         )
 
 
+class Summary(MethodView):
+
+    def post(self, id, page=0):
+        filters = json.loads(request.form.get('filters', '{}'))
+        name = request.form.get('name')
+        segment = update_segment(id, filters, name, refresh=True)
+
+        return jsonify(
+            member_count=segment.count,
+            engagement=round(segment.engagement, 1),
+        )
+
+
 class Create(MethodView):
 
     def get(self, id=None, page=0, template=None, segment=None):
@@ -155,6 +177,8 @@ class Create(MethodView):
             ranges=segment.get_ranges(),
             lists=lists,
             users=users,
+            member_count=segment.count,
+            engagement=round(segment.engagement, 1),
             id=id,
             name=segment.name if segment.name else "New Segment",
             page=page
@@ -217,7 +241,8 @@ audience.add_url_rule("/", view_func=Default.as_view('index'))
 audience.add_url_rule("/segment/create", view_func=Create.as_view('create'))
 audience.add_url_rule("/segment/<id>", view_func=Create.as_view('id'))
 audience.add_url_rule("/segment/<id>/<int:page>", view_func=Create.as_view("page"))
-audience.add_url_rule("/segment/<id>/<int:page>/filters", view_func=Create.as_view("filter_update"))
+audience.add_url_rule("/segment/<id>/<int:page>/filtered_users", view_func=Create.as_view("filtered_users"))
+audience.add_url_rule("/segment/<id>/<int:page>/filtered_summary", view_func=Summary.as_view("filtered_summary"))
 audience.add_url_rule("/segment/autocomplete/<field>", view_func=Autocomplete.as_view("autocomplete"))
 audience.add_url_rule("/segment/<id>/save", view_func=Save.as_view("save"))
 audience.add_url_rule('/segment/<id>/delete', view_func=Delete.as_view('delete'))

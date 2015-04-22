@@ -128,4 +128,23 @@ class Segment(orm.Document):
         )
         return res['count']
 
+    @property
+    def engagement(self):
+        q = {
+            "aggregations": {
+                "eng": { "avg": { "field": "engagement" } },
+            },
+            "query": self.build_query_filters(),
+        }
+        ES = db.init_elasticsearch()
+        res = ES.search(
+            config.ES_INDEX,
+            config.USER_RECORD_TYPE,
+            _source=False,
+            size=0,
+            body=q,
+        )
+        return res.get("aggregations", {}).get("eng", {}).get("value", None)
+
+
 Client.segments = orm.Lazy(type=Segment, key='client')
