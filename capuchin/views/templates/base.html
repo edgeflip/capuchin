@@ -39,9 +39,9 @@
                 {% block menu_items %}
                 <div class="container">
                     <div class="navbar-right">
-                        <form class="navbar-form navbar-left" role="search">
+                        <form class="navbar-form navbar-left" role="search" action="{{url_for('search.index')}}" method="GET">
                             <div class="input-group">
-                                <input name="q" type="text" autocomplete="off" class="form-control" value="">
+                                <input name="q" type="text" autocomplete="off" class="form-control" value="{% if q %}{{q}}{% endif %}">
                                 <span class="input-group-btn">
                                     <button class="btn btn-default" type="button">
                                         <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
