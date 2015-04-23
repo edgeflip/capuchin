@@ -51,15 +51,20 @@
                         </form>
                         <ul class="nav navbar-nav navbar-right dropdown">
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                                <a href="#" id="client_messages" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                                {% set count = current_user.client.messages(query={'read':None}).count() %}
+                                {% if not count: %}
+                                    <span class="icon-envelope" aria-hidden="true"></span>
+                                    <span class="label label-danger"></span>
+                                {% else: %}
                                     <span class="icon-envelope-open" aria-hidden="true"></span>
-                                    <span class="label label-danger">4</span>
+                                    <span class="label label-danger">{{ count }}</span>
+                                {% endif %}
                                 </a>
                                 <ul class="dropdown-menu" role="menu">
-                                    <li><a href="">Welcome to SociallyMinded! Take a guided tour.</a></li>
-                                    <li><a href="{{url_for('facebook.index')}}">Connect a Facebook page to get started</a></li>
-                                    <li><a href="">View your Facebook Page Report</a></li>
-                                    <li><a href="{{url_for('engagement.index')}}">View your Engagement page</a></li>
+                                    {% for message in current_user.client.messages(sort=[('__created__', -1)]): %}
+                                        <li><a href="{{message.link}}">{{message.text}}</a></li>
+                                    {% endfor %}
                                 </ul>
                             </li>
                             <li class="dropdown">

@@ -227,6 +227,15 @@ $(document).ready(function () {
         }
         // table refresh will be taken care of by .table-change handler
     });
+}).ready(function () {
+    var read = function() {
+        $("#client_messages .label").hide();
+        $("#client_messages .icon-envelope-open").removeClass("icon-envelope-open").addClass("icon-envelope");
+    };
+    $("#client_messages").click(function(e) {
+        url = '/messages/mark_read';
+        $.ajax(url, {method: 'POST', success: read});
+    });
 });
 
 (function () {

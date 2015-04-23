@@ -120,3 +120,18 @@ class AccountToken(orm.Document):
     admin = field.DocumentId(type=Admin)
 
 Client.admins = orm.Lazy(type=Admin, key='client')
+
+
+class Message(orm.Document):
+    _db = "capuchin"
+    _collection = "client_messages"
+    _indexes = [
+        orm.Index('read', key=('read', 1)),
+    ]
+
+    text = field.Char()
+    link = field.Char()
+    client = field.DocumentId(type=Client)
+    read = field.Date()
+
+Client.messages = orm.Lazy(type=Message, key='client')

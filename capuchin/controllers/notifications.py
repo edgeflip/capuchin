@@ -5,6 +5,7 @@ from flask.views import MethodView
 from capuchin import config
 from capuchin.models.segment import Segment
 from capuchin.models.notification import Notification
+from capuchin.models.client import Message
 from capuchin.workers.notifications import get_redirect_url, send_notifications
 
 
@@ -30,6 +31,12 @@ class NotificationsCreate(MethodView):
         nid = str(notification._id)
         chain = (get_redirect_url.si(nid) | send_notifications.si(nid))
         chain.delay()
+
+        message = Message()
+        message.client = current_user.client
+        message.text = "Your notification was sent"
+        message.link = url_for("engagement.index")
+        message.save()
 
         return redirect(url_for(".index"))
 
