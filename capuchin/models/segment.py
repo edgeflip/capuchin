@@ -7,7 +7,7 @@ from capuchin import filters
 from capuchin import db
 from capuchin.models.client import Client
 from capuchin.models.user import User
-from capuchin.models import SearchObject
+from capuchin.models import SearchObject, ESObject
 
 
 class Segment(SearchObject):
@@ -21,12 +21,6 @@ class Segment(SearchObject):
     filters = orm.Field(default={})
     client = field.DocumentId(type=Client)
     last_notification = field.Date()
-
-    class Search(object):
-        index = config.ES_INDEX
-        doc_type = 'segment'
-        query_fields = ['_all']
-        return_fields = ['_id']
 
     @property
     def id(self):
@@ -152,6 +146,34 @@ class Segment(SearchObject):
             body=q,
         )
         return res.get("aggregations", {}).get("eng", {}).get("value", None)
+
+class SegmentSearch(ESObject):
+    TYPE = 'segment'
+
+    @classmethod
+    def filter(cls, client, q, sort):
+        q = {
+            "query": {
+                "query_string": {
+                    "default_field": "_all",
+                    "query": q
+                }
+            },
+            "filter":{
+                "term":{
+                    "client":str(client._id)
+                }
+            },
+            "sort":sort
+        }
+        return q
+
+    @property
+    def id(self):
+        return self._id
+
+    def url(self):
+        return url_for('audience.id', id=self._id)
 
 
 Client.segments = orm.Lazy(type=Segment, key='client')

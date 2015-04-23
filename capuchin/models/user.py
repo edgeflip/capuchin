@@ -15,15 +15,15 @@ from capuchin.models.interest import Interest
 class User(ESObject):
     TYPE = config.USER_RECORD_TYPE
 
-    class Search(object):
-        index = config.ES_INDEX
-        doc_type = 'user'
-        query_fields = ['_all']
-        return_fields = ['_id']
-
     @classmethod
     def filter(cls, client, q, sort):
         q = {
+            "query": {
+                "query_string": {
+                    "default_field": "_all",
+                    "query": q
+                }
+            },
             "filter":{
                 "term":{
                     "clients.id":str(client._id)
@@ -32,35 +32,6 @@ class User(ESObject):
             "sort":sort
         }
         return q
-
-    @classmethod
-    def search(cls, client, query, size=10, start=0):
-        q = {
-            "query":{
-                "filtered":{
-                    "query":{
-                        "query_string":{
-                            "fields":cls.Search.query_fields,
-                            "query":escape_query(query),
-                        }
-                    },
-                    "filter":{
-                        "term":{
-                            "clients.id":str(client._id)
-                        }
-                    }
-                }
-            }
-        }
-        ES = db.init_elasticsearch()
-        res = ES.search(
-            index=cls.Search.index,
-            doc_type=cls.Search.doc_type,
-            body=q,
-            from_=start,
-            size=size
-        )
-        return res
 
     @property
     def id(self):

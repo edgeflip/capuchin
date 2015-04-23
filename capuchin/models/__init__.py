@@ -10,49 +10,13 @@ def escape_query(q): return q
 
 class SearchObject(orm.Document):
 
-    class Search(object):
-        index = config.ES_INDEX
-        doc_type = 'user'
-        query_fields = ['_all']
-        return_fields = ['_id']
-
-    @classmethod
-    def search(cls, client, query, size=10, start=0):
-        q = {
-            "query":{
-                "filtered":{
-                    "query":{
-                        "query_string":{
-                            "fields":cls.Search.query_fields,
-                            "query":escape_query(query),
-                        }
-                    },
-                    "filter":{
-                        "term":{
-                            "client":str(client._id)
-                        }
-                    }
-                }
-            }
-        }
-        ES = db.init_elasticsearch()
-        res = ES.search(
-            index=cls.Search.index,
-            doc_type=cls.Search.doc_type,
-            body=q,
-            from_=start,
-            size=size
-        )
-        return res
-
     def save(self, *args, **kwargs):
         res = super(SearchObject, self).save(*args, **kwargs)
-        logging.info("SAVING SearchObject!")
         doc = json.dumps(self.json(), cls=ElasticSearchEncoder)
-        logging.info(doc)
-        self.ES.index(
-            index=self.Search.index,
-            doc_type=self.Search.doc_type,
+        ES = db.init_elasticsearch()
+        ES.index(
+            index=config.ES_INDEX,
+            doc_type=self.__class__.__name__.lower(),
             body=doc,
             id=str(self._id)
         )

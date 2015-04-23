@@ -19,13 +19,9 @@ from flask.views import MethodView
 from capuchin import config
 from capuchin import filters
 from capuchin.controllers.tables import render_table
-from capuchin.models.imports import ImportOrigin
-from capuchin.models.interest import Interest
-from capuchin.models.segment import Segment
-from capuchin.models.user import User
-from capuchin.models.notification import Notification
-from capuchin.models.post import Post
-from capuchin.views.tables.audience import Users, Segments, SegmentUsers
+from capuchin.views.tables.audience import Users
+from capuchin.views.tables.dashboard import Posts
+from capuchin.views.tables.search import Notifications, Segments
 
 
 search = Blueprint(
@@ -35,18 +31,33 @@ search = Blueprint(
     url_prefix="/search",
 )
 
-class Search(MethodView):
+def get_table(cls, q, sort='__created__'):
+    t = render_table(cls)
+    if not t:
+        t = cls(current_user.client).render(
+            q=q,
+            sort=(sort, 'desc')
+        )
 
-    def get(self):
-        q = request.args.get('q')
-        posts = Post.search(current_user.client, q)
-        users = User.search(current_user.client, q)
-        segments = Segment.search(current_user.client, q)
-        notifications = Notification.search(current_user.client, q)
-        logging.info(posts)
-        logging.info(users)
-        logging.info(segments)
-        logging.info(notifications)
-        return Response()
+    return t
 
-search.add_url_rule("/", view_func=Search.as_view("index"))
+class Index(MethodView):
+
+    def get(self, page=0):
+        q = request.args.get('q') or '*'
+        posts = get_table(Posts, q, 'created_time')
+        users = get_table(Users, q, 'first_activity')
+        segments = get_table(Segments, q)
+        notifications = get_table(Notifications, q)
+
+        return render_template(
+            'search/results.html',
+            posts=posts,
+            users=users,
+            segments=segments,
+            notifications=notifications,
+            page=page,
+            q=q,
+        )
+
+search.add_url_rule("/", view_func=Index.as_view("index"))
