@@ -1017,8 +1017,8 @@ function DumpObjectIndented(obj, indent)
                 }
                 nv.utils.windowResize(chart.update);
                 chartInfo.chart = chart;
-                chartList["chart"+settings.id] = chartInfo;
-                return chart
+                if (chartList != undefined) chartList["chart" + settings.id] = chartInfo;
+                return chart;
             });
         };
 

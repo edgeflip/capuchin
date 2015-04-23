@@ -1,0 +1,18 @@
+<div id="{{ modal_remove_id }}" class="modal fade modal-remove" tabindex="-1" role="dialog" aria-labelledby="Remove a {{ modal_remove_title }}" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Remove a {{ modal_remove_title }}</h4>
+            </div>
+            <div class="modal-body">
+                <h5>Are you sure?</h5>
+                <p>The {{ modal_remove_title_long }} <strong class=object-name></strong> will no longer be listed here.</p>
+                <p>{{ modal_remove_note }}</p>
+                <p class=text-center>
+                    <button class="btn btn-default btn-action table-change" data-action=delete-object data-target="" data-refresh="" type=submit>Remove {{ modal_remove_title }}</button>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

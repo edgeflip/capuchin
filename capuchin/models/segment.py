@@ -1,14 +1,16 @@
-from flask import url_for
 import humongolus as orm
-import humongolus.field as field
+from flask import url_for
+from humongolus import field
+
 from capuchin import config
 from capuchin import filters
 from capuchin import db
 from capuchin.models.client import Client
 from capuchin.models.user import User
-from bunch import Bunch
+
 
 class Segment(orm.Document):
+
     _db = "capuchin"
     _collection = "segments"
     _indexes = [
@@ -18,6 +20,10 @@ class Segment(orm.Document):
     filters = orm.Field(default={})
     client = field.DocumentId(type=Client)
     last_notification = field.Date()
+
+    @property
+    def id(self):
+        return self._id
 
     @property
     def url(self):

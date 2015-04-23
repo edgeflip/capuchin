@@ -2,7 +2,17 @@ import json
 import logging
 import math
 
-from flask import Blueprint, render_template, redirect, url_for, request, Response, g, jsonify
+from bson.objectid import InvalidId
+from flask import (
+    Blueprint,
+    Response,
+    g,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
 from flask.ext.login import current_user
 from flask.views import MethodView
 
@@ -121,6 +131,7 @@ class View(MethodView):
 
 
 class Summary(MethodView):
+
     def post(self, id, page=0):
         filters = json.loads(request.form.get('filters', '{}'))
         name = request.form.get('name')
@@ -189,15 +200,6 @@ class Create(MethodView):
         return self.get(id=id, page=page, template="audience/records.html", segment=segment)
 
 
-class Autocomplete(MethodView):
-
-    def get(self, field):
-        term = request.args.get("term")
-        res = get_suggestions(field, term)
-        ar = [{"label": u"{}".format(a['key']), "value": a['key']} for a in res[field]['buckets']]
-        return Response(json.dumps(ar), mimetype='application/json')
-
-
 class Save(MethodView):
 
     def post(self, id, page=0):
@@ -205,6 +207,34 @@ class Save(MethodView):
         s.name = request.form['name']
         s.save()
         return render_template("widgets/notification.html", message=('success', 'Segment Saved'))
+
+
+class Delete(MethodView):
+
+    def post(self, id):
+        try:
+            segment = Segment(id=id)
+        except InvalidId:
+            segment = None
+        else:
+            if segment.client._id != current_user.client._id:
+                segment = None
+
+        if segment is None:
+            return ("Not Found: {}".format(id), 404)
+
+        segment.remove()
+        return jsonify(status='success', message='Segment Removed')
+
+
+class Autocomplete(MethodView):
+
+    def get(self, field):
+        term = request.args.get('term')
+        results = get_suggestions(field, term)
+        data = [{'label': unicode(result['key']), 'value': result['key']}
+                for result in results[field]['buckets']]
+        return Response(json.dumps(data), mimetype='application/json')
 
 
 audience.add_url_rule("/", view_func=Default.as_view('index'))
@@ -215,4 +245,5 @@ audience.add_url_rule("/segment/<id>/<int:page>/filtered_users", view_func=Creat
 audience.add_url_rule("/segment/<id>/<int:page>/filtered_summary", view_func=Summary.as_view("filtered_summary"))
 audience.add_url_rule("/segment/autocomplete/<field>", view_func=Autocomplete.as_view("autocomplete"))
 audience.add_url_rule("/segment/<id>/save", view_func=Save.as_view("save"))
+audience.add_url_rule('/segment/<id>/delete', view_func=Delete.as_view('delete'))
 audience.add_url_rule("/view/<id>", view_func=View.as_view("view"))

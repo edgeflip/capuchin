@@ -16,12 +16,22 @@ SETTINGS = {
                     "tokenizer":"standard",
                     "filter":[ "standard", "lowercase", "stop", "kstem", "ngram" ]
                 },
+                "autocomplete_multiword":{
+                    "type":"custom",
+                    "tokenizer": "keyword",
+                    "filter":[ "standard", "lowercase", "stop", "kstem", "edge_ngram" ],
+                },
             },
             "filter": {
                 "ngram": {
                     "type": "nGram",
                     "min_gram": 2,
                     "max_gram": 8,
+                },
+                "edge_ngram": {
+                    "type": "edgeNGram",
+                    "min_gram": 2,
+                    "max_gram": 12,
                 },
                 "snowball": {
                     "type": "snowball",
@@ -82,7 +92,7 @@ USER = {
                     },
                     "suggest": {
                         "type": "string",
-                        "analyzer": "autocomplete"
+                        "analyzer": "autocomplete_multiword"
                     }
                 }
             },
