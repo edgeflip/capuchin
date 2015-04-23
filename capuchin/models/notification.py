@@ -2,7 +2,8 @@ import random
 
 import humongolus as orm
 from humongolus import field
-
+from capuchin import config
+from capuchin.models import SearchObject
 from capuchin.models.client import Client
 from capuchin.models.post import Post
 from capuchin.models.segment import Segment
@@ -15,7 +16,7 @@ class Redirect(orm.EmbeddedDocument):
     path = field.Char()
 
 
-class Notification(orm.Document):
+class Notification(SearchObject):
 
     _db = "capuchin"
     _collection = "notifications"
@@ -24,6 +25,13 @@ class Notification(orm.Document):
         orm.Index('clients', key=('client', 1)),
         orm.Index('post_id', key=('post_id', 1)),
     ]
+
+    class Search(object):
+        index = config.ES_INDEX
+        doc_type = 'notification'
+        query_fields = ['_all']
+        return_fields = ['_id']
+
 
     message = field.Char()
     segment = field.ModelChoice(type=Segment)

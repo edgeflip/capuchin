@@ -120,6 +120,7 @@ class Capuchin(Flask):
         from controllers.engagement import engagement
         from controllers.tables import tables
         from controllers.reports import reports
+        from controllers.search import search
         db.before_request(self.user_logged_in)
         notifications.before_request(self.user_logged_in)
         lists.before_request(self.user_logged_in)
@@ -128,6 +129,7 @@ class Capuchin(Flask):
         engagement.before_request(self.user_logged_in)
         tables.before_request(self.user_logged_in)
         reports.before_request(self.user_logged_in)
+        search.before_request(self.user_logged_in)
         self.register_blueprint(hc)
         self.register_blueprint(db)
         self.register_blueprint(notifications)
@@ -140,3 +142,4 @@ class Capuchin(Flask):
         self.register_blueprint(engagement)
         self.register_blueprint(tables)
         self.register_blueprint(reports)
+        self.register_blueprint(search)

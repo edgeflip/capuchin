@@ -16,7 +16,7 @@ def init_elasticsearch():
                 hosts=config.ES_HOSTS,
                 sniff_on_start=True,
                 sniff_on_connection_fail=True,
-                sniffer_timeout=60
+                sniffer_timeout=60,
             )
             es_connected = True
             logging.info(ES)
@@ -75,6 +75,14 @@ def create_index(ES):
                     "post":{
                         "_source":{"enabled":True},
                         "properties":user_mapping.POST
+                    },
+                    "notification":{
+                        "_source":{"enabled":True},
+                        "properties":user_mapping.NOTIFICATION
+                    },
+                    "segment":{
+                        "_source":{"enabled":True},
+                        "properties":user_mapping.SEGMENT
                     }
                 }
             }

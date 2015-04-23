@@ -19,3 +19,15 @@ class JavascriptEncoder(json.JSONEncoder):
                 return obj.json()
             except:
                 return str(obj)
+
+class ElasticSearchEncoder(json.JSONEncoder):
+    mimetype="json-es"
+
+    def default(self, obj):
+        if isinstance(obj, datetime.datetime): return obj.strftime('%Y-%m-%dT%H:%M:%S')
+        if isinstance(obj, ObjectId): return str(obj)
+        if isinstance(obj, Exception): return str(obj)
+        if isinstance(obj, DocumentId): return obj()
+        if isinstance(obj, DynamicDocument): return obj()
+        try: return obj.json()
+        except Exception as e: pass

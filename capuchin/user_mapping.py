@@ -49,6 +49,20 @@ POST = {
     }
 }
 
+NOTIFICATION = {
+    "client":{
+        "type":"string",
+        "index": "not_analyzed"
+    }
+}
+
+SEGMENT = {
+    "client":{
+        "type":"string",
+        "index": "not_analyzed"
+    }
+}
+
 USER = {
     "efid": {"type": "long",},
     "clients":{

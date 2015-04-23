@@ -7,9 +7,10 @@ from capuchin import filters
 from capuchin import db
 from capuchin.models.client import Client
 from capuchin.models.user import User
+from capuchin.models import SearchObject
 
 
-class Segment(orm.Document):
+class Segment(SearchObject):
 
     _db = "capuchin"
     _collection = "segments"
@@ -20,6 +21,12 @@ class Segment(orm.Document):
     filters = orm.Field(default={})
     client = field.DocumentId(type=Client)
     last_notification = field.Date()
+
+    class Search(object):
+        index = config.ES_INDEX
+        doc_type = 'segment'
+        query_fields = ['_all']
+        return_fields = ['_id']
 
     @property
     def id(self):

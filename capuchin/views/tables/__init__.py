@@ -184,7 +184,7 @@ class MongoTable(Table):
     def build_rows(self, records):
         tr = []
         for record in records:
-            td = [u'<tr data-object="{}" data-url="{}">'.format(record.id, record.url)]
+            td = [u'<tr data-object="{}" data-url="{}">'.format(record._id, record.url)]
             for column in self.columns:
                 levels = column.field.split(".")
                 value = record

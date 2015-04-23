@@ -32,6 +32,8 @@ mongodb:
     image: dockerfile/mongodb
     expose:
         - "27017"
+    ports:
+        - "27017:27017"
 
 elasticsearch:
     image: dockerfile/elasticsearch
@@ -40,6 +42,8 @@ elasticsearch:
     expose:
         - "9200"
         - "9300"
+    ports:
+        - "9200:9200"
 
     volumes:
         - ./config:/config
