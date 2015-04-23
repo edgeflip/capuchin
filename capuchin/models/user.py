@@ -31,6 +31,7 @@ class User(ESObject):
     def id(self):
         return self.efid
 
+    @property
     def url(self):
         return url_for('audience.view', id=self.efid)
 

@@ -2,6 +2,11 @@
 {% block title %}Notifications{% endblock %}
 {% set active_page='engagement' %}
 {% block content %}
+<div class="row">
+    <div class="col-md-9">
+        <h3>Notifications <a class="btn btn-action btn-primary" href="#boost-modal" data-toggle=modal data-target="#boost-modal">Create</a></h3>
+    </div>
+</div>
 <div id="records" class="row">
     {% include "notifications/includes/records.html" %}
 </div>
