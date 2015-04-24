@@ -33,6 +33,10 @@ class Notification(orm.Document):
     redirect = Redirect()
     smart = field.Boolean(default=False)
 
+    @property
+    def id(self):
+        return self._id
+
     def get_post(self):
         return Post(id=self.post_id)
 
