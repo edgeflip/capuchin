@@ -227,6 +227,72 @@ $(document).ready(function () {
         }
         // table refresh will be taken care of by .table-change handler
     });
+}).ready(function () {
+    /* self-delivery forms submit their contents asynchronously and deliver the results to their target.
+    */
+    function getControlByName (controlName) {
+        // Bound to native form
+        return this.elements[controlName];
+    }
+
+    function unsatisfactory (control) {
+        return ! $(control).val();
+    }
+
+    function controlName (control) {
+        return control.name;
+    }
+
+    function showErrors (_index, element) {
+        // Bound to array of names of controls with errors
+        var $element = $(element),
+            target = $element.data('error'),
+            on = this.indexOf(target) > -1;
+
+        $element.toggleClass('on', on);
+        $element.closest('.form-group').toggleClass('has-error', on);
+    }
+
+    function startRequest () {
+        // bound to jQuery wrapper of form
+        this.find('[type=submit]').prop('disabled', true);
+    }
+
+    function endRequest () {
+        // bound to jQuery wrapper of form
+        this.find('[type=submit]').prop('disabled', false);
+    }
+
+    function showResult (data) {
+        // bound to jQuery wrapper of form
+        $(this.data('target')).html(data);
+    }
+
+    function deliver (event) {
+        var form = this,
+            $form = $(this),
+            requires = $form.data('require'),
+            requiredControls = requires && requires.split(/ +/).map(getControlByName, form),
+            errors = requiredControls && requiredControls.filter(unsatisfactory),
+            errorNames = errors && errors.map(controlName);
+
+        if (errorNames && errorNames.length > 0) {
+            $form.find('[data-error]').each(showErrors.bind(errorNames));
+        } else {
+            $form.find('[data-error]').removeClass('on');
+            startRequest.call($form);
+            $.ajax(form.action, {
+                data: $form.serialize(),
+                method: form.method
+            })
+            .done(showResult.bind($form))
+            .always(endRequest.bind($form));
+        }
+
+        event.preventDefault();
+    }
+
+    $('.self-delivery').submit(deliver);
 });
 
 (function () {

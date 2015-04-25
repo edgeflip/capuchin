@@ -92,7 +92,7 @@ class Capuchin(Flask):
         self.login_manager.login_view = "auth.login"
 
     def user_logged_in(self):
-        logging.info(request.path)
+        logging.debug(request.path)
         if not current_user.is_authenticated():
             return redirect(url_for("auth.login", next=request.path, _external=True))
 
@@ -120,6 +120,7 @@ class Capuchin(Flask):
         from controllers.engagement import engagement
         from controllers.tables import tables
         from controllers.reports import reports
+
         db.before_request(self.user_logged_in)
         notifications.before_request(self.user_logged_in)
         lists.before_request(self.user_logged_in)
@@ -128,6 +129,7 @@ class Capuchin(Flask):
         engagement.before_request(self.user_logged_in)
         tables.before_request(self.user_logged_in)
         reports.before_request(self.user_logged_in)
+
         self.register_blueprint(hc)
         self.register_blueprint(db)
         self.register_blueprint(notifications)

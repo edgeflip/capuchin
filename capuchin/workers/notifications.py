@@ -4,6 +4,7 @@ import requests
 from celery.utils.log import get_task_logger
 
 from capuchin import config
+from capuchin.integration import chapo
 from capuchin.workers import app
 from capuchin.models.event import record_event
 from capuchin.models.notification import Notification
@@ -19,13 +20,7 @@ def get_redirect_url(nid):
     notification = Notification(id=nid)
     url = notification.get_url()
     LOG.debug("Notification target URL: %s", url)
-    response = requests.post(
-        config.REDIRECTOR_URL,
-        data={'url': url},
-        headers={'Authorization': ' apikey {}'.format(config.REDIRECTOR_AUTH)},
-        allow_redirects=False,
-    )
-    location = response.headers['location']
+    location = chapo.get_redirect_url(url)
     (_base, path) = location.split('/canvas/', 1)
     LOG.debug("Notification redirect href: %s", path)
     notification.redirect.original_url = url
