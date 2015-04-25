@@ -24,7 +24,7 @@
             delete ui.selectedItems[val];
             delete capuchin.segment.filters["{{filter['field']}}"];
             capuchin.segment.refresh();
-            console.log("REMOVED", filters);
+            console.log("REMOVED", capuchin.segment.filters);
         }
     });
     fixSelectCallback(

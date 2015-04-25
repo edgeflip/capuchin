@@ -103,10 +103,17 @@ class Table(object):
         total = records.total
         return records, total
 
+    def tr(self, record):
+        url = record.url
+        id = record.id
+        url_attribute = u' data-url="{}"'.format(url) if url else ''
+        object_attribute = u' data-object="{}"'.format(id) if id else ''
+        return u'<tr{}{}>'.format(object_attribute, url_attribute)
+
     def build_rows(self, records):
         tr = []
         for record in records.hits:
-            td = [u'<tr data-object="{}" data-url="{}">'.format(record.id, record.url())]
+            td = [self.tr(record)]
             for column in self.columns:
                 value = record
                 for level in column.field.split("."):
@@ -184,7 +191,7 @@ class MongoTable(Table):
     def build_rows(self, records):
         tr = []
         for record in records:
-            td = [u'<tr data-object="{}" data-url="{}">'.format(record.id, record.url)]
+            td = [self.tr(record)]
             for column in self.columns:
                 levels = column.field.split(".")
                 value = record

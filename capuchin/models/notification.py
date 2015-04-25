@@ -34,8 +34,8 @@ class Notification(orm.Document):
     smart = field.Boolean(default=False)
 
     @property
-    def clicks(self):
-        return random.randint(1000, 9999999)
+    def id(self):
+        return self._id
 
     def get_post(self):
         return Post(id=self.post_id)
@@ -43,5 +43,7 @@ class Notification(orm.Document):
     def get_url(self):
         return Post.make_fb_url(self.post_id) if self.post_id else self.url
 
+    def get_content(self):
+        return self.get_post().message if self.post_id else self.url
 
 Segment.notifications = orm.Lazy(type=Notification, key='segment')

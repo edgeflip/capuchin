@@ -24,6 +24,7 @@ class Post(ESObject):
         }
         return q
 
+    @property
     def url(self):
         return url_for('engagement.view', id=self.id)
 
