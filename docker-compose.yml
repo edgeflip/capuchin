@@ -84,5 +84,5 @@ web:
         - rabbitmq:mq
     expose:
         - "8000:8000"
-    environment:
-        SERVER_NAME: capuchin.dev
+    env_file:
+        - /app/web.env
