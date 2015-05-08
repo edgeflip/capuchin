@@ -1,0 +1,70 @@
+esdata:
+    image: ubuntu
+    command: true
+    volumes:
+        - /es/data
+        - /log
+
+influxdata:
+    image: ubuntu
+    command: true
+    volumes:
+        - /data
+
+rabbitdata:
+    image: ubuntu
+    command: true
+    volumes:
+        - /data/log
+        - /data/mnesia
+
+rabbitmq:
+    image: rabbitmq
+    hostname: rabbitmq
+    expose:
+        - 5672
+        - 15672
+
+mongodb:
+    image: dockerfile/mongodb
+    expose:
+        - 27017
+
+elasticsearch:
+    image: dockerfile/elasticsearch
+    hostname: elasticsearch
+    command: /elasticsearch/bin/elasticsearch -Des.config=/config/elasticsearch.yml
+    expose:
+        - 9200
+        - 9300
+
+    volumes:
+        - ../config:/config
+
+influxdb:
+    image: tutum/influxdb
+    hostname: influx
+    expose:
+        - 8083
+        - 8086
+
+    ports:
+        - "8083:8083"
+        - "8086:8086"
+
+web:
+    build: ..
+    command: supervisord -c /config/supervisor.conf -n
+    volumes:
+        - ..:/app
+        - ../config:/config
+    expose:
+        - 8000
+
+nginx:
+    image: nginx:1.7
+    volumes:
+        - ../config/nginx/capuchin.conf:/etc/nginx/conf.d/default.conf
+        - ..:/app
+    ports:
+        - "80:80"
