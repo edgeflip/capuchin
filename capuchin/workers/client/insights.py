@@ -77,11 +77,16 @@ class Insights():
 
     def page(self, data):
         next_ = data.get('paging', {}).get('next')
+        last = next_
         while next_:
             response = requests.get(next_)
             data = response.json()
             self.write_data(data)
             next_ = data.get('paging', {}).get('next')
+            if next_ == last:
+                next_ = None
+            else:
+                last = next_
 
     def write_influx(self, points, url):
         data = [
