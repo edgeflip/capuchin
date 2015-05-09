@@ -29,12 +29,12 @@ rabbitmq:
         - rabbitdata
 
 mongodb:
-    image: dockerfile/mongodb
+    image: mongo
     expose:
         - "27017"
 
 elasticsearch:
-    image: dockerfile/elasticsearch
+    build: ./es
     hostname: elasticsearch
     command: /elasticsearch/bin/elasticsearch -Des.config=/config/elasticsearch.yml
     expose:
