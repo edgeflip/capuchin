@@ -3,9 +3,10 @@
 #
 # https://github.com/dockerfile/elasticsearch
 #
+# Edited locally to handle base image path change (as yet unresolved in repo).
 
 # Pull base image.
-FROM library/java
+FROM library/java # EDITED
 
 ENV ES_PKG_NAME elasticsearch-1.5.0
 
