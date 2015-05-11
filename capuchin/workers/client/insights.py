@@ -1,6 +1,7 @@
 import datetime
 import logging
 import time
+import urlparse
 
 import requests
 from flask_oauth import OAuth
@@ -72,8 +73,9 @@ class Insights():
         data['since'] = time.mktime(self.since.timetuple())
         data['until'] = time.mktime(datetime.datetime.utcnow().timetuple())
         res = self.fb_app.get('/v2.2/{}/insights'.format(id), data=data)
-        self.write_data(res.data)
-        self.page(res.data)
+        if isinstance(res.data, dict):
+            self.write_data(res.data)
+            self.page(res.data)
 
     def page(self, data):
         next_ = data.get('paging', {}).get('next')
@@ -83,7 +85,10 @@ class Insights():
             data = response.json()
             self.write_data(data)
             next_ = data.get('paging', {}).get('next')
-            if next_ == last:
+
+            now = time.mktime(datetime.datetime.utcnow().timetuple())
+            since = int(urlparse.parse_qs(urlparse.urlparse(next_).query).get('since', [0])[0])
+            if next_ == last or since > now:
                 next_ = None
             else:
                 last = next_
