@@ -1,5 +1,4 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from flask.ext.login import current_user
 from flask.views import MethodView
 from admin import config
 from admin.util import email
@@ -12,6 +11,7 @@ clients = Blueprint(
     template_folder=config.TEMPLATES,
     url_prefix="/clients",
 )
+
 
 def create_client(name, email):
     cl = Client()
@@ -27,11 +27,13 @@ def create_client(name, email):
     at.save()
     return at._id
 
+
 class ClientsDefault(MethodView):
 
     def get(self):
         clients = [l for l in Client.find()]
         return render_template("clients/index.html", clients=clients)
+
 
 class ClientsCreate(MethodView):
 
