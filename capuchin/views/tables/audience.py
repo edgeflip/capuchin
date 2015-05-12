@@ -67,6 +67,18 @@ def date_formatter(v, r):
     return date_format(v)
 
 
+def engagement_formatter(val, record):
+    engagement = record.engagement
+    numeric_engagement = 1 if not engagement else int(record.engagement)
+    output = ""
+    for threshold in range(1, 6):
+        if numeric_engagement >= threshold:
+            output += "<span class='glyphicon glyphicon-star'></span>"
+        else:
+            output += "<span class='glyphicon glyphicon-star-empty'></span>"
+    return output
+
+
 class Segments(MongoTable):
 
     cls = Segment
@@ -74,7 +86,7 @@ class Segments(MongoTable):
         Column('name', "Name", sortable=True),
         Column('created', "Created", formatter=date_formatter, sortable=True),
         Column('', 'Members', formatter=segment_count),
-        Column('', 'Engagement', formatter=lambda r, v: "...", sortable=True),
+        Column('', 'Engagement', formatter=engagement_formatter, sortable=True),
         Column('last_notification', "Last Notification", formatter=date_formatter, sortable=True),
         Column('', 'Actions', formatter=segment_actions),
     ]
