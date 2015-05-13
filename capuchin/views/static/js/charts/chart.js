@@ -537,9 +537,10 @@ function DumpObjectIndented(obj, indent)
         var interval = false
 
         this.render = function(columns, chartList){
+            var maybeDisableClass = settings.hide ? " chart-disabled" : "";
             $(this).append("<div class=\"col-md-"+columns+" dash-chart\"> \
                 <h3>"+settings.name+"</h3> \
-                <div id=\"chart"+settings.id+"\" data-url=\""+settings.data_url+"\" class=\"chart\"> \
+                <div id=\"chart"+settings.id+"\" data-url=\""+settings.data_url+"\" class=\"chart" + maybeDisableClass + "\"> \
                     <div class=\"progress\">\
                         <div\
                             class=\"progress-bar progress-bar-info progress-bar-striped active loader\"\
@@ -1017,8 +1018,8 @@ function DumpObjectIndented(obj, indent)
                 }
                 nv.utils.windowResize(chart.update);
                 chartInfo.chart = chart;
-                chartList["chart"+settings.id] = chartInfo;
-                return chart
+                if (chartList != undefined) chartList["chart" + settings.id] = chartInfo;
+                return chart;
             });
         };
 
@@ -1502,7 +1503,7 @@ function DumpObjectIndented(obj, indent)
 
 (function($){
     $.fn.list = function(settings){
-        $(this).append("<div class=\"col-md-"+settings.columns+" dash-chart\" id=\"trending\"> \
+        $(this).append("<div class=\"col-md-"+settings.columns+" dash-chart chart-disabled\" id=\"trending\"> \
             <h3>"+settings.name+"</h3> \
             <p><a target=\"_blank\" data-rank=1 href=\"https://www.facebook.com/topic/Jon-Hamm/112468628768413\"><img class=\"trending\" src=\"/static/img/fb-trending.png\"></img>Jon Hamm</a></p> \
             <p><a target=\"_blank\" data-rank=2 href=\"https://www.facebook.com/topic/Germanwings/108639032494132\"><img class=\"trending\" src=\"/static/img/fb-trending.png\"></img>Germanwings</a></p> \

@@ -5,7 +5,7 @@ from capuchin import config
 from capuchin.models.post import Post
 from capuchin.views.insights.charts import DualAxisTimeChart
 from capuchin.views.insights import age, gender, interests
-from capuchin.views.tables.dashboard import Posts, Notifications
+from capuchin.views.tables.dashboard import Posts, ClientNotifications, PostNotifications
 from capuchin.controllers.tables import render_table
 import logging
 from collections import OrderedDict
@@ -32,7 +32,7 @@ def create_pagination(total_records, current_page=0):
 
 class Index(MethodView):
 
-    def get(self, page=0, template='posts/index.html'):
+    def get(self, page=0, template='engagement/index.html'):
         query = request.args.get('q') or '*'
 
         posts = render_table(Posts)
@@ -42,9 +42,17 @@ class Index(MethodView):
                 sort=('created_time', 'desc'),
             )
 
+        notifications = render_table(ClientNotifications)
+        if not notifications:
+            notifications = ClientNotifications(current_user.client).render(
+                q='*',
+                sort=('created_time', 'desc'),
+            )
+
         return render_template(
             template,
             posts=posts,
+            notifications=notifications,
             page=page,
             q=query,
         )
@@ -56,7 +64,7 @@ class View(MethodView):
 
     def get(self, id):
         post = Post(id=id)
-        notifications = Notifications(current_user.client)
+        notifications = PostNotifications(current_user.client)
         logging.info(post)
         return render_template(
             "posts/view.html",

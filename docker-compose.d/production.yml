@@ -1,21 +1,21 @@
 esdata:
     extends:
-        file: docker-compose.d/common.yml
+        file: ./common.yml
         service: esdata
 
 influxdata:
     extends:
-        file: docker-compose.d/common.yml
+        file: ./common.yml
         service: influxdata
 
 rabbitdata:
     extends:
-        file: docker-compose.d/common.yml
+        file: ./common.yml
         service: rabbitdata
 
 rabbitmq:
     extends:
-        file: docker-compose.d/common.yml
+        file: ./common.yml
         service: rabbitmq
 
     volumes_from:
@@ -23,12 +23,12 @@ rabbitmq:
 
 mongodb:
     extends:
-        file: docker-compose.d/common.yml
+        file: ./common.yml
         service: mongodb
 
 elasticsearch:
     extends:
-        file: docker-compose.d/common.yml
+        file: ./common.yml
         service: elasticsearch
 
     volumes_from:
@@ -36,7 +36,7 @@ elasticsearch:
 
 influxdb:
     extends:
-        file: docker-compose.d/common.yml
+        file: ./common.yml
         service: influxdb
 
     volumes_from:
@@ -44,17 +44,20 @@ influxdb:
 
 web:
     extends:
-        file: docker-compose.d/common.yml
+        file: ./common.yml
         service: web
     links:
         - mongodb:mongo
         - elasticsearch:es
         - influxdb:influx
         - rabbitmq:mq
+    environment:
+        ENVIRONMENT: production
+        SERVER_NAME: admin.efprod.com
 
 nginx:
     extends:
-        file: docker-compose.d/common.yml
+        file: ./common.yml
         service: nginx
     links:
         - web

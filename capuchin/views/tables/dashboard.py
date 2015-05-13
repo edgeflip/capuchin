@@ -42,6 +42,7 @@ def post_engagement(val, record):
 
 
 def post_actions(val, record):
+    # TODO: use <tr data-object> instead of post_id?
     return """\
 <div class="btn-group btn-group-xs" role="group" aria-label="...">
     <a class="btn btn-default" href="{view_href}">View</a>
@@ -75,6 +76,9 @@ def date_formatter(v, r):
     return date_format(r.created_time)
 
 
+def truncate(v, chars):
+    return current_app.jinja_env.filters['truncate'](v, chars)
+
 class Posts(Table):
 
     cls = Post
@@ -89,38 +93,58 @@ class Posts(Table):
     ]
 
 
-def notif_message(v, r):
-    return current_app.jinja_env.filters['truncate'](v, 25)
-
-notification_columns = [
-    Column('created', 'Date', formatter=lambda v, r: date_format(v)),
-    Column('', 'Notification', formatter=lambda v, r: 'Notification'),
-    Column('', 'Segment', formatter=lambda v, r: r.segment.name),
-    Column('message', 'Description', formatter=notif_message),
-    Column('engagement', 'Click %', formatter=lambda v, r: "{}%".format(random.randint(2, 99)))
-]
-
-
 class Notifications(MongoTable):
     cls = Notification
-    columns = notification_columns
+    columns = [
+        Column('created', 'Date', formatter=lambda v, r: date_format(v), sortable=True),
+        Column('message', 'Description', formatter=lambda v, r: truncate(v, 25), sortable=True),
+        Column('segment', 'Segment', formatter=lambda v, r: r.segment.name, sortable=True),
+        Column('post', 'Content', formatter=lambda v, r: truncate(r.get_content(), 25), sortable=True),
+        Column('engagement', 'Click %', formatter=lambda v, r: "{}%".format(random.randint(2, 99)))
+    ]
+
+    fake_data = (
+            ['03/19/2015', '{Name}, take five minutes to watch this video.', 'Urban 18-35', '54%'],
+            ['03/18/2015', '{Name}, help us move the political needle on this important issue!', 'Politically Active', '63%'],
+            ['03/17/2015', '{Name}, you need to see this...', 'All Supporters', '41%'],
+    )
+
+    def get_records(self, q, from_, size, sort):
+        records, total = super(Notifications, self).get_records(q, from_, size, sort)
+        return records, total+3
+
+
+class ClientNotifications(Notifications):
+    def build_rows(self, records):
+        real_rows = super(ClientNotifications, self).build_rows(records)
+
+        for row in self.fake_data:
+            td = [u"<tr>"]
+            td.append(u"<td>{}</td>".format(row[0]))
+            td.append(u"<td>{}</td>".format(row[1]))
+            td.append(u"<td>{}</td>".format(row[2]))
+            td.append(u"<td>{}</td>".format("Merchants of Doubt, a new documentary..."))
+            td.append(u"<td>{}</td>".format(row[3]))
+            td.append(u"</tr>")
+            real_rows.append(u"".join(td))
+        return real_rows
+
+
+class PostNotifications(Notifications):
+    columns = [
+        Column('created', 'Date', formatter=lambda v, r: date_format(v), sortable=True),
+        Column('message', 'Description', formatter=lambda v, r: truncate(v, 25), sortable=True),
+        Column('segment', 'Segment', formatter=lambda v, r: r.segment.name, sortable=True),
+        Column('engagement', 'Click %', formatter=lambda v, r: "{}%".format(random.randint(2, 99)))
+    ]
 
     def build_rows(self, records):
-        real_rows = super(Notifications, self).build_rows(records)
+        real_rows = super(PostNotifications, self).build_rows(records)
 
-        data = (
-            ('3/19/2015', 'Notification', 'Urban 18-35', '{Name}, take five minutes to watch this video.', '54%'),
-            ('3/18/2015', 'Notification', 'Politically Active', '{Name}, help us move the political needle on this important issue!', '63%'),
-            ('3/17/2015', 'Notification', 'All Supporters', '{Name}, you need to see this...', '41%'),
-        )
-        for row in data:
-            td = [u"<tr data-url=\"None\">"]
+        for row in self.fake_data:
+            td = [u"<tr>"]
             for field in row:
                 td.append(u"<td>{}</td>".format(field))
             td.append(u"</tr>")
             real_rows.append(u"".join(td))
         return real_rows
-
-    def get_records(self, q, from_, size, sort):
-        records, total = super(Notifications, self).get_records(q, from_, size, sort)
-        return records, total+3

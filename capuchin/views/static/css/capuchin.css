@@ -258,6 +258,9 @@ ul.navbar-right.dropdown {
     content: '';
 }
 
+.btn-group-xs:not(:first-child) {
+    margin-left: 1em;
+}
 .btn-group-xs>.btn {
     border-radius: 10px;
 }
@@ -444,6 +447,34 @@ table td img.table-image {
 }
 .dash-chart {
     padding-bottom: 20px;
+}
+
+.chart-disabled:before {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 10;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 10px;
+}
+.chart-disabled:after {
+    font-size: 200%;
+    text-align: center;
+    content: "Coming Soon!";
+    padding-top: 25px;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 10;
+    background-color: rgba(200, 200, 200, 0.3);
+    border-radius: 10px;
 }
 
 .post-reach-chart {

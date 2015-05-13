@@ -3,16 +3,23 @@ from flask.ext.login import current_user
 from flask.views import MethodView
 
 from capuchin import config
-from capuchin.models.segment import Segment
 from capuchin.models.notification import Notification
+from capuchin.models.segment import Segment
+from capuchin.views.tables.dashboard import ClientNotifications
+from capuchin.controllers.tables import render_table
 from capuchin.workers.notifications import get_redirect_url, send_notifications
 
 
 class NotificationsDefault(MethodView):
 
     def get(self):
-        notifications = Notification.find()
-        return render_template("notifications/index.html", records=notifications)
+        notifications = render_table(ClientNotifications)
+        if not notifications:
+            notifications = ClientNotifications(current_user.client).render(
+                q='*',
+                sort=('created_time', 'desc'),
+            )
+        return render_template("notifications/index.html", notifications=notifications)
 
 
 class NotificationsCreate(MethodView):
@@ -31,7 +38,7 @@ class NotificationsCreate(MethodView):
         chain = (get_redirect_url.si(nid) | send_notifications.si(nid))
         chain.delay()
 
-        return redirect(url_for(".index"))
+        return redirect(url_for("engagement.index"))
 
 
 notifications = Blueprint(

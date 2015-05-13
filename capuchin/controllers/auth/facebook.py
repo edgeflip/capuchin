@@ -1,14 +1,15 @@
-from flask import Blueprint, render_template, request, redirect, url_for, Response
+import json
+import logging
+from urlparse import parse_qs
+
+from flask import Blueprint, flash, render_template, request, redirect, url_for, Response
 from flask.views import MethodView
 from flask.ext.login import login_required, current_user
 from capuchin import config
 from capuchin.signals import facebook_connected
 from capuchin.workers import client_insights, client_feed
-from capuchin.models.client import Client, SocialAccount, FacebookPage, PageCategory
+from capuchin.models.client import Client, FacebookPage, PageCategory
 from flask_oauth import OAuth
-import logging
-from urlparse import parse_qs, urlparse
-import json
 
 oauth = OAuth()
 
@@ -18,6 +19,7 @@ facebook = Blueprint(
     template_folder=config.TEMPLATES,
     url_prefix="/auth/facebook",
 )
+
 
 def get_new_client_data(sender, client):
     logging.info("FACCEBOOK CONNECTED {}: {}".format(sender, client))
@@ -34,13 +36,21 @@ fb_app = oauth.remote_app(
     authorize_url='https://www.facebook.com/dialog/oauth',
     consumer_key=config.FACEBOOK_APP_ID,
     consumer_secret=config.FACEBOOK_APP_SECRET,
-    request_token_params={'scope': 'manage_pages,read_insights,ads_management'}
+    request_token_params={
+        'scope': ','.join([
+            'manage_pages',
+            'read_insights',
+            # 'ads_management',
+        ]),
+    }
 )
+
 
 @fb_app.tokengetter
 def get_facebook_token(token=None):
     sa = current_user.social.facebook
     return (sa.token, sa.secret)
+
 
 @facebook.route("/login", methods=['GET', 'POST'])
 @login_required
@@ -49,6 +59,7 @@ def login():
         callback=url_for('.authorized',
             next=request.args.get('next'), _external=True)
     )
+
 
 @facebook.route("/authorized", methods=['GET', 'POST'])
 @fb_app.authorized_handler
@@ -68,6 +79,7 @@ def authorized(resp):
 
     return redirect(url_for(".verify"))
 
+
 def get_pages(user_id):
     pages = []
     res = fb_app.get("/{}/accounts".format(user_id))
@@ -76,12 +88,13 @@ def get_pages(user_id):
         res = fb_app.get(
             "/{}/accounts".format(user_id),
             data={
-                "after":res.data.get("paging", {}).get("cursor").get("after")
+                "after": res.data.get("paging", {}).get("cursor").get("after")
             }
         )
-        pages+= [p for p in res.data.get("data")]
+        pages += [p for p in res.data.get("data")]
 
     return pages
+
 
 def get_long_token(token):
     fb = current_user.social.facebook

@@ -20,20 +20,19 @@ def user_notification(val, record):
 def user_location(v, r):
     return r.location_name.location
 
-user_columns = [
-    Column('first_name', "Name", formatter=user_name, sortable=True),
-    Column('age', "Age", sortable=True),
-    Column('gender', "Gender", sortable=True),
-    Column('location_name.city', "Location", formatter=user_location),
-    Column('', "Source", formatter=lambda v, r: "Facebook Ad"),
-    Column('last_notification', "Last Notification", formatter=user_notification, sortable=True),
-    # Column('', 'Link', formatter=lambda v,r: "Action", cls="actions"),
-]
-
 
 class Users(Table):
+
     cls = User
-    columns = user_columns
+    columns = [
+        Column('first_name', "Name", formatter=user_name, sortable=True),
+        Column('age', "Age", sortable=True),
+        Column('gender', "Gender", sortable=True),
+        Column('location_name.city', "Location", formatter=user_location),
+        Column('', "Source", formatter=lambda v, r: "Facebook Ad"),
+        Column('last_notification', "Last Notification", formatter=user_notification, sortable=True),
+        # Column('', 'Link', formatter=lambda v,r: "Action", cls="actions"),
+    ]
 
 
 class SegmentUsers(Users):
@@ -50,10 +49,15 @@ def segment_count(v, r):
 
 
 def segment_actions(v, record):
+    # FIXME: redefine .btn-danger?
+    # TODO: extend use <tr data-object> instead of segment_id?
     return """\
-<div class="btn-group btn-group-xs">
+<div class="btn-group btn-group-xs" role=group>
     <a class="btn btn-default" href="#grow-modal" data-toggle=modal data-target="#grow-modal" data-segment="{segment_id}" role="button">Grow</a>
     <a class="btn btn-default" href="#boost-modal" data-toggle=modal data-target="#boost-modal" data-segment="{segment_id}" data-title="Engage a Segment" role="button">Engage</a>
+</div>
+<div class="btn-group btn-group-xs" role=group>
+    <button class=btn type=button data-toggle=modal data-target="#remove-segment-modal" data-icon="&#xe054;" value=Delete></button>
 </div>""".format(
         segment_id=record._id,
     )
@@ -63,16 +67,26 @@ def date_formatter(v, r):
     return date_format(v)
 
 
-segment_columns = [
-    Column('name', "Name", sortable=True),
-    Column('created', "Created", formatter=date_formatter, sortable=True),
-    Column('', 'Members', formatter=segment_count),
-    Column('', 'Engagement', formatter=lambda r, v: "...", sortable=True),
-    Column('last_notification', "Last Notification", formatter=date_formatter, sortable=True),
-    Column('', 'Actions', formatter=segment_actions),
-]
+def engagement_formatter(val, record):
+    engagement = record.engagement
+    numeric_engagement = 1 if not engagement else int(record.engagement)
+    output = ""
+    for threshold in range(1, 6):
+        if numeric_engagement >= threshold:
+            output += "<span class='glyphicon glyphicon-star'></span>"
+        else:
+            output += "<span class='glyphicon glyphicon-star-empty'></span>"
+    return output
 
 
 class Segments(MongoTable):
+
     cls = Segment
-    columns = segment_columns
+    columns = [
+        Column('name', "Name", sortable=True),
+        Column('created', "Created", formatter=date_formatter, sortable=True),
+        Column('', 'Members', formatter=segment_count),
+        Column('', 'Engagement', formatter=engagement_formatter, sortable=True),
+        Column('last_notification', "Last Notification", formatter=date_formatter, sortable=True),
+        Column('', 'Actions', formatter=segment_actions),
+    ]

@@ -103,18 +103,24 @@ class Table(object):
         total = records.total
         return records, total
 
+    def tr(self, record):
+        url = record.url
+        id = record.id
+        url_attribute = u' data-url="{}"'.format(url) if url else ''
+        object_attribute = u' data-object="{}"'.format(id) if id else ''
+        return u'<tr{}{}>'.format(object_attribute, url_attribute)
+
     def build_rows(self, records):
         tr = []
-        for r in records.hits:
-            td = [u"<tr data-url=\"{}\">".format(r.url())]
-            for c in self.columns:
-                val = r
-                for level in c.field.split("."):
-                    val = val.get(level, {})
-                td.append(c.td(val, r))
+        for record in records.hits:
+            td = [self.tr(record)]
+            for column in self.columns:
+                value = record
+                for level in column.field.split("."):
+                    value = value.get(level, {})
+                td.append(column.td(value, record))
             td.append(u"</tr>")
             tr.append(u"".join(td))
-
         return tr
 
     def render(self, q="*", from_=0, size=10, sort=None, pagination=True):
@@ -125,10 +131,11 @@ class Table(object):
             self.__module__,
             self.__class__.__name__
         ).split(".")[3:])
-        id = u"{}{}".format("table", random.randint(9999, 99999999))
+        id = u"table{}".format(random.randint(9999, 99999999))
+        q_encoded = json.dumps(q, cls=JavascriptEncoder)
         th = [c.th(me, id, sort,
                    obj=self.obj,
-                   q=json.dumps(q, cls=JavascriptEncoder),
+                   q=q_encoded,
                    from_=0,
                    size=size,
                    pagination=pagination,
@@ -142,43 +149,55 @@ class Table(object):
         )
         table = info + (
             u'<div class=table-responsive>'
-            u'<table class="table table-striped table-hover table-compact">'
-            u'<thead><tr>{}</tr></thead><tbody>{}</tbody></table></div>'.format(
+            u'<table class="table table-striped table-hover table-compact" data-source="{}">'
+            u'<thead><tr>{}</tr></thead><tbody>{}</tbody></table></div>'
+            .format(
+                url_for(
+                    'tables.index',
+                    cls=me,
+                    field=sort and sort[0],
+                    dir=sort and sort[1],
+                    obj=self.obj,
+                    q=q_encoded,
+                    from_=from_,
+                    size=size,
+                    pagination=pagination,
+                    url=url
+                ),
                 u"".join(th),
-                u"".join(tr))
+                u"".join(tr),
+            )
         )
         pagination = self.build_pagination(me, id, sort, from_=from_, size=size, total=total, q=json.dumps(q, cls=JavascriptEncoder), pagination=self.pagination, url=url)
         return u"<div id=\"{}\">{}{}</div>".format(id, table, pagination)
+
 
 class MongoTable(Table):
 
     def get_records(self, q, from_, size, sort):
         q = q if q and q!="*" else {}
         q.update({'client':self.client._id})
-        logging.info("MONGO QUERY: {}".format(q))
-        if sort:
-            d = 1 if sort[1]=='asc' else -1
-            sort = [(sort[0], d)]
+        logging.debug("MONGO QUERY: {}".format(q))
 
-        sort = sort if sort else [('_id',-1)]
+        if sort:
+            sort = [(sort[0], 1 if sort[1] == 'asc' else -1)]
+        else:
+            sort = [('created', -1)]
+
         records = self.cls.find(q).sort(sort).skip(int(from_)).limit(int(size))
         total = records.count()
         return records, total
 
     def build_rows(self, records):
         tr = []
-        for r in records:
-            td = [u"<tr data-url=\"{}\">".format(r.url)]
-            for c in self.columns:
-                levels = c.field.split(".")
-                val = r
-                for i in levels:
-                    try:
-                        val = getattr(val, i)
-                    except:
-                        val = ""
-                td.append(c.td(val, r))
+        for record in records:
+            td = [self.tr(record)]
+            for column in self.columns:
+                levels = column.field.split(".")
+                value = record
+                for level in levels:
+                    value = getattr(value, level, '')
+                td.append(column.td(value, record))
             td.append(u"</tr>")
             tr.append(u"".join(td))
-
         return tr
