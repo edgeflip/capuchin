@@ -115,8 +115,6 @@ class UserImport(dict):
 
     def __init__(self, obj):
         super(UserImport, self).__init__()
-        interests = [i.name for i in Interest.find()]
-        imports = [i.name for i in ImportOrigin.find()]
         self.parse(obj)
         try:
             self.con = psycopg2.connect(
@@ -155,16 +153,11 @@ class UserImport(dict):
         """
         self.cur.execute(query, (efid,))
         rows = self.cur.fetchall()
-        interest = interests[random.randint(0, len(interests)-1)]
-        imp = imports[random.randint(0, len(imports)-1)]
-        self['interests'] = [interest]
-
         self['clients'] = [
             {
                 'asid':row['fbid'],
                 'id':str(Client.find_one({ 'slug': row['codename']})._id),
                 'engagement':random.randint(1, 5),
-                'import_origins': [imp],
             }
             for row in rows
         ]
