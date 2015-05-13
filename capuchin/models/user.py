@@ -153,14 +153,15 @@ class UserImport(dict):
         """
         self.cur.execute(query, (efid,))
         rows = self.cur.fetchall()
-        self['clients'] = [
-            {
-                'asid':row['fbid'],
-                'id':str(Client.find_one({ 'slug': row['codename']})._id),
-                'engagement':random.randint(1, 5),
-            }
-            for row in rows
-        ]
+        self['clients'] = []
+        for row in rows:
+            client_record = Client.find_one({ 'slug': row['codename']})
+            if client_record:
+                self['clients'].append({
+                    'asid':row['fbid'],
+                    'id':str(client_record._id),
+                    'engagement':random.randint(1, 5),
+                }
 
     def parse(self, obj):
         for k,v in obj.iteritems():
