@@ -115,8 +115,6 @@ class UserImport(dict):
 
     def __init__(self, obj):
         super(UserImport, self).__init__()
-        interests = [i.name for i in Interest.find()]
-        imports = [i.name for i in ImportOrigin.find()]
         self.parse(obj)
         try:
             self.con = psycopg2.connect(
@@ -155,21 +153,15 @@ class UserImport(dict):
         """
         self.cur.execute(query, (efid,))
         rows = self.cur.fetchall()
-        #FIXME demo hack, users should be imported based on the client, we are just grabbing everyone and assigning them to all clients.
-        user_client = rows[0]
-        interest = interests[random.randint(0, len(interests)-1)]
-        imp = imports[random.randint(0, len(imports)-1)]
-        self['interests'] = [interest]
-
-        self['clients'] = [
-            {
-                'asid':user_client['fbid'],
-                'id':str(c._id),
-                'engagement':random.randint(1, 5),
-                'import_origins': [imp],
-            }
-            for c in Client.find()
-        ]
+        self['clients'] = []
+        for row in rows:
+            client_record = Client.find_one({ 'slug': row['codename']})
+            if client_record:
+                self['clients'].append({
+                    'asid':row['fbid'],
+                    'id':str(client_record._id),
+                    'engagement':random.randint(1, 5),
+                })
 
     def parse(self, obj):
         for k,v in obj.iteritems():

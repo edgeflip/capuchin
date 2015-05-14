@@ -1,9 +1,9 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from flask.ext.login import current_user
 from flask.views import MethodView
 from admin import config
 from admin.util import email
 from capuchin.models.client import Client, Admin, AccountToken
+from capuchin.integration import magnus
 import logging
 
 clients = Blueprint(
@@ -13,10 +13,12 @@ clients = Blueprint(
     url_prefix="/clients",
 )
 
+
 def create_client(name, email):
     cl = Client()
     cl.name = name
     cl.save()
+    magnus.get_or_create_client(cl.slug, name)
     admin = Admin()
     admin.email = email
     admin.password = cl._id
@@ -27,11 +29,13 @@ def create_client(name, email):
     at.save()
     return at._id
 
+
 class ClientsDefault(MethodView):
 
     def get(self):
         clients = [l for l in Client.find()]
         return render_template("clients/index.html", clients=clients)
+
 
 class ClientsCreate(MethodView):
 

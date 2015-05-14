@@ -3,6 +3,7 @@ from flask.ext.login import login_user, current_user, logout_user
 from flask.views import MethodView
 from pymongo.errors import DuplicateKeyError
 from capuchin import config
+from capuchin.integration import magnus
 from capuchin.models.client import Client, Admin, Competitor, AccountToken
 from capuchin.util import password
 import logging
@@ -78,20 +79,12 @@ class AuthRegister(MethodView):
             cl = Client()
             cl.name = form['org']
             cl.slug = cl.name
-            for page_id, name in (
-                ("433468746723138", "Divvy Bikes"),
-                ("63811549237", "The White House"),
-                ("54779960819", "United Nations"),
-            ):
-                comp = Competitor()
-                comp.id = page_id
-                comp.name = name
-                cl.competitors.append(comp)
             cl.save()
         except DuplicateKeyError as e:
             logging.exception(e)
             flash("Organization name already taken", "danger");
             return render_template("auth/register.html", form=form)
+        magnus.get_or_create_client(cl.slug, cl.name)
         try:
             a = Admin()
             a.name = form['name']
