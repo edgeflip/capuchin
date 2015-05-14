@@ -161,7 +161,7 @@ class UserImport(dict):
                     'asid':row['fbid'],
                     'id':str(client_record._id),
                     'engagement':random.randint(1, 5),
-                }
+                })
 
     def parse(self, obj):
         for k,v in obj.iteritems():
