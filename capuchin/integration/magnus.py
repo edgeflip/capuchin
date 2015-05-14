@@ -1,6 +1,7 @@
 from capuchin import config
 import psycopg2
 import psycopg2.extras
+import logging
 
 def get_or_create_client(slug, name):
     connection = psycopg2.connect(
@@ -22,6 +23,7 @@ def get_or_create_client(slug, name):
 
     magnus_id = fetch_client_id()
     if not magnus_id:
+        logging.info("No magnus client found, auto-provisioning")
         cursor.execute(
             "insert into clients (name, codename, created, updated) values (%s, %s, now(), now())",
             (name, slug)
