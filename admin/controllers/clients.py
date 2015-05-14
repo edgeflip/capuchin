@@ -4,7 +4,7 @@ from flask.views import MethodView
 from admin import config
 from admin.util import email
 from capuchin.models.client import Client, Admin, AccountToken
-from capuchin.util import magnus
+from capuchin.integration import magnus
 import logging
 
 clients = Blueprint(
@@ -18,7 +18,7 @@ def create_client(name, email):
     cl = Client()
     cl.name = name
     cl.save()
-    magnus.get_or_create_magnus_client(cl.slug, name)
+    magnus.get_or_create_client(cl.slug, name)
     admin = Admin()
     admin.email = email
     admin.password = cl._id

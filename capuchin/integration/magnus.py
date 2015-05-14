@@ -2,7 +2,7 @@ from capuchin import config
 import psycopg2
 import psycopg2.extras
 
-def get_or_create_magnus_client(slug, name):
+def get_or_create_client(slug, name):
     connection = psycopg2.connect(
         database=config.SOURCE_DATABASE,
         port=config.SOURCE_PORT,
