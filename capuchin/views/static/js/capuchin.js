@@ -230,6 +230,7 @@ $(document).ready(function () {
 }).ready(function () {
     /* self-delivery forms submit their contents asynchronously and deliver the results to their target.
     */
+    // Functional helpers //
     function getControlByName (controlName) {
         // Bound to native form
         return this.elements[controlName];
@@ -244,10 +245,10 @@ $(document).ready(function () {
     }
 
     function showErrors (_index, element) {
-        // Bound to array of names of controls with errors
-        var $element = $(element),
-            target = $element.data('error'),
-            on = this.indexOf(target) > -1;
+        // Bound to array of names of controls with erroneous input
+        var $element = $(element), // current form error element
+            target = $element.data('error'), // its form control
+            on = this.indexOf(target) > -1; // its error status
 
         $element.toggleClass('on', on);
         $element.closest('.form-group').toggleClass('has-error', on);
@@ -271,10 +272,10 @@ $(document).ready(function () {
     function deliver (event) {
         var form = this,
             $form = $(this),
-            requires = $form.data('require'),
-            requiredControls = requires && requires.split(/ +/).map(getControlByName, form),
-            errors = requiredControls && requiredControls.filter(unsatisfactory),
-            errorNames = errors && errors.map(controlName);
+            requireSpec = $form.data('require'),
+            requiredControls = requireSpec && requireSpec.split(/ +/).map(getControlByName, form),
+            errorControls = requiredControls && requiredControls.filter(unsatisfactory),
+            errorNames = errorControls && errorControls.map(controlName);
 
         if (errorNames && errorNames.length > 0) {
             $form.find('[data-error]').each(showErrors.bind(errorNames));
@@ -292,6 +293,7 @@ $(document).ready(function () {
         event.preventDefault();
     }
 
+    // TODO: upon type, remove errors?
     $('.self-delivery').submit(deliver);
 });
 

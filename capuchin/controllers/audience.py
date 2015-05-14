@@ -241,6 +241,10 @@ class Autocomplete(MethodView):
 class Invitation(MethodView):
 
     def post(self):
+        """Construct a Facebook app "login" URL which redirects to the posted URL,
+        shortened via an inline call to chapo.
+
+        """
         destination_url = request.form['destination-url']
         facebook_id = next(
             social_account.app_id
