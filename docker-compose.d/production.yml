@@ -53,7 +53,7 @@ web:
         - rabbitmq:mq
     environment:
         ENVIRONMENT: production
-        SERVER_NAME: admin.efprod.com
+        SERVER_NAME: admin.edgeflip.com
 
 nginx:
     extends:
