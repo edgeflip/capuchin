@@ -251,9 +251,10 @@ class Invitation(MethodView):
             for social_account in current_user.client.social
             if social_account.type == social_account.FACEBOOK
         )
+        success_url = chapo.wrap_outgoing_url(destination_url, facebook_id)
         full_url = 'https://www.facebook.com/dialog/oauth?' + urllib.urlencode([
             ('client_id', facebook_id),
-            ('redirect_uri', destination_url),
+            ('redirect_uri', success_url),
             # scope ...
         ])
         short_url = chapo.get_redirect_url(full_url, canvas=False)

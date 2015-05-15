@@ -1,4 +1,5 @@
 import requests
+import urllib
 
 from capuchin import config
 
@@ -14,3 +15,11 @@ def get_redirect_url(url, canvas=True):
         allow_redirects=False,
     )
     return response.headers['location']
+
+
+def wrap_outgoing_url(url, fb_app_id):
+    return 'https://{HOST}/share/outgoing/{APP_ID}/{URL_ENC}/'.format(
+        APP_ID=fb_app_id,
+        HOST=config.REDIRECTOR_HOST,
+        URL_ENC=urllib.quote_plus(url),
+    )
