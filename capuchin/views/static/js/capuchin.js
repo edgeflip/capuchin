@@ -254,19 +254,31 @@ $(document).ready(function () {
         $element.closest('.form-group').toggleClass('has-error', on);
     }
 
+    function clearError () {
+        // Bound to manipulated form element
+        var $form = $(this).closest('.self-delivery'),
+            $error = $form.find('[data-error="' + this.name + '"]');
+
+        $error.removeClass('on');
+        $error.closest('.form-group').removeClass('has-error');
+    }
+
     function startRequest () {
         // bound to jQuery wrapper of form
         this.find('[type=submit]').prop('disabled', true);
+        this.find('.spinner.switch').addClass('on');
     }
 
     function endRequest () {
         // bound to jQuery wrapper of form
         this.find('[type=submit]').prop('disabled', false);
+        this.find('.spinner.switch').removeClass('on');
     }
 
     function showResult (data) {
         // bound to jQuery wrapper of form
         $(this.data('target')).html(data);
+        this.find('.result-info.switch').addClass('on');
     }
 
     function deliver (event) {
@@ -293,8 +305,8 @@ $(document).ready(function () {
         event.preventDefault();
     }
 
-    // TODO: upon type, remove errors?
-    $('.self-delivery').submit(deliver);
+    $('.self-delivery').submit(deliver)
+    .on('click keydown', '.form-control', clearError);
 });
 
 (function () {
