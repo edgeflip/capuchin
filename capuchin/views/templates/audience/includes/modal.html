@@ -7,10 +7,10 @@
             </div>
             <div class="modal-body text-center" id="grow-body">
                 <ul class="list-unstyled">
-                    <li><a href="#fans-modal" data-toggle=modal data-target="#fans-modal" data-dismiss=modal class="btn btn-default btn-action">Invite Facebook Fans</a></li>
-                    <li><a href="#" class="btn btn-default">Invite External List</a></li>
-                    <li><a href="#share-modal" data-toggle=modal data-target="#share-modal" data-dismiss=modal class="btn btn-default">Smart Sharing Invite</a></li>
-                    <li><a href="#" class="btn btn-default">Generate Invite URL</a></li>
+                    <li><a href="#invite-modal" data-toggle=modal data-target="#invite-modal" data-dismiss=modal class="btn btn-default{% if 'invite-url' in grow_highlights %} btn-action{% endif %}">Generate Invite URL</a></li>
+                    <li><a href="#share-modal" data-toggle=modal data-target="#share-modal" data-dismiss=modal class="btn btn-default{% if 'smart-share' in grow_highlights %} btn-action{% endif %}">Smart Sharing Invite</a></li>
+                    <li><a href="#fans-modal" data-toggle=modal data-target="#fans-modal" data-dismiss=modal class="btn btn-default{% if 'invite-fans' in grow_highlights %} btn-action{% endif %}">Invite Facebook Fans</a></li>
+                    <li><a href="#" class="btn btn-default{% if 'invite-list' in grow_highlights %} btn-action{% endif %}">Invite External List</a></li>
                 </ul>
             </div>
         </div>
@@ -44,6 +44,19 @@
                                    "{Name}, causes are more meaningful when they're shared. Invite your friends!",
                                    "{Name}, invite {friend1}, {friend2}, and {friend3} to support your causes."] %}
                 {% include "notifications/includes/form.html" %}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="invite-modal" tabindex="-1" role="dialog" aria-labelledby="Generate Invite URL" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="invite-title">Generate Invite URL</h4>
+            </div>
+            <div class="modal-body" id="invite-body">
+                {% include "audience/includes/invite-form.html" %}
             </div>
         </div>
     </div>

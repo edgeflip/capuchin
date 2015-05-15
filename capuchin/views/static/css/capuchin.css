@@ -514,6 +514,9 @@ table td img.table-image {
 #grow-modal .btn {
     min-width: 190px;
 }
+#grow-body ul {
+    margin-top: 15px;
+}
 #grow-body li {
     margin-bottom: 30px;
 }
@@ -540,7 +543,7 @@ form[role=search] .btn .glyphicon-search {
 .form-notification [class^=col-sm-] {
     padding-right: 0;
 }
-.form-notification .static-control {
+.form-standard .static-control {
     border: 1px solid #8F8F8F;
     border-radius: 5px;
     color: #555;
@@ -551,33 +554,33 @@ form[role=search] .btn .glyphicon-search {
     overflow: hidden;
     text-overflow: ellipsis;
 }
-.form-notification .form-control {
+.form-standard .form-control {
     border: 1px solid #4785AB;
     border-radius: 5px;
     color: #4785AB;
     padding-left: 10px;
 }
-.form-notification .form-control:focus {
+.form-standard .form-control:focus {
     box-shadow: none;
 }
-.form-notification input.form-control {
+.form-standard input.form-control {
     border: 0;
     background-color: #A0CAE2;
     color: white;
 }
-.form-notification ::-webkit-input-placeholder {
+.form-standard ::-webkit-input-placeholder {
     color: white;
 }
-.form-notification :-moz-placeholder {
+.form-standard :-moz-placeholder {
     color: white;
 }
-.form-notification ::-moz-placeholder {
+.form-standard ::-moz-placeholder {
     color: white;
 }
-.form-notification :-ms-input-placeholder {
+.form-standard :-ms-input-placeholder {
     color: white;
 }
-.form-notification .advice-block {
+.form-standard .advice-block {
     max-width: 275px;
 }
 

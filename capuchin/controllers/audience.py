@@ -1,6 +1,7 @@
 import json
 import logging
 import math
+import urllib
 
 from bson.objectid import InvalidId
 from flask import (
@@ -16,8 +17,8 @@ from flask import (
 from flask.ext.login import current_user
 from flask.views import MethodView
 
-from capuchin import config
-from capuchin import filters
+from capuchin import config, filters
+from capuchin.integration import chapo
 from capuchin.controllers.tables import render_table
 from capuchin.models.imports import ImportOrigin
 from capuchin.models.interest import Interest
@@ -237,7 +238,30 @@ class Autocomplete(MethodView):
         return Response(json.dumps(data), mimetype='application/json')
 
 
+class Invitation(MethodView):
+
+    def post(self):
+        """Construct a Facebook app "login" URL which redirects to the posted URL,
+        shortened via an inline call to chapo.
+
+        """
+        destination_url = request.form['destination-url']
+        facebook_id = next(
+            social_account.app_id
+            for social_account in current_user.client.social
+            if social_account.type == social_account.FACEBOOK
+        )
+        full_url = 'https://www.facebook.com/dialog/oauth?' + urllib.urlencode([
+            ('client_id', facebook_id),
+            ('redirect_uri', destination_url),
+            # scope ...
+        ])
+        short_url = chapo.get_redirect_url(full_url, canvas=False)
+        return (short_url, 201)
+
+
 audience.add_url_rule("/", view_func=Default.as_view('index'))
+audience.add_url_rule("/invite", view_func=Invitation.as_view('invite'))
 audience.add_url_rule("/segment/create", view_func=Create.as_view('create'))
 audience.add_url_rule("/segment/<id>", view_func=Create.as_view('id'))
 audience.add_url_rule("/segment/<id>/<int:page>", view_func=Create.as_view("page"))

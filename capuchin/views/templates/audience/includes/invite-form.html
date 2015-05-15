@@ -1,0 +1,14 @@
+<form class="form-invite form-standard self-delivery" action="{{ url_for('audience.invite') }}" method="POST" data-require="destination-url" data-target="#invite-url">
+    <div class="form-group">
+        <label for="{{form_label}}destination-url">Enter the URL of a page to which invitees should be directed</label>
+        <input type="text" class=form-control id="{{form_label}}destination-url" name="destination-url" placeholder="http://my-site.com/" tabindex="1">
+        <p class="help-block switch" data-error="destination-url">This field is required.</p>
+    </div>
+    <div class="form-group">
+        <button type=submit class="btn btn-default btn-action" tabindex="2">Generate URL</button>
+    </div>
+    {% from "macros/load-awesome.html" import line_scale %}
+    {{ line_scale("la-dark la-sm switch") }}
+    <p class="result-info switch">Share the below URL to invite supporters into your audience:</p>
+</form>
+<p id="invite-url"></p>

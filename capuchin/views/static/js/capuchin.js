@@ -227,6 +227,86 @@ $(document).ready(function () {
         }
         // table refresh will be taken care of by .table-change handler
     });
+}).ready(function () {
+    /* self-delivery forms submit their contents asynchronously and deliver the results to their target.
+    */
+    // Functional helpers //
+    function getControlByName (controlName) {
+        // Bound to native form
+        return this.elements[controlName];
+    }
+
+    function unsatisfactory (control) {
+        return ! $(control).val();
+    }
+
+    function controlName (control) {
+        return control.name;
+    }
+
+    function showErrors (_index, element) {
+        // Bound to array of names of controls with erroneous input
+        var $element = $(element), // current form error element
+            target = $element.data('error'), // its form control
+            on = this.indexOf(target) > -1; // its error status
+
+        $element.toggleClass('on', on);
+        $element.closest('.form-group').toggleClass('has-error', on);
+    }
+
+    function clearError () {
+        // Bound to manipulated form element
+        var $form = $(this).closest('.self-delivery'),
+            $error = $form.find('[data-error="' + this.name + '"]');
+
+        $error.removeClass('on');
+        $error.closest('.form-group').removeClass('has-error');
+    }
+
+    function startRequest () {
+        // bound to jQuery wrapper of form
+        this.find('[type=submit]').prop('disabled', true);
+        this.find('.spinner.switch').addClass('on');
+    }
+
+    function endRequest () {
+        // bound to jQuery wrapper of form
+        this.find('[type=submit]').prop('disabled', false);
+        this.find('.spinner.switch').removeClass('on');
+    }
+
+    function showResult (data) {
+        // bound to jQuery wrapper of form
+        $(this.data('target')).html(data);
+        this.find('.result-info.switch').addClass('on');
+    }
+
+    function deliver (event) {
+        var form = this,
+            $form = $(this),
+            requireSpec = $form.data('require'),
+            requiredControls = requireSpec && requireSpec.split(/ +/).map(getControlByName, form),
+            errorControls = requiredControls && requiredControls.filter(unsatisfactory),
+            errorNames = errorControls && errorControls.map(controlName);
+
+        if (errorNames && errorNames.length > 0) {
+            $form.find('[data-error]').each(showErrors.bind(errorNames));
+        } else {
+            $form.find('[data-error]').removeClass('on');
+            startRequest.call($form);
+            $.ajax(form.action, {
+                data: $form.serialize(),
+                method: form.method
+            })
+            .done(showResult.bind($form))
+            .always(endRequest.bind($form));
+        }
+
+        event.preventDefault();
+    }
+
+    $('.self-delivery').submit(deliver)
+    .on('click keydown', '.form-control', clearError);
 });
 
 (function () {
